@@ -82,5 +82,44 @@ namespace SekiDiscord
                     break;
             }
         }
+
+        [Command("addcmd")]
+        [Description("Add a command to the custom commands list")]
+        public async Task AddCustomCommand(CommandContext ctx)
+        {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "addcmd Command");
+            string nick = ctx.User.Username;
+            string[] splits;
+            string message;
+            splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
+
+            if (CustomCommand.CommandExists(splits[0], StringLibrary.CustomCommands) == true)
+            {
+                message = "Command " + splits[0] + " already exists.";
+                await ctx.RespondAsync(message);
+            }
+
+            StringLibrary.CustomCommands.Add(new CustomCommand(nick, splits[1], splits[2]));
+            CustomCommand.SaveCustomCommands(StringLibrary.CustomCommands);
+        }
+
+        [Command("removecmd")]
+        [Description("Remove a command to the custom commands list")]
+        public async Task RemoveCustomCommand(CommandContext ctx)
+        {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "removecmd Command");
+
+            string[] splits;
+
+            splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
+
+            if (Useful.MemberIsBotOperator(ctx.Member) || ctx.Member.IsOwner)
+            {
+                CustomCommand.RemoveCommandByName(splits[1], StringLibrary.CustomCommands);
+                CustomCommand.SaveCustomCommands(StringLibrary.CustomCommands);
+                string message = "Command " + splits[1] + " removed.";
+                await ctx.RespondAsync(message);
+            }
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -16,7 +15,7 @@ namespace SekiDiscord.Commands
             int killID;
             string killString;
             string nick = e.User.Username;
-            List<string> listU = getOnlineUsers(e.Channel.Guild);
+            List<string> listU = Useful.getOnlineUsers(e.Channel.Guild);
             string args;
 
             try
@@ -103,7 +102,7 @@ namespace SekiDiscord.Commands
                 args = string.Empty;
             }
 
-            List<string> listU = getOnlineUsers(e.Channel.Guild);
+            List<string> listU = Useful.getOnlineUsers(e.Channel.Guild);
 
             if (string.IsNullOrWhiteSpace(args) || args.ToLower() == "random")
                 target = listU[r.Next(listU.Count)];
@@ -132,37 +131,16 @@ namespace SekiDiscord.Commands
             return message;
         }
 
-        private static List<string> getOnlineUsers(DiscordGuild discordGuild)
-        {
-            List<string> ul = new List<string>();
-
-            foreach (DiscordMember u in discordGuild.Members)
-            {
-                try
-                {
-                    if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle)
-                        ul.Add(u.DisplayName);
-                }
-                catch
-                {
-                }
-            }
-            return ul;
-        }
-
         public class KillResult
         {
-            private string result;
-            private bool isAction;
-
             public KillResult(string result, bool isAction)
             {
                 this.Result = result;
                 this.IsAction = isAction;
             }
 
-            public string Result { get => result; set => result = value; }
-            public bool IsAction { get => isAction; set => isAction = value; }
+            public string Result { get; set; }
+            public bool IsAction { get; set; }
         }
     }
 }

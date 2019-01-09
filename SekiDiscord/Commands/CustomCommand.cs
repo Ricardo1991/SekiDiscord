@@ -1,6 +1,8 @@
-﻿using System;
+﻿using DSharpPlus.EventArgs;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace SekiDiscord.Commands
 {
@@ -91,6 +93,33 @@ namespace SekiDiscord.Commands
             return command;
         }
 
+        internal static string UseCustomCommand(string command, string arguments, MessageCreateEventArgs e, StringLibrary stringLibrary)
+        {
+            string response;
+            Random r = new Random();
+            string nick = e.Author.Username;
+            List<string> listU = Useful.getOnlineUsers(e.Channel.Guild);
+            CustomCommand customcommand;
+            var regex = new Regex(Regex.Escape("<random>"));
+
+            if (CommandExists(command, stringLibrary.CustomCommands) == false)
+            {
+                //message = new Privmsg(CHANNEL, "Command " + cmd + " doesn't exist.");
+                //sendMessage(message);
+
+                return string.Empty;
+            }
+
+            customcommand = GetCustomCommandByName(command, stringLibrary.CustomCommands);
+
+            if (customcommand == null) return string.Empty;
+
+            response = customcommand.Format;
+
+            response = Useful.FillTags(response, nick.Trim(), arguments, listU);
+            return response;
+        }
+
         public static void SaveCustomCommands(List<CustomCommand> commands)
         {
             using (StreamWriter newTask = new StreamWriter("TextFiles/customCommands.txt", false))
@@ -106,7 +135,7 @@ namespace SekiDiscord.Commands
         {
             foreach (CustomCommand q in commands)
             {
-                if (String.Compare(q.Name, name, true) == 0)
+                if (string.Compare(q.Name, name, true) == 0)
                     return true;
             }
 
@@ -117,7 +146,7 @@ namespace SekiDiscord.Commands
         {
             foreach (CustomCommand q in commands)
             {
-                if (String.Compare(q.Name, name, true) == 0)
+                if (string.Compare(q.Name, name, true) == 0)
                     return q;
             }
 
@@ -128,7 +157,7 @@ namespace SekiDiscord.Commands
         {
             foreach (CustomCommand q in commands)
             {
-                if (String.Compare(q.Name, name, true) == 0)
+                if (string.Compare(q.Name, name, true) == 0)
                 {
                     commands.Remove(GetCustomCommandByName(name, commands));
                     return;

@@ -40,22 +40,25 @@ namespace SekiDiscord
                 if (e.Message.Content.ToLower().StartsWith("!quit"))
                 {
                     DiscordMember author = await e.Guild.GetMemberAsync(e.Author.Id);
-                    bool isBotAdmin = false;
-
-                    foreach (DiscordRole role in author.Roles)
-                    {
-                        if (role.Name == "bot-admin")
-                        {
-                            isBotAdmin = true;
-                            break;
-                        }
-                    }
+                    bool isBotAdmin = Useful.MemberIsBotOperator(author);
 
                     if (author.IsOwner || isBotAdmin)
                     {
                         quit = true;
                         Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Quitting...");
                     }
+                }
+
+                //CustomCommands
+                else if (e.Message.Content.StartsWith('!'))
+                {
+                    string arguments = string.Empty;
+                    string[] split = e.Message.Content.Split(new char[] { ' ' }, 2);
+                    string command = split[0];
+                    if (split.Length > 1) arguments = split[1];
+                    string result = Commands.CustomCommand.UseCustomCommand(command.TrimStart('!'), arguments, e, StringLib);
+                    if (!string.IsNullOrEmpty(result))
+                        await e.Message.RespondAsync(result);
                 }
             };
 
@@ -67,12 +70,14 @@ namespace SekiDiscord
             SekiCommands.SetStringLibrary(StringLib);
             commands.RegisterCommands<SekiCommands>();
 
-            await discord.ConnectAsync();   //Connect to Discord
+            //Connect to Discord
+            await discord.ConnectAsync();
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Ready!");
 
             while (!quit)
             {
-                await Task.Delay(5 * 1000);           //Wait a bit
+                //Wait a bit
+                await Task.Delay(5 * 1000);
             }
 
             await discord.DisconnectAsync();

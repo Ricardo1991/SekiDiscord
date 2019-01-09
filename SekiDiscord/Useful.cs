@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DSharpPlus.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -7,6 +8,36 @@ namespace SekiDiscord
 {
     public static class Useful
     {
+        public static bool MemberIsBotOperator(DiscordMember member)
+        {
+            foreach (DiscordRole role in member.Roles)
+            {
+                if (role.Name == "bot-admin")
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static List<string> getOnlineUsers(DiscordGuild discordGuild)
+        {
+            List<string> ul = new List<string>();
+
+            foreach (DiscordMember u in discordGuild.Members)
+            {
+                try
+                {
+                    if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle)
+                        ul.Add(u.DisplayName);
+                }
+                catch
+                {
+                }
+            }
+            return ul;
+        }
+
         public static string Base64Encode(string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
@@ -66,9 +97,9 @@ namespace SekiDiscord
 
             if (string.IsNullOrWhiteSpace(strSource)) return string.Empty;
 
-            if (String.IsNullOrEmpty(strEnd))
+            if (string.IsNullOrEmpty(strEnd))
             {
-                if (String.IsNullOrEmpty(strStart))
+                if (string.IsNullOrEmpty(strStart))
                     Start = 0;
                 else
                     Start = strSource.IndexOf(strStart, 0) + strStart.Length;
@@ -78,7 +109,7 @@ namespace SekiDiscord
             }
             else if (strSource.Contains(strStart) && strSource.Contains(strEnd))
             {
-                if (String.IsNullOrEmpty(strStart))
+                if (string.IsNullOrEmpty(strStart))
                     Start = 0;
                 else
                     Start = strSource.IndexOf(strStart, 0) + strStart.Length;
@@ -88,7 +119,7 @@ namespace SekiDiscord
             }
             else
             {
-                if (String.IsNullOrEmpty(strStart))
+                if (string.IsNullOrEmpty(strStart))
                     Start = 0;
                 else
                     Start = strSource.IndexOf(strStart, 0) + strStart.Length;
