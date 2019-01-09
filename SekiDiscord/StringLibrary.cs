@@ -1,8 +1,6 @@
-﻿using System;
+﻿using MarkovSharp.TokenisationStrategies;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using MarkovSharp.TokenisationStrategies;
 
 namespace SekiDiscord
 {

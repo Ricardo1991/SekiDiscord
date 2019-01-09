@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MarkovSharp.Models
 {
@@ -26,7 +23,7 @@ namespace MarkovSharp.Models
         {
             return ChainDictionary.ContainsKey(key);
         }
-        
+
         /// <summary>
         /// Add a TGram to the markov models store with a composite key of the previous [Level] number of TGrams
         /// </summary>

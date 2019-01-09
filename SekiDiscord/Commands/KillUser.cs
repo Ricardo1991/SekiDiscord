@@ -1,10 +1,7 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace SekiDiscord.Commands
 {
@@ -141,13 +138,13 @@ namespace SekiDiscord.Commands
 
             foreach (DiscordMember u in discordGuild.Members)
             {
-                try { 
+                try
+                {
                     if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle)
                         ul.Add(u.DisplayName);
                 }
                 catch
                 {
-
                 }
             }
             return ul;

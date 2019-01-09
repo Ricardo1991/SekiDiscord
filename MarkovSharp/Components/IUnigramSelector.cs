@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MarkovSharp.Components
 {
-    public interface IUnigramSelector <TUnigram>
+    public interface IUnigramSelector<TUnigram>
     {
         TUnigram SelectUnigram(IEnumerable<TUnigram> ngrams);
     }

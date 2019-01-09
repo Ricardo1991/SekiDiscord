@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-namespace SekiDiscord
+namespace SekiDiscord.Commands
 {
     public class CustomCommand
     {

@@ -1,9 +1,6 @@
-﻿using System;
+﻿using MarkovSharp.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MarkovSharp.Models;
 
 namespace MarkovSharp.TokenisationStrategies
 {
@@ -14,17 +11,17 @@ namespace MarkovSharp.TokenisationStrategies
         Type PhraseType { get; }
 
         IEnumerable<TUnigram> SplitTokens(TPhrase input);
-        
+
         TPhrase RebuildPhrase(IEnumerable<TUnigram> tokens);
 
         void Learn(IEnumerable<TPhrase> phrases, bool ignoreAlreadyLearnt = true);
-        
+
         void Learn(TPhrase phrase);
-        
+
         void Retrain(int newLevel);
-        
+
         IEnumerable<TPhrase> Walk(int lines = 1, TPhrase seed = default(TPhrase));
-        
+
         List<TUnigram> GetMatches(TPhrase input);
 
         TUnigram GetTerminatorUnigram();
