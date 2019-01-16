@@ -162,7 +162,7 @@ namespace SekiDiscord
         [Description("Roll a number between 0 and 100")]
         public async Task Roll(CommandContext ctx)
         {
-            string nick = ctx.User.Username;
+            string nick = ctx.Member.DisplayName;
             Random random = new Random();
             int number = random.Next(0, 100);
 
@@ -220,7 +220,7 @@ namespace SekiDiscord
         {
             string message = string.Empty;
             string arg;
-            string user = ctx.User.Username;
+            string user = ctx.Member.DisplayName;
 
             Random r = new Random();
             string[] choices;
@@ -257,7 +257,7 @@ namespace SekiDiscord
             int MAX_TEXT = 10;
 
             string text;
-            string user = ctx.User.Username;
+            string user = ctx.Member.DisplayName;
 
             try
             {
