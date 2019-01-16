@@ -1,7 +1,11 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using SekiDiscord.Commands;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SekiDiscord
@@ -59,6 +63,23 @@ namespace SekiDiscord
                     string result = Commands.CustomCommand.UseCustomCommand(command.TrimStart('!'), arguments, e, StringLib);
                     if (!string.IsNullOrEmpty(result))
                         await e.Message.RespondAsync(result);
+                }
+
+                //Ping users, leave this last cause it's sloooooooow
+                var ping_channel = await discord.GetChannelAsync(Settings.Default.ping_channel_id);
+                if (e.Message.Content != null && e.Message.ChannelId != Settings.Default.ping_channel_id) {
+                    HashSet<string> pinged_users = PingUser.Ping(e, StringLib);
+                    foreach (string user in pinged_users) {
+                        if (user != e.Message.Author.Username.ToLower()) {
+                            DiscordMember member = e.Guild.Members.Where(mem => mem.Username.ToLower().Contains(user)).First();
+                            string author_nickname = e.Message.Channel.Guild.Members.Where(x => x.Id.Equals(e.Message.Author.Id)).Select(x => x.Nickname).First();
+                            if (author_nickname == null)
+                                author_nickname = e.Message.Author.Username;
+                            StringBuilder stringBuilder = new StringBuilder();
+                            stringBuilder.Append(member.Mention + " at " + e.Message.Channel.Mention + "\n" + "<" + author_nickname + "> " + e.Message.Content);
+                            await discord.SendMessageAsync(ping_channel, stringBuilder.ToString());
+                        }
+                    }
                 }
             };
 
