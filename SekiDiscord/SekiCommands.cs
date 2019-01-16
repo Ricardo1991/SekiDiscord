@@ -159,6 +159,7 @@ namespace SekiDiscord
 
         [Command("square")]
         [Description("square a word")]
+        [Aliases("s")]                          // alternative names for the command
         public async Task SquareText(CommandContext ctx)
         {
             int MAX_TEXT = 10;
