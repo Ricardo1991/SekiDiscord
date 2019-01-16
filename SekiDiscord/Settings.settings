@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SekiDiscord" GeneratedClassName="Settings1">
+  <Profiles />
+  <Settings>
+    <Setting Name="ping_channel_id" Type="System.UInt64" Scope="User">
+      <Value Profile="(Default)">535128077542359051</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

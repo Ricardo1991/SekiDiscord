@@ -126,11 +126,22 @@ namespace SekiDiscord
         [Description("Add a word or phrase for which the user will always be pinged at")]
         public async Task AddPing(CommandContext ctx) {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "addping Command");
+            await Task.Run(() => PingUser.AddPing(ctx, StringLibrary));
+        }
 
-            //string[] splits;
-            //splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
+        [Command("removeping")]
+        [Description("Remove a word or phrase for the users pings")]
+        public async Task RemovePing(CommandContext ctx) {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "removeping Command");
+            await Task.Run(() => PingUser.RemovePing(ctx, StringLibrary));
+        }
 
-            // call command here idk
+        [Command("copyping")]
+        [Description("Copy another users pings")]
+        public async Task CopyPing(CommandContext ctx) {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "copyping Command");
+            //disable for now
+            //await Task.Run(() => PingUser.CopyPing(ctx, StringLibrary));
         }
     }
 }
