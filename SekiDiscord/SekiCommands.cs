@@ -2,6 +2,7 @@
 using DSharpPlus.CommandsNext.Attributes;
 using SekiDiscord.Commands;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -168,6 +169,83 @@ namespace SekiDiscord
             nick = nick.Replace("\r", "");
             string message = nick + " rolled a " + number;
             await ctx.RespondAsync(message);
+        }
+
+        [Command("shuffle")]
+        [Description("Shuffle words randomly. Can be phrases if separated by commas")]
+        public async Task Shuffle(CommandContext ctx)
+        {
+            string message = string.Empty;
+            string arg;
+
+            Random r = new Random();
+            string[] choices;
+            List<string> sList = new List<string>();
+
+            try
+            {
+                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
+            }
+            catch
+            {
+                return;
+            }
+
+            if (arg.Contains(','))
+                choices = arg.Split(new char[] { ',' });
+            else
+                choices = arg.Split(new char[] { ' ' });
+
+            foreach (string s in choices)
+            {
+                sList.Add(s);
+            }
+
+            if (sList.Count != 0)
+            {
+                while (sList.Count > 0)
+                {
+                    int random = r.Next(sList.Count);
+                    message = message + " " + sList[random];
+                    sList.Remove(sList[random]);
+                }
+
+                await ctx.RespondAsync(message);
+            }
+        }
+
+        [Command("choose")]
+        [Description("Choose an item from the presented list randomly")]
+        public async Task choose(CommandContext ctx)
+        {
+            string message = string.Empty;
+            string arg;
+            string user = ctx.User.Username;
+
+            Random r = new Random();
+            string[] choices;
+            List<string> sList = new List<string>();
+
+            try
+            {
+                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
+            }
+            catch
+            {
+                return;
+            }
+
+            if (arg.Contains(','))
+                choices = arg.Split(new char[] { ',' });
+            else
+                choices = arg.Split(new char[] { ' ' });
+
+            if (choices.Length != 0)
+            {
+                int random = r.Next(choices.Length);
+                message = user + ": " + choices[random].Trim();
+                await ctx.RespondAsync(message);
+            }
         }
 
         [Command("square")]
