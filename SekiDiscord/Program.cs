@@ -60,6 +60,11 @@ namespace SekiDiscord
                     if (!string.IsNullOrEmpty(result))
                         await e.Message.RespondAsync(result);
                 }
+
+                //Ping users, leave this last cause it's sloooooooow
+                ulong ping_id = 535083540753416192;
+                var ping_channel = await discord.GetChannelAsync(ping_id);
+                await discord.SendMessageAsync(ping_channel, "hello123");
             };
 
             commands = discord.UseCommandsNext(new CommandsNextConfiguration

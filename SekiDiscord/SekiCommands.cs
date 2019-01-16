@@ -54,7 +54,7 @@ namespace SekiDiscord
             switch (result.IsAction)
             {
                 case true:
-
+                            // why the whitespace
                     await ctx.RespondAsync("*" + result.Result + "*");
                     break;
 
@@ -73,7 +73,7 @@ namespace SekiDiscord
             switch (result.IsAction)
             {
                 case true:
-
+                            // and here
                     await ctx.RespondAsync("*" + result.Result + "*");
                     break;
 
@@ -120,6 +120,17 @@ namespace SekiDiscord
                 string message = "Command " + splits[1] + " removed.";
                 await ctx.RespondAsync(message);
             }
+        }
+
+        [Command("addping")]
+        [Description("Add a word or phrase for which the user will always be pinged at")]
+        public async Task AddPing(CommandContext ctx) {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "addping Command");
+
+            //string[] splits;
+            //splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
+
+            // call command here idk
         }
     }
 }
