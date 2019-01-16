@@ -157,11 +157,25 @@ namespace SekiDiscord
             //await Task.Run(() => PingUser.CopyPing(ctx, StringLibrary));
         }
 
+        [Command("roll")]
+        [Description("Roll a number between 0 and 100")]
+        public async Task Roll(CommandContext ctx)
+        {
+            string nick = ctx.User.Username;
+            Random random = new Random();
+            int number = random.Next(0, 100);
+
+            nick = nick.Replace("\r", "");
+            string message = nick + " rolled a " + number;
+            await ctx.RespondAsync(message);
+        }
+
         [Command("square")]
         [Description("square a word")]
         [Aliases("s")]                          // alternative names for the command
         public async Task SquareText(CommandContext ctx)
         {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Square Command");
             int MAX_TEXT = 10;
 
             string text;
