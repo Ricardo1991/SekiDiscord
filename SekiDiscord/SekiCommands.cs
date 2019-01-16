@@ -183,38 +183,34 @@ namespace SekiDiscord
             }
             else
             {
+                StringBuilder builder = new StringBuilder();
                 for (int i = 0; i <= text.Length - 1; i++)
                 {
                     if (i == 0)
                     {
-                        StringBuilder builder = new StringBuilder();
+                        builder.Append("```");
                         foreach (char value in text.ToCharArray())
                         {
                             builder.Append(value + " ");
                         }
-                        string msg = builder.ToString();
-                        string message = msg.ToUpper();
-                        await ctx.RespondAsync(message);
+                        builder.Append("\n");
                     }
                     else if (i == text.Length - 1)
                     {
-                        StringBuilder builder = new StringBuilder();
                         foreach (char value in text.ToCharArray().Reverse())
                         {
                             builder.Append(value + " ");
                         }
-                        string msg = builder.ToString();
-                        string message = msg.ToUpper();
-                        await ctx.RespondAsync(message);
+                        builder.Append("```");
                     }
                     else
                     {
-                        String msg = null;
-                        msg = text[i] + new String(' ', text.Length + (text.Length - 3)) + text[text.Length - 1 - i];
-                        string message = msg.ToUpper();
-                        await ctx.RespondAsync(message);
+                        builder.Append(text[i] + new string(' ', text.Length + (text.Length - 3)) + text[text.Length - 1 - i] + "\n");
                     }
                 }
+                string msg = builder.ToString();
+                string message = msg.ToUpper();
+                await ctx.RespondAsync(message);
             }
         }
     }
