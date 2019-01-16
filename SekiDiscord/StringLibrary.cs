@@ -166,33 +166,42 @@ namespace SekiDiscord
             return true;
         }
 
-        private async void ReadPings() {
+        private async void ReadPings()
+        {
             Pings.Clear();
-            if (File.Exists("TextFiles/pings.json")) {
-                try {
-                    using (StreamReader r = new StreamReader("TextFiles/pings.json")) {
+            if (File.Exists("TextFiles/pings.json"))
+            {
+                try
+                {
+                    using (StreamReader r = new StreamReader("TextFiles/pings.json"))
+                    {
                         string json = await r.ReadToEndAsync();
                         Pings = JsonConvert.DeserializeObject<Dictionary<string, HashSet<string>>>(json);
                     }
                 }
-                catch {
-
+                catch
+                {
                 }
-            } else {
-
+            }
+            else
+            {
             }
         }
 
-        private void SavePings() {
-            try {
-                using (StreamWriter w = File.CreateText("TextFiles/pings.json")) {
+        private void SavePings()
+        {
+            try
+            {
+                using (StreamWriter w = File.CreateText("TextFiles/pings.json"))
+                {
                     //string json = JsonConvert.SerializeObject(Pings, Formatting.Indented);
                     //w.Write(json);
                     JsonSerializer serializer = new JsonSerializer();
                     serializer.Serialize(w, Pings);
                 }
-            } catch {
-
+            }
+            catch
+            {
             }
         }
 

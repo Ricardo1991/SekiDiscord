@@ -54,7 +54,6 @@ namespace SekiDiscord
             switch (result.IsAction)
             {
                 case true:
-                            // why the whitespace
                     await ctx.RespondAsync("*" + result.Result + "*");
                     break;
 
@@ -73,7 +72,6 @@ namespace SekiDiscord
             switch (result.IsAction)
             {
                 case true:
-                            // and here
                     await ctx.RespondAsync("*" + result.Result + "*");
                     break;
 
@@ -124,21 +122,24 @@ namespace SekiDiscord
 
         [Command("addping")]
         [Description("Add a word or phrase for which the user will always be pinged at")]
-        public async Task AddPing(CommandContext ctx) {
+        public async Task AddPing(CommandContext ctx)
+        {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "addping Command");
             await Task.Run(() => PingUser.AddPing(ctx, StringLibrary));
         }
 
         [Command("removeping")]
         [Description("Remove a word or phrase for the users pings")]
-        public async Task RemovePing(CommandContext ctx) {
+        public async Task RemovePing(CommandContext ctx)
+        {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "removeping Command");
             await Task.Run(() => PingUser.RemovePing(ctx, StringLibrary));
         }
 
         [Command("copyping")]
         [Description("Copy another users pings")]
-        public async Task CopyPing(CommandContext ctx) {
+        public async Task CopyPing(CommandContext ctx)
+        {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "copyping Command");
             //disable for now
             //await Task.Run(() => PingUser.CopyPing(ctx, StringLibrary));
