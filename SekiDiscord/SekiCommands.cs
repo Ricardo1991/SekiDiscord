@@ -2,6 +2,8 @@
 using DSharpPlus.CommandsNext.Attributes;
 using SekiDiscord.Commands;
 using System;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SekiDiscord
@@ -153,6 +155,67 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "copyping Command");
             //disable for now
             //await Task.Run(() => PingUser.CopyPing(ctx, StringLibrary));
+        }
+
+        [Command("square")]
+        [Description("square a word")]
+        public async Task SquareText(CommandContext ctx)
+        {
+            int MAX_TEXT = 10;
+
+            string text;
+            string user = ctx.User.Username;
+
+            try
+            {
+                text = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
+            }
+            catch
+            {
+                text = string.Empty;
+            }
+
+            if (text.Length > MAX_TEXT)
+            {
+                string message = "_farts on " + user + "_";
+                await ctx.RespondAsync(message);
+                return;
+            }
+            else
+            {
+                for (int i = 0; i <= text.Length - 1; i++)
+                {
+                    if (i == 0)
+                    {
+                        StringBuilder builder = new StringBuilder();
+                        foreach (char value in text.ToCharArray())
+                        {
+                            builder.Append(value + " ");
+                        }
+                        string msg = builder.ToString();
+                        string message = msg.ToUpper();
+                        await ctx.RespondAsync(message);
+                    }
+                    else if (i == text.Length - 1)
+                    {
+                        StringBuilder builder = new StringBuilder();
+                        foreach (char value in text.ToCharArray().Reverse())
+                        {
+                            builder.Append(value + " ");
+                        }
+                        string msg = builder.ToString();
+                        string message = msg.ToUpper();
+                        await ctx.RespondAsync(message);
+                    }
+                    else
+                    {
+                        String msg = null;
+                        msg = text[i] + new String(' ', text.Length + (text.Length - 3)) + text[text.Length - 1 - i];
+                        string message = msg.ToUpper();
+                        await ctx.RespondAsync(message);
+                    }
+                }
+            }
         }
     }
 }
