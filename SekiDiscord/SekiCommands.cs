@@ -85,7 +85,7 @@ namespace SekiDiscord
             switch (result.IsAction)
             {
                 case true:
-                    await ctx.RespondAsync("*" + result.Result + "*");
+                    await ctx.RespondAsync("*" + result.Result.Trim() + "*");
                     break;
 
                 case false:
