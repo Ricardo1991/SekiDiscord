@@ -1,4 +1,5 @@
 ﻿using MarkovSharp.TokenisationStrategies;
+using Newtonsoft.Json;
 using SekiDiscord.Commands;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +20,7 @@ namespace SekiDiscord
         public List<int> KillsUsed { get; set; } = new List<int>();
         public List<int> FactsUsed { get; set; } = new List<int>();
         public StringMarkov Killgen { get; set; } = new StringMarkov();
+        public Dictionary<string, HashSet<string>> Pings { get; set; } = new Dictionary<string, HashSet<string>>();
 
         public StringLibrary()
         {
@@ -35,6 +37,7 @@ namespace SekiDiscord
             ReadQuotes();
             ReadFunk();
             ReadRules();
+            ReadPings();                //Read ping file
             CustomCommands = CustomCommand.LoadCustomCommands();
 
             return true;
@@ -86,6 +89,11 @@ namespace SekiDiscord
                     ReadFunk();
                     break;
 
+                case "pings":
+                case "ping":
+                    ReadPings();
+                    break;
+
                 default:
                     return false;
             }
@@ -96,6 +104,7 @@ namespace SekiDiscord
         {
             SaveFunk();
             SaveQuotes();
+            SavePings();        // Save pings to file
 
             return true;
         }
@@ -146,10 +155,49 @@ namespace SekiDiscord
                     SaveFunk();
                     break;
 
+                case "pings":
+                case "ping":
+                    SavePings();
+                    break;
+
                 default:
                     return false;
             }
             return true;
+        }
+
+        private async void ReadPings()
+        {
+            Pings.Clear();
+            if (File.Exists("TextFiles/pings.json"))
+            {
+                try
+                {
+                    using (StreamReader r = new StreamReader("TextFiles/pings.json"))
+                    {
+                        string json = await r.ReadToEndAsync();
+                        Pings = JsonConvert.DeserializeObject<Dictionary<string, HashSet<string>>>(json);
+                    }
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        private void SavePings()
+        {
+            try
+            {
+                using (StreamWriter w = File.CreateText("TextFiles/pings.json"))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(w, Pings);
+                }
+            }
+            catch
+            {
+            }
         }
 
         private void ReadKills()

@@ -132,5 +132,11 @@ namespace SekiDiscord.Commands
 
             return message;
         }
+
+        public static string QuoteCount(CommandContext e, StringLibrary stringLibrary)
+        {
+            string message = stringLibrary.Quotes.Count.ToString();
+            return message;
+        }
     }
 }
