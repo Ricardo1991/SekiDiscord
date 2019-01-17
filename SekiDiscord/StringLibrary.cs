@@ -183,9 +183,6 @@ namespace SekiDiscord
                 {
                 }
             }
-            else
-            {
-            }
         }
 
         private void SavePings()
@@ -194,8 +191,6 @@ namespace SekiDiscord
             {
                 using (StreamWriter w = File.CreateText("TextFiles/pings.json"))
                 {
-                    //string json = JsonConvert.SerializeObject(Pings, Formatting.Indented);
-                    //w.Write(json);
                     JsonSerializer serializer = new JsonSerializer();
                     serializer.Serialize(w, Pings);
                 }
