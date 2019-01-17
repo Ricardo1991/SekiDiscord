@@ -133,29 +133,27 @@ namespace SekiDiscord
             }
         }
 
-        [Command("addping")]
-        [Description("Add a word or phrase for which the user will always be pinged at")]
-        public async Task AddPing(CommandContext ctx)
-        {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "addping Command");
-            await Task.Run(() => PingUser.AddPing(ctx, StringLibrary));
-        }
+        [Command("ping")]
+        [Description("Add, Remove or Copy words or phrases that the user will be mentioned at")]
+        [Aliases("p")]                          // alternative names for the command
+        public async Task Ping(CommandContext ctx) {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "ping Command");
 
-        [Command("removeping")]
-        [Description("Remove a word or phrase for the users pings")]
-        public async Task RemovePing(CommandContext ctx)
-        {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "removeping Command");
-            await Task.Run(() => PingUser.RemovePing(ctx, StringLibrary));
-        }
+            string msg, cmd, args;
 
-        [Command("copyping")]
-        [Description("Copy another users pings")]
-        public async Task CopyPing(CommandContext ctx)
-        {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "copyping Command");
-            //disable for now
-            //await Task.Run(() => PingUser.CopyPing(ctx, StringLibrary));
+            try {
+                msg = ctx.Message.Content.ToLower().Split(new char[] { ' ' }, 2)[1]; // remove !p or !ping
+                cmd = msg.Split(new char[] { ' ' }, 2)[0]; // get command word
+                args = Useful.GetBetween(msg, cmd + " ", null); // get words after command, add a space to cmd word so args doesnt start with one
+
+            }
+            catch {
+                msg = cmd = args = string.Empty;
+            }
+
+            if(!string.IsNullOrWhiteSpace(msg) && !string.IsNullOrWhiteSpace(args)) {
+                await Task.Run(() => PingUser.PingControl(ctx, StringLibrary, cmd, args));
+            }
         }
 
         [Command("roll")]
