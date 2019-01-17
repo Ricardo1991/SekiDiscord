@@ -136,22 +136,25 @@ namespace SekiDiscord
         [Command("ping")]
         [Description("Add, Remove or Copy words or phrases that the user will be mentioned at")]
         [Aliases("p")]                          // alternative names for the command
-        public async Task Ping(CommandContext ctx) {
+        public async Task Ping(CommandContext ctx)
+        {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "ping Command");
 
             string msg, cmd, args;
 
-            try {
+            try
+            {
                 msg = ctx.Message.Content.ToLower().Split(new char[] { ' ' }, 2)[1]; // remove !p or !ping
                 cmd = msg.Split(new char[] { ' ' }, 2)[0]; // get command word
                 args = Useful.GetBetween(msg, cmd + " ", null); // get words after command, add a space to cmd word so args doesnt start with one
-
             }
-            catch {
+            catch
+            {
                 msg = cmd = args = string.Empty;
             }
 
-            if(!string.IsNullOrWhiteSpace(msg) && !string.IsNullOrWhiteSpace(args)) {
+            if (!string.IsNullOrWhiteSpace(msg) && !string.IsNullOrWhiteSpace(args))
+            {
                 await Task.Run(() => PingUser.PingControl(ctx, StringLibrary, cmd, args));
             }
         }
@@ -214,7 +217,7 @@ namespace SekiDiscord
 
         [Command("choose")]
         [Description("Choose an item from the presented list randomly")]
-        public async Task choose(CommandContext ctx)
+        public async Task Choose(CommandContext ctx)
         {
             string message = string.Empty;
             string arg;

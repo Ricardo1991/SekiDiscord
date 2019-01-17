@@ -1,6 +1,5 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,30 +8,39 @@ namespace SekiDiscord.Commands
 {
     internal class PingUser
     {
-        public static void PingControl(CommandContext e, StringLibrary stringLibrary, string cmd, string args) {
+        public static void PingControl(CommandContext e, StringLibrary stringLibrary, string cmd, string args)
+        {
             string username = e.Member.Username.ToLower(); // get message creators username in lower case
 
-            switch (cmd) {
+            switch (cmd)
+            {
                 case "add":
-                    if (!stringLibrary.Pings.ContainsKey(username)) {
+                    if (!stringLibrary.Pings.ContainsKey(username))
+                    {
                         stringLibrary.Pings.Add(username, new HashSet<string>() { args });
                     }
-                    else if (stringLibrary.Pings.ContainsKey(username)) {
+                    else if (stringLibrary.Pings.ContainsKey(username))
+                    {
                         stringLibrary.Pings[username].Add(args);
                     }
                     break;
+
                 case "remove":
-                    if (stringLibrary.Pings.ContainsKey(username)) {
+                    if (stringLibrary.Pings.ContainsKey(username))
+                    {
                         stringLibrary.Pings[username].Remove(args);
                     }
                     break;
+
                 case "copy":
                     bool user = stringLibrary.Pings.ContainsKey(username);
                     bool userToCopyFrom = stringLibrary.Pings.ContainsKey(args);
-                    if (!user && userToCopyFrom) {
+                    if (!user && userToCopyFrom)
+                    {
                         stringLibrary.Pings.Add(username, stringLibrary.Pings[args]);
                     }
-                    else if (user && userToCopyFrom) {
+                    else if (user && userToCopyFrom)
+                    {
                         stringLibrary.Pings[username].UnionWith(stringLibrary.Pings[args]);
                     }
                     break;
