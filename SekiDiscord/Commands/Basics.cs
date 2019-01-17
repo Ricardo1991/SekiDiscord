@@ -90,5 +90,21 @@ namespace SekiDiscord.Commands
                 await ctx.RespondAsync(message);
             }
         }
+
+        public static async Task PokeRandom(CommandContext ctx)
+        {
+            int userNumber;
+            Random rnd = new Random();
+            List<string> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
+
+            do
+            {
+                userNumber = rnd.Next(listU.Count);
+            }
+            while (listU[userNumber] == ctx.Member.DisplayName);
+
+            string message = "*pokes " + listU[userNumber] + "*";
+            await ctx.RespondAsync(message);
+        }
     }
 }

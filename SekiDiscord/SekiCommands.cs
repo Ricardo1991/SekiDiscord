@@ -160,6 +160,7 @@ namespace SekiDiscord
         [Description("Roll a number between 0 and 100")]
         public async Task Roll(CommandContext ctx)
         {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Roll Command");
             await Basics.Roll(ctx);
         }
 
@@ -167,6 +168,7 @@ namespace SekiDiscord
         [Description("Shuffle words randomly. Can be phrases if separated by commas")]
         public async Task Shuffle(CommandContext ctx)
         {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Shuffle Command");
             await Basics.Shuffle(ctx);
         }
 
@@ -174,6 +176,7 @@ namespace SekiDiscord
         [Description("Choose an item from the presented list randomly")]
         public async Task Choose(CommandContext ctx)
         {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Choose Command");
             await Basics.Choose(ctx);
         }
 
@@ -182,6 +185,7 @@ namespace SekiDiscord
         [Aliases("s")]                          // alternative names for the command
         public async Task SquareText(CommandContext ctx)
         {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Square Command");
             await Square.SquareText(ctx);
         }
 
@@ -189,6 +193,7 @@ namespace SekiDiscord
         [Description("gimme music")]
         public async Task Funk(CommandContext ctx)
         {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Funk Command");
             string arg;
             try
             {
@@ -203,6 +208,14 @@ namespace SekiDiscord
                 await Commands.Funk.PrintFunk(ctx, stringLibrary);
             else
                 Commands.Funk.AddFunk(ctx, stringLibrary);
+        }
+
+        [Command("poke")]
+        [Description("poke someone randomly")]
+        public async Task Poke(CommandContext ctx)
+        {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Poke Command");
+            await Basics.PokeRandom(ctx);
         }
     }
 }
