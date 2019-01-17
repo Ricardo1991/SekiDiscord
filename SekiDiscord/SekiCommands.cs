@@ -2,9 +2,6 @@
 using DSharpPlus.CommandsNext.Attributes;
 using SekiDiscord.Commands;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SekiDiscord
@@ -163,90 +160,21 @@ namespace SekiDiscord
         [Description("Roll a number between 0 and 100")]
         public async Task Roll(CommandContext ctx)
         {
-            string nick = ctx.Member.DisplayName;
-            Random random = new Random();
-            int number = random.Next(0, 100);
-
-            nick = nick.Replace("\r", "");
-            string message = nick + " rolled a " + number;
-            await ctx.RespondAsync(message);
+            await Basics.Roll(ctx);
         }
 
         [Command("shuffle")]
         [Description("Shuffle words randomly. Can be phrases if separated by commas")]
         public async Task Shuffle(CommandContext ctx)
         {
-            string message = string.Empty;
-            string arg;
-
-            Random r = new Random();
-            string[] choices;
-            List<string> sList = new List<string>();
-
-            try
-            {
-                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
-            }
-            catch
-            {
-                return;
-            }
-
-            if (arg.Contains(','))
-                choices = arg.Split(new char[] { ',' });
-            else
-                choices = arg.Split(new char[] { ' ' });
-
-            foreach (string s in choices)
-            {
-                sList.Add(s);
-            }
-
-            if (sList.Count != 0)
-            {
-                while (sList.Count > 0)
-                {
-                    int random = r.Next(sList.Count);
-                    message = message + " " + sList[random];
-                    sList.Remove(sList[random]);
-                }
-
-                await ctx.RespondAsync(message);
-            }
+            await Basics.Shuffle(ctx);
         }
 
         [Command("choose")]
         [Description("Choose an item from the presented list randomly")]
         public async Task Choose(CommandContext ctx)
         {
-            string message = string.Empty;
-            string arg;
-            string user = ctx.Member.DisplayName;
-
-            Random r = new Random();
-            string[] choices;
-            List<string> sList = new List<string>();
-
-            try
-            {
-                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
-            }
-            catch
-            {
-                return;
-            }
-
-            if (arg.Contains(','))
-                choices = arg.Split(new char[] { ',' });
-            else
-                choices = arg.Split(new char[] { ' ' });
-
-            if (choices.Length != 0)
-            {
-                int random = r.Next(choices.Length);
-                message = user + ": " + choices[random].Trim();
-                await ctx.RespondAsync(message);
-            }
+            await Basics.Choose(ctx);
         }
 
         [Command("square")]
@@ -254,58 +182,7 @@ namespace SekiDiscord
         [Aliases("s")]                          // alternative names for the command
         public async Task SquareText(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Square Command");
-            int MAX_TEXT = 10;
-
-            string text;
-            string user = ctx.Member.DisplayName;
-
-            try
-            {
-                text = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch
-            {
-                text = string.Empty;
-            }
-
-            if (text.Length > MAX_TEXT)
-            {
-                string message = "_farts on " + user + "_";
-                await ctx.RespondAsync(message);
-                return;
-            }
-            else
-            {
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i <= text.Length - 1; i++)
-                {
-                    if (i == 0)
-                    {
-                        builder.Append("```");
-                        foreach (char value in text.ToCharArray())
-                        {
-                            builder.Append(value + " ");
-                        }
-                        builder.Append("\n");
-                    }
-                    else if (i == text.Length - 1)
-                    {
-                        foreach (char value in text.ToCharArray().Reverse())
-                        {
-                            builder.Append(value + " ");
-                        }
-                        builder.Append("```");
-                    }
-                    else
-                    {
-                        builder.Append(text[i] + new string(' ', text.Length + (text.Length - 3)) + text[text.Length - 1 - i] + "\n");
-                    }
-                }
-                string msg = builder.ToString();
-                string message = msg.ToUpper();
-                await ctx.RespondAsync(message);
-            }
+            await Square.SquareText(ctx);
         }
     }
 }
