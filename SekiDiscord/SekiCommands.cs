@@ -184,5 +184,25 @@ namespace SekiDiscord
         {
             await Square.SquareText(ctx);
         }
+
+        [Command("funk")]
+        [Description("gimme music")]
+        public async Task Funk(CommandContext ctx)
+        {
+            string arg;
+            try
+            {
+                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
+            }
+            catch
+            {
+                arg = string.Empty;
+            }
+
+            if (string.IsNullOrEmpty(arg)) //lookup or random
+                await Commands.Funk.PrintFunk(ctx, stringLibrary);
+            else
+                Commands.Funk.AddFunk(ctx, stringLibrary);
+        }
     }
 }
