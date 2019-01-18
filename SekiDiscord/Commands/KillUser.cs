@@ -14,7 +14,7 @@ namespace SekiDiscord.Commands
             string target;
             int killID;
             string killString;
-            string nick = e.User.Username;
+            string nick = e.Member.DisplayName;
             List<string> listU = Useful.getOnlineUsers(e.Channel.Guild);
             string args;
 
