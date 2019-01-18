@@ -217,5 +217,14 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Poke Command");
             await Basics.PokeRandom(ctx);
         }
+
+        [Command("youtube")]
+        [Description("poke someone randomly")]
+        [Aliases("yt")]                          // alternative names for the command
+        public async Task YoutubeSearch(CommandContext ctx)
+        {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Youtube Command");
+            await Youtube.YoutubeSearch(ctx);
+        }
     }
 }

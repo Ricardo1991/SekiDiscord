@@ -21,9 +21,36 @@ namespace SekiDiscord
         {
             if (args.Length < 1)
             {
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Not enough arguments. Usage: SekiDiscord <api-key>. Quitting.");
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Not enough arguments. Usage: SekiDiscord <discord-api-key> <google-api-key>. Quitting.");
                 return;
             }
+            //TODO: This should be fixed once .net Core 3.0 is released
+            /*if (Settings.Default.UpgradeNeeded)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.UpgradeNeeded = false;
+                Settings.Default.Save();
+            }*/
+            if (string.IsNullOrWhiteSpace(Settings.Default.apikey))
+            {
+                string api = string.Empty;
+                if (args.Length > 1)
+                {
+                    api = args[1];
+                }
+                else
+                {
+                    Console.WriteLine("Add api key for youtube search (or enter to ignore): ");
+                    api = Console.ReadLine();
+                }
+                if (!string.IsNullOrWhiteSpace(api))
+                {
+                    Settings.Default.apikey = api;
+                    //TODO: This should be fixed once .net Core 3.0 is released
+                    //Settings.Default.Save();
+                }
+            }
+
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Starting...");
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
