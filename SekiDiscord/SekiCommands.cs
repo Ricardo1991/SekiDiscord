@@ -150,9 +150,9 @@ namespace SekiDiscord
                 msg = cmd = args = string.Empty;
             }
 
-            if (!string.IsNullOrWhiteSpace(msg) && !string.IsNullOrWhiteSpace(args))
+            if (!string.IsNullOrWhiteSpace(msg))
             {
-                await Task.Run(() => PingUser.PingControl(ctx, StringLibrary, cmd, args));
+                await PingUser.PingControl(ctx, StringLibrary, cmd, args);
             }
         }
 

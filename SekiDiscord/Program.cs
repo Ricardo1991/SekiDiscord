@@ -17,6 +17,12 @@ namespace SekiDiscord
 
         private static StringLibrary StringLib { get; set; } = new StringLibrary();
 
+        public static async Task DMUser(DiscordUser user, string msg) {
+            if (!string.IsNullOrWhiteSpace(msg)) {
+                await discord.SendMessageAsync(await discord.CreateDmAsync(user), msg);
+            }
+        }
+
         private static void Main(string[] args)
         {
             if (args.Length < 1)
