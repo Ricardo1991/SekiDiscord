@@ -226,5 +226,13 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Youtube Command");
             await Youtube.YoutubeSearch(ctx);
         }
+
+        [Command("nick")]
+        [Description("generate a nickname")]
+        public async Task Nick(CommandContext ctx)
+        {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Nick Command");
+            await Commands.Nick.NickGen(ctx, stringLibrary);
+        }
     }
 }
