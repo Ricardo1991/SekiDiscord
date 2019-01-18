@@ -1,7 +1,5 @@
 ﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,46 +16,59 @@ namespace SekiDiscord.Commands
             switch (cmd)
             {
                 case "add":
-                    if (!string.IsNullOrWhiteSpace(args)) {
-                        if (!stringLibrary.Pings.ContainsKey(username)) {
+                    if (!string.IsNullOrWhiteSpace(args))
+                    {
+                        if (!stringLibrary.Pings.ContainsKey(username))
+                        {
                             stringLibrary.Pings.Add(username, new HashSet<string>() { args });
                         }
-                        else if (stringLibrary.Pings.ContainsKey(username)) {
+                        else if (stringLibrary.Pings.ContainsKey(username))
+                        {
                             stringLibrary.Pings[username].Add(args);
                         }
                     }
                     break;
 
                 case "remove":
-                    if (!string.IsNullOrWhiteSpace(args)) {
-                        if (stringLibrary.Pings.ContainsKey(username)) {
+                    if (!string.IsNullOrWhiteSpace(args))
+                    {
+                        if (stringLibrary.Pings.ContainsKey(username))
+                        {
                             stringLibrary.Pings[username].Remove(args);
                         }
                     }
                     break;
 
                 case "copy":
-                    if (!string.IsNullOrWhiteSpace(args)) {
+                    if (!string.IsNullOrWhiteSpace(args))
+                    {
                         bool user = stringLibrary.Pings.ContainsKey(username);
                         bool userToCopyFrom = stringLibrary.Pings.ContainsKey(args);
-                        if (!user && userToCopyFrom) {
+                        if (!user && userToCopyFrom)
+                        {
                             stringLibrary.Pings.Add(username, stringLibrary.Pings[args]);
                         }
-                        else if (user && userToCopyFrom) {
+                        else if (user && userToCopyFrom)
+                        {
                             stringLibrary.Pings[username].UnionWith(stringLibrary.Pings[args]);
                         }
                     }
                     break;
+
                 case "info":
-                    if (stringLibrary.Pings.ContainsKey(username)) {
+                    if (stringLibrary.Pings.ContainsKey(username))
+                    {
                         var discordUser = e.Message.Author;
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.Append("Your pings: ");
-                        foreach (string ping in stringLibrary.Pings[username]) {
+                        foreach (string ping in stringLibrary.Pings[username])
+                        {
                             stringBuilder.Append(ping + " ");
                         }
                         await Program.DMUser(discordUser, stringBuilder.ToString());
-                    } else if (!stringLibrary.Pings.ContainsKey(username)) {
+                    }
+                    else if (!stringLibrary.Pings.ContainsKey(username))
+                    {
                         await e.RespondAsync("You have no pings saved :(");
                     }
                     break;
