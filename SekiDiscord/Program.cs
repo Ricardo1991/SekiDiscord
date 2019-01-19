@@ -110,7 +110,7 @@ namespace SekiDiscord
 
                     foreach (string user in pinged_users) // loop and get mention strings
                     {
-                        if (user != e.Message.Author.Username.ToLower()) 
+                        if (user != e.Message.Author.Username.ToLower())
                         {
                             member = e.Guild.Members.Where(mem => mem.Username.ToLower().Contains(user)).First();
                             mentions += member.Mention + " ";
