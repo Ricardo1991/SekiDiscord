@@ -63,9 +63,9 @@ namespace SekiDiscord.Commands
                         stringBuilder.Append("Your pings: ");
                         foreach (string ping in stringLibrary.Pings[username])
                         {
-                            stringBuilder.Append(ping + " ");
+                            stringBuilder.Append("[" + ping + "] ");
                         }
-                        await Program.DMUser(discordUser, stringBuilder.ToString());
+                        await Program.DMUser(discordUser, stringBuilder.ToString().Trim());
                     }
                     else if (!stringLibrary.Pings.ContainsKey(username))
                     {
