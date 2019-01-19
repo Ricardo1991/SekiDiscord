@@ -8,22 +8,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SekiDiscord {
-
-    internal class Program {
+namespace SekiDiscord
+{
+    internal class Program
+    {
         private static DiscordClient discord;
         private static CommandsNextModule commands;
 
         private static StringLibrary StringLib { get; set; } = new StringLibrary();
 
-        public static async Task DMUser(DiscordUser user, string msg) {
-            if (!string.IsNullOrWhiteSpace(msg)) {
+        public static async Task DMUser(DiscordUser user, string msg)
+        {
+            if (!string.IsNullOrWhiteSpace(msg))
+            {
                 await discord.SendMessageAsync(await discord.CreateDmAsync(user), msg);
             }
         }
 
-        private static void Main(string[] args) {
-            if (args.Length < 1) {
+        private static void Main(string[] args)
+        {
+            if (args.Length < 1)
+            {
                 Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Not enough arguments. Usage: SekiDiscord <discord-api-key> <google-api-key>. Quitting.");
                 return;
             }
@@ -34,16 +39,20 @@ namespace SekiDiscord {
                 Settings.Default.UpgradeNeeded = false;
                 Settings.Default.Save();
             }*/
-            if (string.IsNullOrWhiteSpace(Settings.Default.apikey)) {
+            if (string.IsNullOrWhiteSpace(Settings.Default.apikey))
+            {
                 string api = string.Empty;
-                if (args.Length > 1) {
+                if (args.Length > 1)
+                {
                     api = args[1];
                 }
-                else {
+                else
+                {
                     Console.WriteLine("Add api key for youtube search (or enter to ignore): ");
                     api = Console.ReadLine();
                 }
-                if (!string.IsNullOrWhiteSpace(api)) {
+                if (!string.IsNullOrWhiteSpace(api))
+                {
                     Settings.Default.apikey = api;
                     //TODO: This should be fixed once .net Core 3.0 is released
                     //Settings.Default.Save();
@@ -54,28 +63,34 @@ namespace SekiDiscord {
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
-        private static async Task MainAsync(string[] args) {
+        private static async Task MainAsync(string[] args)
+        {
             string token = args[0];
             bool quit = false;
 
-            discord = new DiscordClient(new DiscordConfiguration {
+            discord = new DiscordClient(new DiscordConfiguration
+            {
                 Token = token,
                 TokenType = TokenType.Bot
             });
 
-            discord.MessageCreated += async e => {
-                if (e.Message.Content.ToLower().StartsWith("!quit")) {
+            discord.MessageCreated += async e =>
+            {
+                if (e.Message.Content.ToLower().StartsWith("!quit"))
+                {
                     DiscordMember author = await e.Guild.GetMemberAsync(e.Author.Id);
                     bool isBotAdmin = Useful.MemberIsBotOperator(author);
 
-                    if (author.IsOwner || isBotAdmin) {
+                    if (author.IsOwner || isBotAdmin)
+                    {
                         quit = true;
                         Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Quitting...");
                     }
                 }
 
                 //CustomCommands
-                else if (e.Message.Content.StartsWith('!')) {
+                else if (e.Message.Content.StartsWith('!'))
+                {
                     string arguments = string.Empty;
                     string[] split = e.Message.Content.Split(new char[] { ' ' }, 2);
                     string command = split[0];
@@ -87,20 +102,23 @@ namespace SekiDiscord {
 
                 //Ping users, leave this last cause it's sloooooooow
                 var ping_channel = await discord.GetChannelAsync(Settings.Default.ping_channel_id);
-                if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.ChannelId != Settings.Default.ping_channel_id) {
+                if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.ChannelId != Settings.Default.ping_channel_id)
+                {
                     HashSet<string> pinged_users = PingUser.Ping(e, StringLib);
                     string mentions = string.Empty;
                     DiscordMember member;
 
                     foreach (string user in pinged_users) // loop and get mention strings
                     {
-                        if (user != e.Message.Author.Username.ToLower()) {
+                        if (user != e.Message.Author.Username.ToLower())
+                        {
                             member = e.Guild.Members.Where(mem => mem.Username.ToLower().Contains(user)).First();
                             mentions += member.Mention + " ";
                         }
                     }
 
-                    if (!string.IsNullOrWhiteSpace(mentions)) {
+                    if (!string.IsNullOrWhiteSpace(mentions))
+                    {
                         string author_nickname = e.Message.Channel.Guild.Members.Where(x => x.Id.Equals(e.Message.Author.Id)).Select(x => x.Nickname).First();
                         if (author_nickname == null)
                             author_nickname = e.Message.Author.Username;
@@ -111,7 +129,8 @@ namespace SekiDiscord {
                 }
             };
 
-            commands = discord.UseCommandsNext(new CommandsNextConfiguration {
+            commands = discord.UseCommandsNext(new CommandsNextConfiguration
+            {
                 StringPrefix = "!"
             });
 
@@ -122,7 +141,8 @@ namespace SekiDiscord {
             await discord.ConnectAsync();
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Ready!");
 
-            while (!quit) {
+            while (!quit)
+            {
                 //Wait a bit
                 await Task.Delay(5 * 1000);
             }
