@@ -20,16 +20,16 @@ namespace SekiDiscord
             return false;
         }
 
-        public static List<string> getOnlineUsers(DiscordGuild discordGuild)
+        public static List<DiscordMember> getOnlineUsers(DiscordGuild discordGuild)
         {
-            List<string> ul = new List<string>();
+            List<DiscordMember> ul = new List<DiscordMember>();
 
             foreach (DiscordMember u in discordGuild.Members)
             {
                 try
                 {
                     if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle)
-                        ul.Add(u.DisplayName);
+                        ul.Add(u);
                 }
                 catch
                 {
@@ -128,7 +128,7 @@ namespace SekiDiscord
             }
         }
 
-        public static string FillTags(string template, string user, string target, List<string> userlist)
+        public static string FillTags(string template, string user, string target, List<DiscordMember> userlist)
         {
             var regex = new Regex(Regex.Escape("<random>"));
             Random r = new Random();
@@ -141,7 +141,7 @@ namespace SekiDiscord
             {
                 do
                 {
-                    randomTarget = userlist[r.Next(userlist.Count)];
+                    randomTarget = userlist[r.Next(userlist.Count)].DisplayName;
                 } while (string.Compare(target, randomTarget, true) == 0 || userlist.Count < 2);
 
                 template = regex.Replace(template, randomTarget, 1);

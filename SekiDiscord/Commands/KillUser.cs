@@ -1,4 +1,5 @@
 ﻿using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -15,7 +16,7 @@ namespace SekiDiscord.Commands
             int killID;
             string killString;
             string nick = e.Member.DisplayName;
-            List<string> listU = Useful.getOnlineUsers(e.Channel.Guild);
+            List<DiscordMember> listU = Useful.getOnlineUsers(e.Channel.Guild);
             string args;
 
             try
@@ -40,7 +41,7 @@ namespace SekiDiscord.Commands
                 else
                 {
                     if (string.IsNullOrWhiteSpace(args) || args.ToLower() == "random")
-                        target = listU[r.Next(listU.Count)];
+                        target = listU[r.Next(listU.Count)].DisplayName;
                     else
                         target = args.Trim();
 
@@ -102,10 +103,10 @@ namespace SekiDiscord.Commands
                 args = string.Empty;
             }
 
-            List<string> listU = Useful.getOnlineUsers(e.Channel.Guild);
+            List<DiscordMember> listU = Useful.getOnlineUsers(e.Channel.Guild);
 
             if (string.IsNullOrWhiteSpace(args) || args.ToLower() == "random")
-                target = listU[r.Next(listU.Count)];
+                target = listU[r.Next(listU.Count)].DisplayName;
             else
                 target = args.Trim();
 

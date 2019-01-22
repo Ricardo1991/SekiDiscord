@@ -1,4 +1,5 @@
-﻿using DSharpPlus.EventArgs;
+﻿using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -98,7 +99,7 @@ namespace SekiDiscord.Commands
             string response;
             Random r = new Random();
             string nick = e.Author.Username;
-            List<string> listU = Useful.getOnlineUsers(e.Channel.Guild);
+            List<DiscordMember> listU = Useful.getOnlineUsers(e.Channel.Guild);
             CustomCommand customcommand;
             var regex = new Regex(Regex.Escape("<random>"));
 

@@ -1,4 +1,5 @@
 ﻿using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -95,13 +96,13 @@ namespace SekiDiscord.Commands
         {
             int userNumber;
             Random rnd = new Random();
-            List<string> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
+            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
 
             do
             {
                 userNumber = rnd.Next(listU.Count);
             }
-            while (listU[userNumber] == ctx.Member.DisplayName);
+            while (listU[userNumber].DisplayName == ctx.Member.DisplayName);
 
             string message = "*pokes " + listU[userNumber] + "*";
             await ctx.RespondAsync(message);
