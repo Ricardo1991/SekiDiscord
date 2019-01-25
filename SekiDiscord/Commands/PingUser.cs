@@ -79,7 +79,7 @@ namespace SekiDiscord.Commands
         public static HashSet<string> Ping(MessageCreateEventArgs e, StringLibrary stringLibrary)
         {
             string message = e.Message.Content.ToLower();
-            HashSet<string> pinged_users = stringLibrary.Pings.Where(kvp => kvp.Value.Any(value => Regex.IsMatch(message, @"^.*" + value + ".*$"))).Select(kvp => kvp.Key).ToHashSet(); // what the fuck, but it works
+            HashSet<string> pinged_users = stringLibrary.Pings.Where(kvp => kvp.Value.Any(value => Regex.IsMatch(message, @"^.*\b" + value + "\b.*$"))).Select(kvp => kvp.Key).ToHashSet(); // what the fuck, but it works
             return pinged_users;
         }
     }
