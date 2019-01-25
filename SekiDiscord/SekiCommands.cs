@@ -234,5 +234,13 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Nick Command");
             await Commands.Nick.NickGen(ctx, stringLibrary);
         }
+
+        [Command("fact")]
+        [Description("Show a random fun made up fact")]
+        public async Task Fact(CommandContext ctx)
+        {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Fact Command");
+            await Commands.Fact.ShowFact(ctx, stringLibrary);
+        }
     }
 }
