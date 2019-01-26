@@ -58,6 +58,25 @@ namespace SekiDiscord
                     //Settings.Default.Save();
                 }
             }
+            if (string.IsNullOrWhiteSpace(Settings.Default.CleverbotAPI))
+            {
+                string api = string.Empty;
+                if (args.Length > 2)
+                {
+                    api = args[2];
+                }
+                else
+                {
+                    Console.WriteLine("Add api key for Cleverbot (or enter to ignore): ");
+                    api = Console.ReadLine();
+                }
+                if (!string.IsNullOrWhiteSpace(api))
+                {
+                    Settings.Default.CleverbotAPI = api;
+                    //TODO: This should be fixed once .net Core 3.0 is released
+                    //Settings.Default.Save();
+                }
+            }
 
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Starting...");
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -67,6 +86,7 @@ namespace SekiDiscord
         {
             string token = args[0];
             bool quit = false;
+            string botName = string.Empty;
 
             discord = new DiscordClient(new DiscordConfiguration
             {
@@ -95,9 +115,25 @@ namespace SekiDiscord
                     string[] split = e.Message.Content.Split(new char[] { ' ' }, 2);
                     string command = split[0];
                     if (split.Length > 1) arguments = split[1];
-                    string result = Commands.CustomCommand.UseCustomCommand(command.TrimStart('!'), arguments, e, StringLib);
+                    string result = CustomCommand.UseCustomCommand(command.TrimStart('!'), arguments, e, StringLib);
                     if (!string.IsNullOrEmpty(result))
                         await e.Message.RespondAsync(result);
+                }
+
+                //Bot Talk and Cleverbot
+                else if (e.Message.Content.StartsWith(botName + ",", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (e.Message.Content.EndsWith('?'))
+                    {
+                    }
+                    else
+                    {
+                        await BotTalk.BotThink(e, StringLib, botName);
+                    }
+                }
+                else if (e.Message.Content.EndsWith(botName, StringComparison.OrdinalIgnoreCase))
+                {
+                    await BotTalk.BotThink(e, StringLib, botName);
                 }
 
                 //Ping users, leave this last cause it's sloooooooow
@@ -141,6 +177,7 @@ namespace SekiDiscord
             await discord.ConnectAsync();
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Ready!");
 
+            botName = discord.CurrentUser.Username;
             while (!quit)
             {
                 //Wait a bit
