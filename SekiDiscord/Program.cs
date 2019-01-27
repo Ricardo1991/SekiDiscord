@@ -109,7 +109,7 @@ namespace SekiDiscord
 
             discord.UnknownEvent += async unk =>
             {
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Unknown Event " + unk.EventName);
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Unknown Event: " + unk.EventName);
             };
 
             discord.MessageCreated += async e =>
@@ -198,7 +198,11 @@ namespace SekiDiscord
             while (!quit)
             {
                 if (tryReconnect)
-                    await discord.ReconnectAsync();
+                {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Attempting to Reconnect...");
+                    await discord.ConnectAsync();
+                }
+
                 //Wait a bit
                 await Task.Delay(10 * 1000);
             }
