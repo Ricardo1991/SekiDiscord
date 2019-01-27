@@ -86,6 +86,7 @@ namespace SekiDiscord
         {
             string token = args[0];
             bool quit = false;
+            bool tryReconnect = false;
             string botName = string.Empty;
 
             discord = new DiscordClient(new DiscordConfiguration
@@ -96,8 +97,19 @@ namespace SekiDiscord
 
             discord.SocketErrored += async a =>
             {
-                quit = true;
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Error... " + a.Exception.Message);
+                tryReconnect = true;
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Error: " + a.Exception.Message);
+            };
+
+            discord.Ready += async a =>
+            {
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Ready!");
+                tryReconnect = false;
+            };
+
+            discord.UnknownEvent += async unk =>
+            {
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Unknown Event " + unk.EventName);
             };
 
             discord.MessageCreated += async e =>
@@ -181,13 +193,14 @@ namespace SekiDiscord
 
             //Connect to Discord
             await discord.ConnectAsync();
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Ready!");
 
             botName = discord.CurrentUser.Username;
             while (!quit)
             {
+                if (tryReconnect)
+                    await discord.ReconnectAsync();
                 //Wait a bit
-                await Task.Delay(5 * 1000);
+                await Task.Delay(10 * 1000);
             }
 
             await discord.DisconnectAsync();
