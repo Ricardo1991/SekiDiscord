@@ -94,6 +94,12 @@ namespace SekiDiscord
                 TokenType = TokenType.Bot
             });
 
+            discord.SocketErrored += async a =>
+            {
+                quit = true;
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Error... " + a.Exception.Message);
+            };
+
             discord.MessageCreated += async e =>
             {
                 if (e.Message.Content.ToLower().StartsWith("!quit"))
