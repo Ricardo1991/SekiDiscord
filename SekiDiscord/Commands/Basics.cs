@@ -104,7 +104,7 @@ namespace SekiDiscord.Commands
             }
             while (listU[userNumber].DisplayName == ctx.Member.DisplayName);
 
-            string message = "*pokes " + listU[userNumber] + "*";
+            string message = "*pokes " + listU[userNumber].DisplayName + "*";
             await ctx.RespondAsync(message);
         }
     }
