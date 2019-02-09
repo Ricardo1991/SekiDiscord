@@ -98,9 +98,9 @@ namespace SekiDiscord.Commands
         {
             string response;
             Random r = new Random();
-            string nick = e.Author.Username;
+            string nick = ((DiscordMember)e.Message.Author).DisplayName;
             List<DiscordMember> listU = Useful.getOnlineUsers(e.Channel.Guild);
-            CustomCommand customcommand;
+            CustomCommand customCommand;
             var regex = new Regex(Regex.Escape("<random>"));
 
             if (CommandExists(command, stringLibrary.CustomCommands) == false)
@@ -111,11 +111,14 @@ namespace SekiDiscord.Commands
                 return string.Empty;
             }
 
-            customcommand = GetCustomCommandByName(command, stringLibrary.CustomCommands);
+            customCommand = GetCustomCommandByName(command, stringLibrary.CustomCommands);
 
-            if (customcommand == null) return string.Empty;
+            if (customCommand == null)
+            {
+                return string.Empty;
+            }
 
-            response = customcommand.Format;
+            response = customCommand.Format;
 
             response = Useful.FillTags(response, nick.Trim(), arguments, listU);
             return response;

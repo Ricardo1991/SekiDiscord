@@ -91,7 +91,7 @@ namespace SekiDiscord.Commands
             string target = "";
             string killString;
             string args;
-            string nick = e.Message.Author.Username;
+            string nick = e.Member.DisplayName;
             KillResult message;
 
             try
