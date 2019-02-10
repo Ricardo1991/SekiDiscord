@@ -173,7 +173,7 @@ namespace SekiDiscord
 
                     if (!string.IsNullOrWhiteSpace(mentions))
                     {
-                        string author_nickname = e.Message.Channel.Guild.Members.Where(x => x.Id.Equals(e.Message.Author.Id)).Select(x => x.Nickname).First();
+                        string author_nickname = ((DiscordMember)e.Message.Author).DisplayName;
                         if (author_nickname == null)
                             author_nickname = e.Message.Author.Username;
                         StringBuilder stringBuilder = new StringBuilder();
