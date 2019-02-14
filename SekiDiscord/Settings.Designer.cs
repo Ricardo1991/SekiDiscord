@@ -82,5 +82,17 @@ namespace SekiDiscord {
                 this["CleverbotAPI"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("265477742928199681")]
+        public ulong limid {
+            get {
+                return ((ulong)(this["limid"]));
+            }
+            set {
+                this["limid"] = value;
+            }
+        }
     }
 }

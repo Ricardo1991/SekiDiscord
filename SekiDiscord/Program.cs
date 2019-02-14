@@ -154,6 +154,19 @@ namespace SekiDiscord
                     await BotTalk.BotThink(e, StringLib, botName);
                 }
 
+                //waifunator
+                if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.Author.Id == Settings.Default.limid) //lims shitty id lul
+                {
+                    if (e.Message.Content.ToLower().Contains("wife"))
+                    {
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discord, ":regional_indicator_w:"));
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discord, ":regional_indicator_a:"));
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discord, ":regional_indicator_i:"));
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discord, ":regional_indicator_f:"));
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discord, ":regional_indicator_u:"));
+                    }
+                }
+
                 //Ping users, leave this last cause it's sloooooooow
                 var ping_channel = await discord.GetChannelAsync(Settings.Default.ping_channel_id);
                 if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.ChannelId != Settings.Default.ping_channel_id)
