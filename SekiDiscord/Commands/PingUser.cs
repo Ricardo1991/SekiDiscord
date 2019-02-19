@@ -1,4 +1,5 @@
 ﻿using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,11 +77,43 @@ namespace SekiDiscord.Commands
             stringLibrary.SaveLibrary("pings");
         }
 
-        public static HashSet<string> Ping(MessageCreateEventArgs e, StringLibrary stringLibrary)
+        public static HashSet<string> GetPingedUsers(MessageCreateEventArgs e, StringLibrary stringLibrary)
         {
             string message = e.Message.Content.ToLower();
             HashSet<string> pinged_users = stringLibrary.Pings.Where(kvp => kvp.Value.Any(value => Regex.IsMatch(message, @"^.*\b" + value + @"\b.*$"))).Select(kvp => kvp.Key).ToHashSet(); // what the fuck, but it works
             return pinged_users;
+        }
+
+        public static async Task SendPings(MessageCreateEventArgs e, StringLibrary stringLibrary)
+        {
+            DiscordChannel channel = await Program.GetDiscordClient.GetChannelAsync(Settings.Default.ping_channel_id); //get channel from channel id
+
+            if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.ChannelId != Settings.Default.ping_channel_id)
+            {
+                HashSet<string> pinged_users = GetPingedUsers(e, stringLibrary);
+                string mentions = string.Empty;
+                DiscordMember member;
+
+                foreach (string user in pinged_users) // loop and get mention strings
+                {
+                    if (user != e.Message.Author.Username.ToLower())
+                    {
+                        member = e.Guild.Members.Where(mem => mem.Username.ToLower().Equals(user)).FirstOrDefault();
+                        if (member != null)
+                            mentions += member.Mention + " ";
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(mentions))
+                {
+                    string author_nickname = ((DiscordMember)e.Message.Author).DisplayName;
+                    if (author_nickname == null)
+                        author_nickname = e.Message.Author.Username;
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.Append(mentions + "at " + e.Message.Channel.Mention + "\n" + "<" + author_nickname + "> " + e.Message.Content);
+                    await Program.GetDiscordClient.SendMessageAsync(channel, stringBuilder.ToString());
+                }
+            }
         }
     }
 }
