@@ -25,6 +25,18 @@ namespace SekiDiscord
             }
         }
 
+        public static DiscordClient GetDiscordClient 
+        {
+            get 
+            {
+                return discord;
+            }
+            set 
+            {
+                discord = value;
+            }
+        }
+
         private static void Main(string[] args)
         {
             if (args.Length < 1)
@@ -168,32 +180,7 @@ namespace SekiDiscord
                 }
 
                 //Ping users, leave this last cause it's sloooooooow
-                var ping_channel = await discord.GetChannelAsync(Settings.Default.ping_channel_id);
-                if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.ChannelId != Settings.Default.ping_channel_id)
-                {
-                    HashSet<string> pinged_users = PingUser.Ping(e, StringLib);
-                    string mentions = string.Empty;
-                    DiscordMember member;
-
-                    foreach (string user in pinged_users) // loop and get mention strings
-                    {
-                        if (user != e.Message.Author.Username.ToLower())
-                        {
-                            member = e.Guild.Members.Where(mem => mem.Username.ToLower().Contains(user)).First();
-                            mentions += member.Mention + " ";
-                        }
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(mentions))
-                    {
-                        string author_nickname = ((DiscordMember)e.Message.Author).DisplayName;
-                        if (author_nickname == null)
-                            author_nickname = e.Message.Author.Username;
-                        StringBuilder stringBuilder = new StringBuilder();
-                        stringBuilder.Append(mentions + "at " + e.Message.Channel.Mention + "\n" + "<" + author_nickname + "> " + e.Message.Content);
-                        await discord.SendMessageAsync(ping_channel, stringBuilder.ToString());
-                    }
-                }
+                await PingUser.SendPings(e, StringLib);
             };
 
             commands = discord.UseCommandsNext(new CommandsNextConfiguration
