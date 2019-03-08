@@ -3,9 +3,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using SekiDiscord.Commands;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SekiDiscord
@@ -25,13 +22,13 @@ namespace SekiDiscord
             }
         }
 
-        public static DiscordClient GetDiscordClient 
+        public static DiscordClient GetDiscordClient
         {
-            get 
+            get
             {
                 return discord;
             }
-            set 
+            set
             {
                 discord = value;
             }
@@ -179,6 +176,8 @@ namespace SekiDiscord
                     }
                 }
 
+                //Update "last seen" for user that sent the message
+                Seen.MarkUserSeen(e, StringLib);
                 //Ping users, leave this last cause it's sloooooooow
                 await PingUser.SendPings(e, StringLib);
             };

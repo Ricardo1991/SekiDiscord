@@ -1,6 +1,7 @@
 ﻿using MarkovSharp.TokenisationStrategies;
 using Newtonsoft.Json;
 using SekiDiscord.Commands;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -21,6 +22,7 @@ namespace SekiDiscord
         public List<int> FactsUsed { get; set; } = new List<int>();
         public StringMarkov Killgen { get; set; } = new StringMarkov();
         public Dictionary<string, HashSet<string>> Pings { get; set; } = new Dictionary<string, HashSet<string>>();
+        public Dictionary<string, DateTime> Seen { get; set; } = new Dictionary<string, DateTime>();
 
         public StringLibrary()
         {
@@ -38,6 +40,7 @@ namespace SekiDiscord
             ReadFunk();
             ReadRules();
             ReadPings();                //Read ping file
+            ReadSeen();                 //Read seem file
             CustomCommands = CustomCommand.LoadCustomCommands();
 
             return true;
@@ -94,6 +97,10 @@ namespace SekiDiscord
                     ReadPings();
                     break;
 
+                case "seen":
+                    ReadSeen();
+                    break;
+
                 default:
                     return false;
             }
@@ -105,6 +112,7 @@ namespace SekiDiscord
             SaveFunk();
             SaveQuotes();
             SavePings();        // Save pings to file
+            SaveSeen();
 
             return true;
         }
@@ -160,6 +168,10 @@ namespace SekiDiscord
                     SavePings();
                     break;
 
+                case "seen":
+                    SaveSeen();
+                    break;
+
                 default:
                     return false;
             }
@@ -185,6 +197,25 @@ namespace SekiDiscord
             }
         }
 
+        private async void ReadSeen()
+        {
+            Seen.Clear();
+            if (File.Exists("TextFiles/seen.json"))
+            {
+                try
+                {
+                    using (StreamReader r = new StreamReader("TextFiles/seen.json"))
+                    {
+                        string json = await r.ReadToEndAsync();
+                        Seen = JsonConvert.DeserializeObject<Dictionary<string, DateTime>>(json);
+                    }
+                }
+                catch
+                {
+                }
+            }
+        }
+
         private void SavePings()
         {
             try
@@ -193,6 +224,21 @@ namespace SekiDiscord
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     serializer.Serialize(w, Pings);
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private void SaveSeen()
+        {
+            try
+            {
+                using (StreamWriter w = File.CreateText("TextFiles/seen.json"))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(w, Seen);
                 }
             }
             catch

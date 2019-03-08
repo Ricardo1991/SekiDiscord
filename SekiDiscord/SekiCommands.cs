@@ -242,5 +242,13 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Fact Command");
             await Commands.Fact.ShowFact(ctx, stringLibrary);
         }
+
+        [Command("seen")]
+        [Description("Check how long ago a user was last seen")]
+        public async Task Seen(CommandContext ctx)
+        {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Seen Command");
+            await Commands.Seen.CheckSeen(ctx, stringLibrary);
+        }
     }
 }

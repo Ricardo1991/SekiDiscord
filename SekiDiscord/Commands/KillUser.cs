@@ -10,18 +10,18 @@ namespace SekiDiscord.Commands
         private static int MAX_KILLS = 500;
         private static Random r = new Random();
 
-        public static KillResult Kill(CommandContext e, StringLibrary stringLibrary)
+        public static KillResult Kill(CommandContext ctx, StringLibrary stringLibrary)
         {
             string target;
             int killID;
             string killString;
-            string nick = e.Member.DisplayName;
-            List<DiscordMember> listU = Useful.getOnlineUsers(e.Channel.Guild);
+            string nick = ctx.Member.DisplayName;
+            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
             string args;
 
             try
             {
-                args = e.Message.Content.Split(new char[] { ' ' }, 2)[1];
+                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
             }
             catch
             {
@@ -85,25 +85,25 @@ namespace SekiDiscord.Commands
             }
         }
 
-        internal static KillResult KillRandom(CommandContext e, StringLibrary stringLibrary)
+        internal static KillResult KillRandom(CommandContext ctx, StringLibrary stringLibrary)
         {
             Random r = new Random();
             string target = "";
             string killString;
             string args;
-            string nick = e.Member.DisplayName;
+            string nick = ctx.Member.DisplayName;
             KillResult message;
 
             try
             {
-                args = e.Message.Content.Split(new char[] { ' ' }, 2)[1];
+                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
             }
             catch
             {
                 args = string.Empty;
             }
 
-            List<DiscordMember> listU = Useful.getOnlineUsers(e.Channel.Guild);
+            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
 
             if (string.IsNullOrWhiteSpace(args) || args.ToLower() == "random")
                 target = listU[r.Next(listU.Count)].DisplayName;
