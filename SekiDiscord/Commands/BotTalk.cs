@@ -28,6 +28,8 @@ namespace SekiDiscord.Commands
                 input = input.Substring(0, input.LastIndexOf(botName, StringComparison.OrdinalIgnoreCase)).Trim();
             }
 
+            await e.Channel.TriggerTypingAsync();
+
             try
             {
                 if (cleverbotSession == null)
