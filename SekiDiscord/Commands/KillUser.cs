@@ -1,5 +1,6 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using System;
 using System.Collections.Generic;
 
@@ -10,15 +11,19 @@ namespace SekiDiscord.Commands
         private static int MAX_KILLS = 500;
         private static Random r = new Random();
 
+        public static KillResult Kill(MessageCreateEventArgs ctx, StringLibrary stringLibrary, string target)
+        {
+            string nick = ((DiscordMember)ctx.Message.Author).DisplayName;
+            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
+
+            return KillUsername(target, nick, listU, stringLibrary);
+        }
+
         public static KillResult Kill(CommandContext ctx, StringLibrary stringLibrary)
         {
-            string target;
-            int killID;
-            string killString;
             string nick = ctx.Member.DisplayName;
             List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
             string args;
-
             try
             {
                 args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
@@ -27,6 +32,15 @@ namespace SekiDiscord.Commands
             {
                 args = string.Empty;
             }
+
+            return KillUsername(args, nick, listU, stringLibrary);
+        }
+
+        private static KillResult KillUsername(string args, string nick, List<DiscordMember> listU, StringLibrary stringLibrary)
+        {
+            string target;
+            int killID;
+            string killString;
 
             try
             {

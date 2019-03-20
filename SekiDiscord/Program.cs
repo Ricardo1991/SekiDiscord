@@ -198,8 +198,15 @@ namespace SekiDiscord
             {
                 if (tryReconnect)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Attempting to Reconnect...");
-                    await discord.ConnectAsync();
+                    try
+                    {
+                        await discord.DisconnectAsync();
+                    }
+                    finally
+                    {
+                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Attempting to Reconnect...");
+                        await discord.ConnectAsync();
+                    }
                 }
 
                 //Wait a bit
