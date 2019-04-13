@@ -13,7 +13,7 @@ namespace SekiDiscord.Commands
     {
         public static async Task PingControl(CommandContext e, StringLibrary stringLibrary, string cmd, string args)
         {
-            string username = e.Member.Username.ToLower(); // get message creators username in lower case
+            ulong username = e.Member.Id; // get message creators username in lower case
             switch (cmd)
             {
                 case "add":
@@ -40,21 +40,21 @@ namespace SekiDiscord.Commands
                     }
                     break;
 
-                case "copy":
-                    if (!string.IsNullOrWhiteSpace(args))
-                    {
-                        bool user = stringLibrary.Pings.ContainsKey(username);
-                        bool userToCopyFrom = stringLibrary.Pings.ContainsKey(args);
-                        if (!user && userToCopyFrom)
-                        {
-                            stringLibrary.Pings.Add(username, stringLibrary.Pings[args]);
-                        }
-                        else if (user && userToCopyFrom)
-                        {
-                            stringLibrary.Pings[username].UnionWith(stringLibrary.Pings[args]);
-                        }
-                    }
-                    break;
+                //case "copy":
+                //    if (!string.IsNullOrWhiteSpace(args))
+                //    {
+                //        bool user = stringLibrary.Pings.ContainsKey(username);
+                //        bool userToCopyFrom = stringLibrary.Pings.ContainsKey(args);
+                //        if (!user && userToCopyFrom)
+                //        {
+                //            stringLibrary.Pings.Add(username, stringLibrary.Pings[args]);
+                //        }
+                //        else if (user && userToCopyFrom)
+                //        {
+                //            stringLibrary.Pings[username].UnionWith(stringLibrary.Pings[args]);
+                //        }
+                //    }
+                //    break;
 
                 case "info":
                     if (stringLibrary.Pings.ContainsKey(username))
@@ -77,10 +77,10 @@ namespace SekiDiscord.Commands
             stringLibrary.SaveLibrary("pings");
         }
 
-        public static HashSet<string> GetPingedUsers(MessageCreateEventArgs e, StringLibrary stringLibrary)
+        public static HashSet<ulong> GetPingedUsers(MessageCreateEventArgs e, StringLibrary stringLibrary)
         {
             string message = e.Message.Content.ToLower();
-            HashSet<string> pinged_users = stringLibrary.Pings.Where(kvp => kvp.Value.Any(value => Regex.IsMatch(message, @"^.*\b" + value + @"\b.*$"))).Select(kvp => kvp.Key).ToHashSet(); // what the fuck, but it works
+            HashSet<ulong> pinged_users = stringLibrary.Pings.Where(kvp => kvp.Value.Any(value => Regex.IsMatch(message, @"^.*\b" + value + @"\b.*$"))).Select(kvp => kvp.Key).ToHashSet(); // what the fuck, but it works
             return pinged_users;
         }
 
@@ -90,15 +90,15 @@ namespace SekiDiscord.Commands
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.ChannelId != Settings.Default.ping_channel_id)
             {
-                HashSet<string> pinged_users = GetPingedUsers(e, stringLibrary);
+                HashSet<ulong> pinged_users = GetPingedUsers(e, stringLibrary);
                 string mentions = string.Empty;
                 DiscordMember member;
 
-                foreach (string user in pinged_users) // loop and get mention strings
+                foreach (ulong user in pinged_users) // loop and get mention strings
                 {
-                    if (user != e.Message.Author.Username.ToLower())
+                    if (user != e.Message.Author.Id)
                     {
-                        member = e.Guild.Members.Where(mem => mem.Username.ToLower().Equals(user)).FirstOrDefault();
+                        member = e.Guild.Members.Where(mem => mem.Id.Equals(user)).FirstOrDefault();
                         if (member != null)
                             mentions += member.Mention + " ";
                     }

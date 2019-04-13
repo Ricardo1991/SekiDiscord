@@ -21,7 +21,7 @@ namespace SekiDiscord
         public List<int> KillsUsed { get; set; } = new List<int>();
         public List<int> FactsUsed { get; set; } = new List<int>();
         public StringMarkov Killgen { get; set; } = new StringMarkov();
-        public Dictionary<string, HashSet<string>> Pings { get; set; } = new Dictionary<string, HashSet<string>>();
+        public Dictionary<ulong, HashSet<string>> Pings { get; set; } = new Dictionary<ulong, HashSet<string>>();
         public Dictionary<string, DateTime> Seen { get; set; } = new Dictionary<string, DateTime>();
 
         public StringLibrary()
@@ -188,7 +188,7 @@ namespace SekiDiscord
                     using (StreamReader r = new StreamReader("TextFiles/pings.json"))
                     {
                         string json = await r.ReadToEndAsync();
-                        Pings = JsonConvert.DeserializeObject<Dictionary<string, HashSet<string>>>(json);
+                        Pings = JsonConvert.DeserializeObject<Dictionary<ulong, HashSet<string>>>(json);
                     }
                 }
                 catch
