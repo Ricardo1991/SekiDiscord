@@ -182,9 +182,11 @@ namespace SekiDiscord
                 await PingUser.SendPings(e, StringLib);
             };
 
+            //Register the commands defined on SekiCommands.cs
             commands = discord.UseCommandsNext(new CommandsNextConfiguration
             {
-                StringPrefix = "!"
+                StringPrefix = "!",
+                CaseSensitive = false
             });
 
             SekiCommands.SetStringLibrary(StringLib);
