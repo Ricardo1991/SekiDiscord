@@ -47,6 +47,7 @@ namespace SekiDiscord
 
         [Command("qcount")]
         [Description("Show how many quotes are loaded")]     // this will be displayed to tell users what this command does when they invoke help
+        [Aliases("qc")]
         public async Task QuoteCount(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Quote Count Command");
