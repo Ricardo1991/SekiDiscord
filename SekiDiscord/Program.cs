@@ -186,7 +186,8 @@ namespace SekiDiscord
             commands = discord.UseCommandsNext(new CommandsNextConfiguration
             {
                 StringPrefix = "!",
-                CaseSensitive = false
+                CaseSensitive = false,
+                EnableMentionPrefix = false
             });
 
             SekiCommands.SetStringLibrary(StringLib);
