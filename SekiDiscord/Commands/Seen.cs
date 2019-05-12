@@ -21,7 +21,7 @@ namespace SekiDiscord.Commands
                 stringLibrary.Seen[username] = DateTime.UtcNow;
             }
 
-            stringLibrary.SaveLibrary("seen");
+            stringLibrary.SaveLibrary(StringLibrary.LibraryType.Seen);
         }
 
         private static DateTime GetUserSeenUTC(string nick, StringLibrary stringLibrary)

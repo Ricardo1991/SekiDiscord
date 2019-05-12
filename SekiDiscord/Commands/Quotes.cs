@@ -31,7 +31,7 @@ namespace SekiDiscord.Commands
             if (!string.IsNullOrWhiteSpace(add))
                 stringLibrary.Quotes.Add(add);
 
-            stringLibrary.SaveLibrary("quotes");
+            stringLibrary.SaveLibrary(StringLibrary.LibraryType.Quote);
         }
 
         public static string PrintQuote(CommandContext e, StringLibrary stringLibrary)

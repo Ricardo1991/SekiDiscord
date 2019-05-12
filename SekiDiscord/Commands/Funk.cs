@@ -8,23 +8,19 @@ namespace SekiDiscord.Commands
     {
         public static async Task PrintFunk(CommandContext ctx, StringLibrary stringLibrary)
         {
+            if (stringLibrary.Funk.Count == 0)
+                return;
+
             Random r = new Random();
-            int i;
-            string message;
+            int i = r.Next(stringLibrary.Funk.Count);
 
-            if (stringLibrary.Funk.Count == 0) return;
-
-            i = r.Next(stringLibrary.Funk.Count);
-            message = stringLibrary.Funk[i];
-
-            await ctx.Message.RespondAsync(message);
+            await ctx.Message.RespondAsync(stringLibrary.Funk[i]);
         }
 
         public static void AddFunk(CommandContext ctx, StringLibrary stringLibrary)
         {
             //if (userlist.UserIsMuted(nick) || !Settings.Default.funkEnabled) return;
 
-            string[] splits;
             string args;
             try
             {
@@ -37,13 +33,13 @@ namespace SekiDiscord.Commands
 
             try
             {
-                splits = ctx.Message.Content.Split();
+                string[] splits = ctx.Message.Content.Split();
                 if (string.Compare(splits[0].ToLower(), "add") == 0)
                     args = args.Replace("add ", string.Empty);
 
                 stringLibrary.Funk.Add(args);
 
-                stringLibrary.SaveLibrary("funk");
+                stringLibrary.SaveLibrary(StringLibrary.LibraryType.Funk);
             }
             catch
             {

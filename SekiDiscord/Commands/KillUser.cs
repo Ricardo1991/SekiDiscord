@@ -8,7 +8,7 @@ namespace SekiDiscord.Commands
 {
     internal class KillUser
     {
-        private static int MAX_KILLS = 500;
+        private static readonly int MAX_KILLS = 500;
         private static Random r = new Random();
 
         public static KillResult Kill(MessageCreateEventArgs ctx, StringLibrary stringLibrary, string target)
@@ -22,8 +22,9 @@ namespace SekiDiscord.Commands
         public static KillResult Kill(CommandContext ctx, StringLibrary stringLibrary)
         {
             string nick = ctx.Member.DisplayName;
-            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
+            List<DiscordMember> usersOnline = Useful.getOnlineUsers(ctx.Channel.Guild);
             string args;
+
             try
             {
                 args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
@@ -33,7 +34,7 @@ namespace SekiDiscord.Commands
                 args = string.Empty;
             }
 
-            return KillUsername(args, nick, listU, stringLibrary);
+            return KillUsername(args, nick, usersOnline, stringLibrary);
         }
 
         private static KillResult KillUsername(string args, string nick, List<DiscordMember> listU, StringLibrary stringLibrary)
@@ -150,8 +151,8 @@ namespace SekiDiscord.Commands
         {
             public KillResult(string result, bool isAction)
             {
-                this.Result = result;
-                this.IsAction = isAction;
+                Result = result;
+                IsAction = isAction;
             }
 
             public string Result { get; set; }

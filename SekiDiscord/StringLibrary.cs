@@ -31,16 +31,15 @@ namespace SekiDiscord
 
         public bool ReloadLibrary()
         {
-            ReadHelp();                 //Help text
-            ReadTrivia();               //Trivia strings
-            ReadKills();                //Read the killstrings
-            ReadFacts();                //Read the factStrings
-            ReadNickGen();              //For the Nick generator
-            ReadQuotes();
-            ReadFunk();
-            ReadRules();
-            ReadPings();                //Read ping file
-            ReadSeen();                 //Read seem file
+            Trivia = ReadTrivia();              //Trivia strings
+            Kill = ReadKills();                 //Read the killstrings
+            Facts = ReadFacts();                //Read the factStrings
+            NickGenStrings = ReadNickGen();     //For the Nick generator
+            Quotes = ReadQuotes();
+            Funk = ReadFunk();
+            Rules = ReadRules();
+            Pings = ReadPings();                //Read ping file
+            Seen = ReadSeen();                  //Read seem file
             CustomCommands = CustomCommand.LoadCustomCommands();
 
             return true;
@@ -56,49 +55,45 @@ namespace SekiDiscord
 
                 case "rules":
                 case "rule":
-                    ReadRules();
-                    break;
-
-                case "help":
-                    ReadHelp();
+                    Rules = ReadRules();
                     break;
 
                 case "nick":
                 case "nicks":
-                    ReadNickGen();
+                    NickGenStrings = ReadNickGen();
                     break;
 
                 case "trivia":
                 case "trivias":
-                    ReadTrivia();
+                    Trivia = ReadTrivia();
                     break;
 
                 case "kills":
                 case "kill":
-                    ReadKills();
+                    Kill = ReadKills();
                     break;
 
                 case "facts":
                 case "fact":
-                    ReadFacts();
+                    Facts = ReadFacts();
                     break;
 
                 case "quotes":
                 case "quote":
-                    ReadQuotes();
+                    Quotes = ReadQuotes();
                     break;
 
                 case "funk":
-                    ReadFunk();
+                    Funk = ReadFunk();
                     break;
 
                 case "pings":
                 case "ping":
-                    ReadPings();
+                    Pings = ReadPings();
                     break;
 
                 case "seen":
-                    ReadSeen();
+                    Seen = ReadSeen();
                     break;
 
                 default:
@@ -109,121 +104,103 @@ namespace SekiDiscord
 
         public bool SaveLibrary()
         {
-            SaveFunk();
-            SaveQuotes();
-            SavePings();        // Save pings to file
-            SaveSeen();
+            SaveFunk(Funk);
+            SaveQuotes(Quotes);
+            SavePings(Pings);        // Save pings to file
+            SaveSeen(Seen);
 
             return true;
         }
 
-        public bool SaveLibrary(string name)
+        public enum LibraryType { All, Rules, Nick, Trivia, Kill, Fact, Quote, Funk, Ping, Seen }
+
+        public bool SaveLibrary(LibraryType type)
         {
-            switch (name.ToLower())
+            switch (type)
             {
-                case "all":
+                case LibraryType.All:
                     SaveLibrary();
                     break;
 
-                case "rules":
-                case "rule":
-
+                case LibraryType.Quote:
+                    SaveQuotes(Quotes);
                     break;
 
-                case "help":
-
+                case LibraryType.Funk:
+                    SaveFunk(Funk);
                     break;
 
-                case "nick":
-                case "nicks":
-
+                case LibraryType.Ping:
+                    SavePings(Pings);
                     break;
 
-                case "trivia":
-                case "trivias":
-
+                case LibraryType.Seen:
+                    SaveSeen(Seen);
                     break;
 
-                case "kills":
-                case "kill":
-
-                    break;
-
-                case "facts":
-                case "fact":
-
-                    break;
-
-                case "quotes":
-                case "quote":
-                    SaveQuotes();
-                    break;
-
-                case "funk":
-                    SaveFunk();
-                    break;
-
-                case "pings":
-                case "ping":
-                    SavePings();
-                    break;
-
-                case "seen":
-                    SaveSeen();
-                    break;
-
+                case LibraryType.Rules:
+                case LibraryType.Nick:
+                case LibraryType.Trivia:
+                case LibraryType.Kill:
+                case LibraryType.Fact:
                 default:
                     return false;
             }
             return true;
         }
 
-        private async void ReadPings()
+        private Dictionary<ulong, HashSet<string>> ReadPings()
         {
-            Pings.Clear();
+            Dictionary<ulong, HashSet<string>> ping = new Dictionary<ulong, HashSet<string>>();
+
             if (File.Exists("TextFiles/pings.json"))
             {
                 try
                 {
                     using (StreamReader r = new StreamReader("TextFiles/pings.json"))
                     {
-                        string json = await r.ReadToEndAsync();
-                        Pings = JsonConvert.DeserializeObject<Dictionary<ulong, HashSet<string>>>(json);
+                        string json = r.ReadToEnd();
+                        ping = JsonConvert.DeserializeObject<Dictionary<ulong, HashSet<string>>>(json);
                     }
                 }
                 catch
                 {
                 }
             }
+
+            return ping;
         }
 
-        private async void ReadSeen()
+        private Dictionary<string, DateTime> ReadSeen()
         {
-            Seen.Clear();
+            Dictionary<string, DateTime> seen = new Dictionary<string, DateTime>();
+
             if (File.Exists("TextFiles/seen.json"))
             {
                 try
                 {
                     using (StreamReader r = new StreamReader("TextFiles/seen.json"))
                     {
-                        string json = await r.ReadToEndAsync();
-                        Seen = JsonConvert.DeserializeObject<Dictionary<string, DateTime>>(json);
+                        string json = r.ReadToEnd();
+                        seen = JsonConvert.DeserializeObject<Dictionary<string, DateTime>>(json);
                     }
                 }
                 catch
                 {
                 }
             }
+
+            return seen;
         }
 
-        private void SavePings()
+        private void SavePings(Dictionary<ulong, HashSet<string>> ping)
         {
             try
             {
                 using (StreamWriter w = File.CreateText("TextFiles/pings.json"))
                 {
                     JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(w, Pings);
+                    serializer.Serialize(w, ping);
                 }
             }
             catch
@@ -231,14 +208,14 @@ namespace SekiDiscord
             }
         }
 
-        private void SaveSeen()
+        private void SaveSeen(Dictionary<string, DateTime> seen)
         {
             try
             {
                 using (StreamWriter w = File.CreateText("TextFiles/seen.json"))
                 {
                     JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(w, Seen);
+                    serializer.Serialize(w, seen);
                 }
             }
             catch
@@ -246,9 +223,9 @@ namespace SekiDiscord
             }
         }
 
-        private void ReadKills()
+        private List<string> ReadKills()
         {
-            Kill.Clear();
+            List<string> kills = new List<string>();
             KillsUsed.Clear();
             Killgen = new StringMarkov();
 
@@ -263,7 +240,7 @@ namespace SekiDiscord
 
                         if (killS.Length > 1 && !(killS[0] == '/' && killS[1] == '/'))
                         {
-                            Kill.Add(killS);
+                            kills.Add(killS);
                             Killgen.Learn(killS);
                         }
                     }
@@ -280,18 +257,18 @@ namespace SekiDiscord
                 //Settings.Default.killEnabled = false;
                 //Settings.Default.Save();
             }
+
+            return kills;
         }
 
         internal string getRandomKillString()
         {
-            string s = Killgen.RebuildPhrase(Killgen.Walk());
-
-            return s;
+            return Killgen.RebuildPhrase(Killgen.Walk());
         }
 
-        private void ReadFacts()
+        private List<string> ReadFacts()
         {
-            Facts.Clear();
+            List<string> facts = new List<string>();
             FactsUsed.Clear();
 
             if (File.Exists("TextFiles/facts.txt"))
@@ -305,7 +282,7 @@ namespace SekiDiscord
 
                         if (factS.Length > 1 && !(factS[0] == '/' && factS[1] == '/'))
                         {
-                            Facts.Add(factS);
+                            facts.Add(factS);
                         }
                     }
 
@@ -320,11 +297,13 @@ namespace SekiDiscord
                 //Settings.Default.factsEnabled = false;
                 //Settings.Default.Save();
             }
+
+            return facts;
         }
 
-        private void ReadRules()
+        private List<string> ReadRules()
         {
-            Rules.Clear();
+            List<string> rules = new List<string>();
             if (File.Exists("TextFiles/rules.txt"))
             {
                 try
@@ -332,7 +311,7 @@ namespace SekiDiscord
                     StreamReader sr = new StreamReader("TextFiles/rules.txt");
                     while (sr.Peek() >= 0)
                     {
-                        Rules.Add(sr.ReadLine());
+                        rules.Add(sr.ReadLine());
                     }
                     sr.Close();
                 }
@@ -345,36 +324,13 @@ namespace SekiDiscord
                 //Settings.Default.rules_Enabled = false;
                 //Settings.Default.Save();
             }
+
+            return rules;
         }
 
-        private void ReadHelp()
+        private List<string> ReadTrivia() //Reads the Trivia stuff
         {
-            Help.Clear();
-            if (File.Exists("TextFiles/help.txt"))
-            {
-                try
-                {
-                    StreamReader sr = new StreamReader("TextFiles/help.txt");
-                    while (sr.Peek() >= 0)
-                    {
-                        Help.Add(sr.ReadLine());
-                    }
-                    sr.Close();
-                }
-                catch
-                {
-                }
-            }
-            else
-            {
-                //Settings.Default.help_Enabled = false;
-                //Settings.Default.Save();
-            }
-        }
-
-        private void ReadTrivia() //Reads the Trivia stuff
-        {
-            Trivia.Clear();
+            List<string> trivia = new List<string>();
 
             if (File.Exists("TextFiles/trivia.txt"))
             {
@@ -383,7 +339,7 @@ namespace SekiDiscord
                     StreamReader sr = new StreamReader("TextFiles/trivia.txt");
                     while (sr.Peek() >= 0)
                     {
-                        Trivia.Add(sr.ReadLine());
+                        trivia.Add(sr.ReadLine());
                     }
                     sr.Close();
                 }
@@ -396,12 +352,13 @@ namespace SekiDiscord
                 //Settings.Default.triviaEnabled = false;
                 //Settings.Default.Save();
             }
+
+            return trivia;
         }
 
-        private void ReadNickGen()//These are for the Nick gen
+        private List<string> ReadNickGen()//These are for the Nick gen
         {
-            NickGenStrings = new List<string>();
-            NickGenStrings.Clear();
+            List<string> nickGenStrings = new List<string>();
             if (File.Exists("TextFiles/nickGen.txt"))
             {
                 try
@@ -409,7 +366,7 @@ namespace SekiDiscord
                     StreamReader sr = new StreamReader("TextFiles/nickGen.txt");
                     while (sr.Peek() >= 0)
                     {
-                        NickGenStrings.Add(sr.ReadLine());
+                        nickGenStrings.Add(sr.ReadLine());
                     }
                     sr.Close();
                 }
@@ -422,12 +379,13 @@ namespace SekiDiscord
                 //Settings.Default.nickEnabled = false;
                 //Settings.Default.Save();
             }
+
+            return nickGenStrings;
         }
 
-        private void ReadQuotes()
+        private List<string> ReadQuotes()
         {
-            Quotes = new List<string>();
-            Quotes.Clear();
+            List<string> quotes = new List<string>();
 
             if (File.Exists("TextFiles/quotes.txt"))
             {
@@ -436,7 +394,7 @@ namespace SekiDiscord
                     StreamReader sr = new StreamReader("TextFiles/quotes.txt");
                     while (sr.Peek() >= 0)
                     {
-                        Quotes.Add(sr.ReadLine());
+                        quotes.Add(sr.ReadLine());
                     }
                     sr.Close();
                 }
@@ -444,23 +402,23 @@ namespace SekiDiscord
                 {
                 }
             }
+            return quotes;
         }
 
-        private void SaveQuotes()
+        private void SaveQuotes(List<string> quotes)
         {
             using (StreamWriter newTask = new StreamWriter("TextFiles/quotes.txt", false))
             {
-                foreach (string q in Quotes)
+                foreach (string q in quotes)
                 {
                     newTask.WriteLine(q);
                 }
             }
         }
 
-        private void ReadFunk()
+        private List<string> ReadFunk()
         {
-            Funk = new List<string>();
-            Funk.Clear();
+            List<string> funk = new List<string>();
 
             if (File.Exists("TextFiles/funk.txt"))
             {
@@ -469,7 +427,7 @@ namespace SekiDiscord
                     StreamReader sr = new StreamReader("TextFiles/funk.txt");
                     while (sr.Peek() >= 0)
                     {
-                        Funk.Add(sr.ReadLine());
+                        funk.Add(sr.ReadLine());
                     }
                     sr.Close();
                 }
@@ -477,13 +435,14 @@ namespace SekiDiscord
                 {
                 }
             }
+            return funk;
         }
 
-        private void SaveFunk()
+        private void SaveFunk(List<string> funk)
         {
             using (StreamWriter newTask = new StreamWriter("TextFiles/Funk.txt", false))
             {
-                foreach (string q in Funk)
+                foreach (string q in funk)
                 {
                     newTask.WriteLine(q);
                 }

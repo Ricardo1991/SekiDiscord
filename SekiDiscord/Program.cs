@@ -9,7 +9,6 @@ namespace SekiDiscord
 {
     internal class Program
     {
-        private static DiscordClient discord;
         private static CommandsNextModule commands;
 
         private static StringLibrary StringLib { get; set; } = new StringLibrary();
@@ -18,21 +17,11 @@ namespace SekiDiscord
         {
             if (!string.IsNullOrWhiteSpace(msg))
             {
-                await discord.SendMessageAsync(await discord.CreateDmAsync(user), msg);
+                await discordClient.SendMessageAsync(await discordClient.CreateDmAsync(user), msg);
             }
         }
 
-        public static DiscordClient GetDiscordClient
-        {
-            get
-            {
-                return discord;
-            }
-            set
-            {
-                discord = value;
-            }
-        }
+        public static DiscordClient discordClient { get; set; }
 
         private static void Main(string[] args)
         {
@@ -98,30 +87,30 @@ namespace SekiDiscord
             bool tryReconnect = false;
             string botName = string.Empty;
 
-            discord = new DiscordClient(new DiscordConfiguration
+            discordClient = new DiscordClient(new DiscordConfiguration
             {
                 Token = token,
                 TokenType = TokenType.Bot
             });
 
-            discord.SocketErrored += async a =>
+            discordClient.SocketErrored += async a =>
             {
                 tryReconnect = true;
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Error: " + a.Exception.Message);
+                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ") + "Error: " + a.Exception.Message);
             };
 
-            discord.Ready += async a =>
+            discordClient.Ready += async a =>
             {
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Ready!");
+                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ") + "Ready!");
                 tryReconnect = false;
             };
 
-            discord.UnknownEvent += async unk =>
+            discordClient.UnknownEvent += async unk =>
             {
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Unknown Event: " + unk.EventName);
+                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ") + "Unknown Event: " + unk.EventName);
             };
 
-            discord.MessageCreated += async e =>
+            discordClient.MessageCreated += async e =>
             {
                 if (e.Message.Content.ToLower().StartsWith("!quit"))
                 {
@@ -168,11 +157,11 @@ namespace SekiDiscord
                 {
                     if (e.Message.Content.ToLower().Contains("wife"))
                     {
-                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discord, ":regional_indicator_w:"));
-                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discord, ":regional_indicator_a:"));
-                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discord, ":regional_indicator_i:"));
-                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discord, ":regional_indicator_f:"));
-                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discord, ":regional_indicator_u:"));
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discordClient, ":regional_indicator_w:"));
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discordClient, ":regional_indicator_a:"));
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discordClient, ":regional_indicator_i:"));
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discordClient, ":regional_indicator_f:"));
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(discordClient, ":regional_indicator_u:"));
                     }
                 }
 
@@ -183,7 +172,7 @@ namespace SekiDiscord
             };
 
             //Register the commands defined on SekiCommands.cs
-            commands = discord.UseCommandsNext(new CommandsNextConfiguration
+            commands = discordClient.UseCommandsNext(new CommandsNextConfiguration
             {
                 StringPrefix = "!",
                 CaseSensitive = false,
@@ -194,21 +183,21 @@ namespace SekiDiscord
             commands.RegisterCommands<SekiCommands>();
 
             //Connect to Discord
-            await discord.ConnectAsync();
+            await discordClient.ConnectAsync();
 
-            botName = discord.CurrentUser.Username;
+            botName = discordClient.CurrentUser.Username;
             while (!quit)
             {
                 if (tryReconnect)
                 {
                     try
                     {
-                        await discord.DisconnectAsync();
+                        await discordClient.DisconnectAsync();
                     }
                     finally
                     {
                         Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Attempting to Reconnect...");
-                        await discord.ConnectAsync();
+                        await discordClient.ConnectAsync();
                     }
                 }
 
@@ -216,7 +205,7 @@ namespace SekiDiscord
                 await Task.Delay(10 * 1000);
             }
 
-            await discord.DisconnectAsync();
+            await discordClient.DisconnectAsync();
         }
     }
 }

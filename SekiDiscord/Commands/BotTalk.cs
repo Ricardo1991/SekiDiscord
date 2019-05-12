@@ -11,8 +11,6 @@ namespace SekiDiscord.Commands
 
         public static async Task BotThink(MessageCreateEventArgs e, StringLibrary stringLibrary, string botName)
         {
-            string message;
-
             if (string.IsNullOrWhiteSpace(Settings.Default.CleverbotAPI))
                 return;
 
@@ -28,6 +26,7 @@ namespace SekiDiscord.Commands
                 input = input.Substring(0, input.LastIndexOf(botName, StringComparison.OrdinalIgnoreCase)).Trim();
             }
 
+            //Show the "bot is typing..." message
             await e.Channel.TriggerTypingAsync();
 
             try
@@ -36,15 +35,13 @@ namespace SekiDiscord.Commands
                     cleverbotSession = new CleverbotSession(Settings.Default.CleverbotAPI);
 
                 CleverbotResponse answer = await cleverbotSession.GetResponseAsync(input);
-                message = answer.Response;
+                await e.Message.RespondAsync(answer.Response);
             }
             catch
             {
-                message = "Sorry, but i can't think right now";
+                await e.Message.RespondAsync("Sorry, but i can't think right now");
                 cleverbotSession = new CleverbotSession(Settings.Default.CleverbotAPI);
             }
-
-            await e.Message.RespondAsync(message);
         }
     }
 }
