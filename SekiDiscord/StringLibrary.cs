@@ -39,7 +39,7 @@ namespace SekiDiscord
             Funk = ReadFunk();
             Rules = ReadRules();
             Pings = ReadPings();                //Read ping file
-            Seen = ReadSeen();                  //Read seem file
+            Seen = ReadSeen();                  //Read seen file
             CustomCommands = CustomCommand.LoadCustomCommands();
 
             return true;
