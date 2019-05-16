@@ -247,8 +247,9 @@ namespace SekiDiscord
 
                     sr.Close();
                 }
-                catch
+                catch (Exception e)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read kills. " + e.Message);
                 }
             }
             else
@@ -288,8 +289,9 @@ namespace SekiDiscord
 
                     sr.Close();
                 }
-                catch
+                catch (Exception e)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read facts. " + e.Message);
                 }
             }
             else
@@ -315,8 +317,9 @@ namespace SekiDiscord
                     }
                     sr.Close();
                 }
-                catch
+                catch (Exception e)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read rules. " + e.Message);
                 }
             }
             else
@@ -343,8 +346,9 @@ namespace SekiDiscord
                     }
                     sr.Close();
                 }
-                catch
+                catch (Exception e)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read trivia. " + e.Message);
                 }
             }
             else
@@ -370,8 +374,9 @@ namespace SekiDiscord
                     }
                     sr.Close();
                 }
-                catch
+                catch (Exception e)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read nickGen. " + e.Message);
                 }
             }
             else
@@ -398,8 +403,9 @@ namespace SekiDiscord
                     }
                     sr.Close();
                 }
-                catch
+                catch (Exception e)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read quotes. " + e.Message);
                 }
             }
             return quotes;
@@ -431,8 +437,9 @@ namespace SekiDiscord
                     }
                     sr.Close();
                 }
-                catch
+                catch (Exception e)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read funk. " + e.Message);
                 }
             }
             return funk;
