@@ -12,7 +12,22 @@ namespace SekiDiscord.Commands
         {
             string nick = ctx.Member.DisplayName;
             Random random = new Random();
-            int number = random.Next(0, 100);
+            string arg = string.Empty;
+            int max = 100;
+
+            try
+            {
+                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
+                int parseMax = int.Parse(arg);
+
+                if (parseMax > 0)
+                    max = parseMax;
+            }
+            catch
+            {
+            }
+
+            int number = random.Next(0, max) + 1;
 
             nick = nick.Replace("\r", "");
             string message = nick + " rolled a " + number;
