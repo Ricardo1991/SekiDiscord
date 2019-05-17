@@ -4,21 +4,11 @@ using System.Collections.Generic;
 
 namespace SekiDiscord.Commands
 {
-    internal class Quotes
+    public class Quotes
     {
-        public static void AddQuote(CommandContext e, StringLibrary stringLibrary)
+        public static void AddQuote(string args, StringLibrary stringLibrary)
         {
             string add;
-            string args;
-
-            try
-            {
-                args = e.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch
-            {
-                return;
-            }
 
             if (stringLibrary.Quotes == null)
                 stringLibrary.Quotes = new List<string>();
@@ -34,20 +24,9 @@ namespace SekiDiscord.Commands
             stringLibrary.SaveLibrary(StringLibrary.LibraryType.Quote);
         }
 
-        public static string PrintQuote(CommandContext e, StringLibrary stringLibrary)
+        public static string PrintQuote(string args, StringLibrary stringLibrary)
         {
             Random r = new Random();
-            string args;
-            string message = string.Empty;
-
-            try
-            {
-                args = e.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch
-            {
-                args = string.Empty;
-            }
 
             if (stringLibrary.Quotes.Count == 0)
                 return string.Empty;
@@ -55,13 +34,14 @@ namespace SekiDiscord.Commands
             //print random
             if (string.IsNullOrWhiteSpace(args))
             {
-                return PrintRandomQuote(e, stringLibrary);
+                return PrintRandomQuote(stringLibrary);
             }
             //Print quote by number
             else if (args.StartsWith("#"))
             {
                 string split = args.Split(new char[] { ' ' }, 2)[0];
                 int number = 0;
+                string message;
 
                 try
                 {
@@ -83,6 +63,7 @@ namespace SekiDiscord.Commands
             {
                 string[] queries = args.Trim().ToLower().Split(' ');
                 List<string> restults = SearchQuotes(queries, stringLibrary);
+                string message = string.Empty;
 
                 if (restults.Count > 0)
                 {
@@ -123,7 +104,7 @@ namespace SekiDiscord.Commands
             return results;
         }
 
-        private static string PrintRandomQuote(CommandContext e, StringLibrary stringLibrary)
+        private static string PrintRandomQuote(StringLibrary stringLibrary)
         {
             Random r = new Random();
             string message;

@@ -36,11 +36,11 @@ namespace SekiDiscord
 
             if (string.Compare(arg.ToLower().Split(new char[] { ' ' }, 2)[0], "add") == 0)  //add
             {
-                Quotes.AddQuote(ctx, stringLibrary);
+                Quotes.AddQuote(arg, stringLibrary);
             }
             else //lookup or random
             {
-                string result = Quotes.PrintQuote(ctx, stringLibrary);
+                string result = Quotes.PrintQuote(arg, stringLibrary);
                 await ctx.RespondAsync(result);
             }
         }
