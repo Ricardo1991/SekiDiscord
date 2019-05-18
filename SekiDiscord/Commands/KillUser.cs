@@ -1,6 +1,4 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
+﻿using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -11,33 +9,12 @@ namespace SekiDiscord.Commands
         private static readonly int MAX_KILLS = 500;
         private static Random r = new Random();
 
-        public static KillResult Kill(MessageCreateEventArgs ctx, StringLibrary stringLibrary, string target)
+        public static KillResult Kill(string author, List<DiscordMember> usersOnline, StringLibrary stringLibrary, string target)
         {
-            string nick = ((DiscordMember)ctx.Message.Author).DisplayName;
-            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
-
-            return KillUsername(target, nick, listU, stringLibrary);
+            return KillUsername(target, author, usersOnline, stringLibrary);
         }
 
-        public static KillResult Kill(CommandContext ctx, StringLibrary stringLibrary)
-        {
-            string nick = ctx.Member.DisplayName;
-            List<DiscordMember> usersOnline = Useful.getOnlineUsers(ctx.Channel.Guild);
-            string args;
-
-            try
-            {
-                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch
-            {
-                args = string.Empty;
-            }
-
-            return KillUsername(args, nick, usersOnline, stringLibrary);
-        }
-
-        private static KillResult KillUsername(string args, string nick, List<DiscordMember> listU, StringLibrary stringLibrary)
+        private static KillResult KillUsername(string args, string author, List<DiscordMember> usersOnline, StringLibrary stringLibrary)
         {
             string target;
             int killID;
@@ -47,7 +24,7 @@ namespace SekiDiscord.Commands
             {
                 if (args.ToLower().Trim() == "la kill")
                 {
-                    return new KillResult(nick + " lost his way", false);
+                    return new KillResult(author + " lost his way", false);
                 }
                 else if (args.ToLower() == "me baby".Trim())
                 {
@@ -56,7 +33,7 @@ namespace SekiDiscord.Commands
                 else
                 {
                     if (string.IsNullOrWhiteSpace(args) || args.ToLower() == "random")
-                        target = listU[r.Next(listU.Count)].DisplayName;
+                        target = usersOnline[r.Next(usersOnline.Count)].DisplayName;
                     else
                         target = args.Trim();
 
@@ -81,7 +58,7 @@ namespace SekiDiscord.Commands
 
                     killString = stringLibrary.Kill[killID];
 
-                    killString = Useful.FillTags(killString, nick.Trim(), target, listU);
+                    killString = Useful.FillTags(killString, author.Trim(), target, usersOnline);
 
                     if (killString.ToLower().Contains("<normal>"))
                     {
@@ -100,35 +77,22 @@ namespace SekiDiscord.Commands
             }
         }
 
-        internal static KillResult KillRandom(CommandContext ctx, StringLibrary stringLibrary)
+        internal static KillResult KillRandom(string args, string author, List<DiscordMember> usersOnline, StringLibrary stringLibrary)
         {
             Random r = new Random();
             string target = "";
             string killString;
-            string args;
-            string nick = ctx.Member.DisplayName;
             KillResult message;
 
-            try
-            {
-                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch
-            {
-                args = string.Empty;
-            }
-
-            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
-
             if (string.IsNullOrWhiteSpace(args) || args.ToLower() == "random")
-                target = listU[r.Next(listU.Count)].DisplayName;
+                target = usersOnline[r.Next(usersOnline.Count)].DisplayName;
             else
                 target = args.Trim();
 
             try
             {
                 killString = stringLibrary.getRandomKillString();
-                killString = Useful.FillTags(killString, nick.Trim(), target, listU).Replace("  ", " ");
+                killString = Useful.FillTags(killString, author.Trim(), target, usersOnline).Replace("  ", " ");
 
                 if (killString.ToLower().Contains("<normal>"))
                 {

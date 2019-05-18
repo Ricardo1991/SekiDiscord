@@ -1,32 +1,21 @@
-﻿using DSharpPlus.CommandsNext;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace SekiDiscord.Commands
 {
     internal class Youtube
     {
-        public static async Task YoutubeSearch(CommandContext ctx)
+        public static string YoutubeSearch(string query)
         {
             string message;
-            string query;
             YoutubeSearch youtubeSearch = new YoutubeSearch();
             YoutubeVideoInfo youtubeVideo = new YoutubeVideoInfo();
 
-            if (string.IsNullOrWhiteSpace(Settings.Default.apikey)) return;
-
-            try
-            {
-                query = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch
-            {
-                query = string.Empty;
-            }
+            if (string.IsNullOrWhiteSpace(Settings.Default.apikey))
+                throw new Exception("No API key for YoutubeSearch");
 
             string getString = "https://www.googleapis.com/youtube/v3/search" + "?key=" + Settings.Default.apikey + "&part=id,snippet" + "&q=" +
                 HttpUtility.UrlEncode(query) + "&maxresults=10&type=video&safeSearch=none";
@@ -59,8 +48,7 @@ namespace SekiDiscord.Commands
                         string duration = YoutubeUseful.ParseDuration(youtubeVideo.items[0].contentDetails.duration);
 
                         message = "https://www.youtube.com/watch?v=" + searchResult.id.videoId;
-                        await ctx.Message.RespondAsync(message);
-                        return;
+                        return message;
                     }
                     catch (Exception ex)
                     {
@@ -69,8 +57,7 @@ namespace SekiDiscord.Commands
                 }
             }
 
-            await ctx.Message.RespondAsync("No Results Found");
-            return;
+            return "No Results Found";
         }
     }
 

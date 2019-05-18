@@ -8,16 +8,15 @@ namespace SekiDiscord.Commands
 {
     internal class Basics
     {
-        public static async Task Roll(CommandContext ctx)
+        public static int Roll(string content)
         {
-            string nick = ctx.Member.DisplayName;
             Random random = new Random();
             string arg = string.Empty;
             int max = 100;
 
             try
             {
-                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
+                arg = content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
                 int parseMax = int.Parse(arg);
 
                 if (parseMax > 0)
@@ -27,14 +26,10 @@ namespace SekiDiscord.Commands
             {
             }
 
-            int number = random.Next(0, max) + 1;
-
-            nick = nick.Replace("\r", "");
-            string message = nick + " rolled a " + number;
-            await ctx.RespondAsync(message);
+            return random.Next(0, max) + 1;
         }
 
-        public static async Task Shuffle(CommandContext ctx)
+        public static string Shuffle(string content)
         {
             string message = string.Empty;
             string arg;
@@ -45,11 +40,11 @@ namespace SekiDiscord.Commands
 
             try
             {
-                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
+                arg = content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
             }
             catch
             {
-                return;
+                return message;
             }
 
             if (arg.Contains(','))
@@ -70,9 +65,8 @@ namespace SekiDiscord.Commands
                     message = message + " " + sList[random];
                     sList.Remove(sList[random]);
                 }
-
-                await ctx.RespondAsync(message);
             }
+            return message;
         }
 
         public static async Task Choose(CommandContext ctx)

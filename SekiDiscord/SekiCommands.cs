@@ -1,7 +1,9 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using SekiDiscord.Commands;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SekiDiscord
@@ -36,11 +38,11 @@ namespace SekiDiscord
 
             if (string.Compare(arg.ToLower().Split(new char[] { ' ' }, 2)[0], "add") == 0)  //add
             {
-                Quotes.AddQuote(arg, stringLibrary);
+                Quotes.AddQuote(arg, StringLibrary);
             }
             else //lookup or random
             {
-                string result = Quotes.PrintQuote(arg, stringLibrary);
+                string result = Quotes.PrintQuote(arg, StringLibrary);
                 await ctx.RespondAsync(result);
             }
         }
@@ -52,7 +54,7 @@ namespace SekiDiscord
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Quote Count Command");
 
-            string result = Quotes.QuoteCount(ctx, stringLibrary);
+            string result = Quotes.QuoteCount(StringLibrary);
             await ctx.RespondAsync(result);
         }
 
@@ -60,7 +62,22 @@ namespace SekiDiscord
         public async Task Kill(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Kill Command");
-            KillUser.KillResult result = KillUser.Kill(ctx, StringLibrary);
+
+            string author = ctx.Member.DisplayName;
+            List<DiscordMember> usersOnline = Useful.getOnlineUsers(ctx.Channel.Guild);
+
+            string args;
+
+            try
+            {
+                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
+            }
+            catch
+            {
+                args = string.Empty;
+            }
+
+            KillUser.KillResult result = KillUser.Kill(author, usersOnline, StringLibrary, args);
 
             switch (result.IsAction)
             {
@@ -78,7 +95,21 @@ namespace SekiDiscord
         public async Task RKill(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "RKill Command");
-            KillUser.KillResult result = KillUser.KillRandom(ctx, StringLibrary);
+
+            string args;
+            string author = ctx.Member.DisplayName;
+            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
+
+            try
+            {
+                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
+            }
+            catch
+            {
+                args = string.Empty;
+            }
+
+            KillUser.KillResult result = KillUser.KillRandom(args, author, listU, StringLibrary);
 
             switch (result.IsAction)
             {
@@ -162,7 +193,14 @@ namespace SekiDiscord
         public async Task Roll(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Roll Command");
-            await Basics.Roll(ctx);
+
+            string nick = ctx.Member.DisplayName;
+            nick = nick.Replace("\r", "");
+
+            int number = Basics.Roll(ctx.Message.Content);
+
+            string message = nick + " rolled a " + number;
+            await ctx.RespondAsync(message);
         }
 
         [Command("shuffle")]
@@ -170,7 +208,10 @@ namespace SekiDiscord
         public async Task Shuffle(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Shuffle Command");
-            await Basics.Shuffle(ctx);
+            string result = Basics.Shuffle(ctx.Message.Content);
+
+            if (!string.IsNullOrWhiteSpace(result))
+                await ctx.RespondAsync(result);
         }
 
         [Command("choose")]
@@ -206,9 +247,9 @@ namespace SekiDiscord
             }
 
             if (string.IsNullOrEmpty(arg)) //lookup or random
-                await Commands.Funk.PrintFunk(ctx, stringLibrary);
+                await Commands.Funk.PrintFunk(ctx, StringLibrary);
             else
-                Commands.Funk.AddFunk(ctx, stringLibrary);
+                Commands.Funk.AddFunk(ctx, StringLibrary);
         }
 
         [Command("poke")]
@@ -225,7 +266,20 @@ namespace SekiDiscord
         public async Task YoutubeSearch(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Youtube Command");
-            await Youtube.YoutubeSearch(ctx);
+
+            string query;
+
+            try
+            {
+                query = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
+
+                string result = Youtube.YoutubeSearch(query);
+
+                await ctx.Message.RespondAsync(result);
+            }
+            catch
+            {
+            }
         }
 
         [Command("nick")]
@@ -233,7 +287,7 @@ namespace SekiDiscord
         public async Task Nick(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Nick Command");
-            await Commands.Nick.NickGen(ctx, stringLibrary);
+            await Commands.Nick.NickGen(ctx, StringLibrary);
         }
 
         [Command("fact")]
@@ -241,7 +295,7 @@ namespace SekiDiscord
         public async Task Fact(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Fact Command");
-            await Commands.Fact.ShowFact(ctx, stringLibrary);
+            await Commands.Fact.ShowFact(ctx, StringLibrary);
         }
 
         [Command("seen")]
@@ -249,7 +303,7 @@ namespace SekiDiscord
         public async Task Seen(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Seen Command");
-            await Commands.Seen.CheckSeen(ctx, stringLibrary);
+            await Commands.Seen.CheckSeen(ctx, StringLibrary);
         }
     }
 }

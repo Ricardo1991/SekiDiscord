@@ -1,5 +1,4 @@
-﻿using DSharpPlus.CommandsNext;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace SekiDiscord.Commands
@@ -114,7 +113,7 @@ namespace SekiDiscord.Commands
             return message;
         }
 
-        public static string QuoteCount(CommandContext e, StringLibrary stringLibrary)
+        public static string QuoteCount(StringLibrary stringLibrary)
         {
             string message = stringLibrary.Quotes.Count.ToString();
             return message;
