@@ -61,7 +61,7 @@ namespace SekiDiscord.Commands
         }
     }
 
-    internal static class YoutubeUseful
+    public static class YoutubeUseful
     {
         public static string GetYoutubeInfoFromID(string id)
         {
