@@ -36,7 +36,11 @@ namespace SekiDiscord.Commands
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i <= text.Length - 1; i++)
                 {
-                    if (i == 0)
+                    if (text.Length == 1) // for single character cases
+                    {
+                        builder.Append("```" + text + "```");
+                    }
+                    else if (i == 0)
                     {
                         builder.Append("```");
                         foreach (char value in text.ToCharArray())
