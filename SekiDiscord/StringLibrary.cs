@@ -45,55 +45,48 @@ namespace SekiDiscord
             return true;
         }
 
-        public bool ReloadLibrary(string name)
+        public bool ReloadLibrary(LibraryType type)
         {
-            switch (name.ToLower())
+            switch (type)
             {
-                case "all":
+                case LibraryType.All:
                     ReloadLibrary();
                     break;
 
-                case "rules":
-                case "rule":
-                    Rules = ReadRules();
-                    break;
-
-                case "nick":
-                case "nicks":
-                    NickGenStrings = ReadNickGen();
-                    break;
-
-                case "trivia":
-                case "trivias":
-                    Trivia = ReadTrivia();
-                    break;
-
-                case "kills":
-                case "kill":
-                    Kill = ReadKills();
-                    break;
-
-                case "facts":
-                case "fact":
-                    Facts = ReadFacts();
-                    break;
-
-                case "quotes":
-                case "quote":
+                case LibraryType.Quote:
                     Quotes = ReadQuotes();
                     break;
 
-                case "funk":
+                case LibraryType.Funk:
                     Funk = ReadFunk();
                     break;
 
-                case "pings":
-                case "ping":
+                case LibraryType.Ping:
                     Pings = ReadPings();
                     break;
 
-                case "seen":
+                case LibraryType.Seen:
                     Seen = ReadSeen();
+                    break;
+
+                case LibraryType.Rules:
+                    Rules = ReadRules();
+                    break;
+
+                case LibraryType.Nick:
+                    NickGenStrings = ReadNickGen();
+                    break;
+
+                case LibraryType.Trivia:
+                    Trivia = ReadTrivia();
+                    break;
+
+                case LibraryType.Kill:
+                    Kill = ReadKills();
+                    break;
+
+                case LibraryType.Fact:
+                    Facts = ReadFacts();
                     break;
 
                 default:
