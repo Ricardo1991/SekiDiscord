@@ -13,7 +13,7 @@ namespace SekiTest
 
             SekiDiscord.Commands.Quotes.AddQuote("add <Me> Quote with 'add'", stringLibrary);
 
-            Assert.True(string.Compare(SekiDiscord.Commands.Quotes.PrintQuote("#" + (quoteSize + 1), stringLibrary), "<Me> Quote with 'add'") == 0);
+            Assert.True(string.Compare(SekiDiscord.Commands.Quotes.PrintQuote("#" + (quoteSize + 1), stringLibrary), "<Me> Quote with 'add'", System.StringComparison.Ordinal) == 0);
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace SekiTest
 
             SekiDiscord.Commands.Quotes.AddQuote("<Me> Second quote", stringLibrary);
 
-            Assert.True(string.Compare(SekiDiscord.Commands.Quotes.PrintQuote("#" + (quoteSize + 1), stringLibrary), "<Me> Second quote") == 0);
+            Assert.True(string.Compare(SekiDiscord.Commands.Quotes.PrintQuote("#" + (quoteSize + 1), stringLibrary), "<Me> Second quote", System.StringComparison.Ordinal) == 0);
         }
     }
 }

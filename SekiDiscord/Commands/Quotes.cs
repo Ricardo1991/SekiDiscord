@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SekiDiscord.Commands
 {
-    public class Quotes
+    public static class Quotes
     {
         public static void AddQuote(string args, StringLibrary stringLibrary)
         {

@@ -148,12 +148,12 @@ namespace SekiDiscord
                     }
                     else
                     {
-                        await Think(e, StringLib, botName);
+                        await Think(e, botName);
                     }
                 }
                 else if (e.Message.Content.EndsWith(botName, StringComparison.OrdinalIgnoreCase))
                 {
-                    await Think(e, StringLib, botName);
+                    await Think(e, botName);
                 }
 
                 //waifunator
@@ -214,7 +214,7 @@ namespace SekiDiscord
             await GetDiscordClient.DisconnectAsync();
         }
 
-        private static async Task Think(MessageCreateEventArgs e, StringLibrary stringLib, string bot)
+        private static async Task Think(MessageCreateEventArgs e, string bot)
         {
             if (string.IsNullOrWhiteSpace(Settings.Default.CleverbotAPI))
                 return;
@@ -224,7 +224,7 @@ namespace SekiDiscord
             //Show the "bot is typing..." message
             await e.Channel.TriggerTypingAsync();
 
-            string response = await BotTalk.BotThinkAsync(input, stringLib, bot);
+            string response = await BotTalk.BotThinkAsync(input, bot);
             await e.Message.RespondAsync(response);
         }
     }

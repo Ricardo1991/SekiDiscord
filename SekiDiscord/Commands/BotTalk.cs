@@ -8,7 +8,7 @@ namespace SekiDiscord.Commands
     {
         static private CleverbotSession cleverbotSession = null;
 
-        public static async Task<string> BotThinkAsync(string input, StringLibrary stringLibrary, string botName)
+        public static async Task<string> BotThinkAsync(string input, string botName)
         {
             //Remove bot name from message input
             if (input.StartsWith(botName, StringComparison.OrdinalIgnoreCase))

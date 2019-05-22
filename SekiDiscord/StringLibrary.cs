@@ -142,7 +142,7 @@ namespace SekiDiscord
             return true;
         }
 
-        private Dictionary<ulong, HashSet<string>> ReadPings()
+        private static Dictionary<ulong, HashSet<string>> ReadPings()
         {
             Dictionary<ulong, HashSet<string>> ping = new Dictionary<ulong, HashSet<string>>();
 
@@ -164,7 +164,7 @@ namespace SekiDiscord
             return ping;
         }
 
-        private Dictionary<string, DateTime> ReadSeen()
+        private static Dictionary<string, DateTime> ReadSeen()
         {
             Dictionary<string, DateTime> seen = new Dictionary<string, DateTime>();
 
@@ -186,7 +186,7 @@ namespace SekiDiscord
             return seen;
         }
 
-        private void SavePings(Dictionary<ulong, HashSet<string>> ping)
+        private static void SavePings(Dictionary<ulong, HashSet<string>> ping)
         {
             try
             {
@@ -201,7 +201,7 @@ namespace SekiDiscord
             }
         }
 
-        private void SaveSeen(Dictionary<string, DateTime> seen)
+        private static void SaveSeen(Dictionary<string, DateTime> seen)
         {
             try
             {
@@ -255,7 +255,7 @@ namespace SekiDiscord
             return kills;
         }
 
-        internal string getRandomKillString()
+        internal string GetRandomKillString()
         {
             return Killgen.RebuildPhrase(Killgen.Walk());
         }
@@ -296,7 +296,7 @@ namespace SekiDiscord
             return facts;
         }
 
-        private List<string> ReadRules()
+        private static List<string> ReadRules()
         {
             List<string> rules = new List<string>();
             if (File.Exists("TextFiles/rules.txt"))
@@ -324,7 +324,7 @@ namespace SekiDiscord
             return rules;
         }
 
-        private List<string> ReadTrivia() //Reads the Trivia stuff
+        private static List<string> ReadTrivia() //Reads the Trivia stuff
         {
             List<string> trivia = new List<string>();
 
@@ -353,7 +353,7 @@ namespace SekiDiscord
             return trivia;
         }
 
-        private List<string> ReadNickGen()//These are for the Nick gen
+        private static List<string> ReadNickGen()//These are for the Nick gen
         {
             List<string> nickGenStrings = new List<string>();
             if (File.Exists("TextFiles/nickGen.txt"))
@@ -381,7 +381,7 @@ namespace SekiDiscord
             return nickGenStrings;
         }
 
-        private List<string> ReadQuotes()
+        private static List<string> ReadQuotes()
         {
             List<string> quotes = new List<string>();
 
@@ -404,7 +404,7 @@ namespace SekiDiscord
             return quotes;
         }
 
-        private void SaveQuotes(List<string> quotes)
+        private static void SaveQuotes(List<string> quotes)
         {
             using (StreamWriter newTask = new StreamWriter("TextFiles/quotes.txt", false))
             {
@@ -415,7 +415,7 @@ namespace SekiDiscord
             }
         }
 
-        private List<string> ReadFunk()
+        private static List<string> ReadFunk()
         {
             List<string> funk = new List<string>();
 
@@ -438,7 +438,7 @@ namespace SekiDiscord
             return funk;
         }
 
-        private void SaveFunk(List<string> funk)
+        private static void SaveFunk(List<string> funk)
         {
             using (StreamWriter newTask = new StreamWriter("TextFiles/Funk.txt", false))
             {

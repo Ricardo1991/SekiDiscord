@@ -6,7 +6,7 @@ namespace SekiDiscord.Commands
 {
     internal class KillUser
     {
-        private static readonly int MAX_KILLS = 500;
+        private const int MAX_KILLS = 500;
         private static Random r = new Random();
 
         public static KillResult Kill(string author, List<DiscordMember> usersOnline, StringLibrary stringLibrary, string target)
@@ -91,7 +91,7 @@ namespace SekiDiscord.Commands
 
             try
             {
-                killString = stringLibrary.getRandomKillString();
+                killString = stringLibrary.GetRandomKillString();
                 killString = Useful.FillTags(killString, author.Trim(), target, usersOnline).Replace("  ", " ");
 
                 if (killString.ToLower().Contains("<normal>"))

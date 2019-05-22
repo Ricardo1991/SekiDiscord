@@ -126,7 +126,7 @@ namespace MarkovSharp
                     previous = tokens[tokens.Length - j];
                     lastCol.Add(previous);
                 }
-                catch (IndexOutOfRangeException e)
+                catch (IndexOutOfRangeException)
                 {
                     previous = GetPrepadUnigram();
                     lastCol.Add(previous);
@@ -311,7 +311,7 @@ namespace MarkovSharp
             {
                 chosen = Chain.GetValuesForKey(key);
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException)
             { }
 
             return chosen;

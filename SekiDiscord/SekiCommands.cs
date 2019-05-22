@@ -10,13 +10,11 @@ namespace SekiDiscord
 {
     public class SekiCommands
     {
-        private static StringLibrary stringLibrary;
-
-        internal StringLibrary StringLibrary { get => stringLibrary; set => stringLibrary = value; }
+        internal static StringLibrary StringLibrary { get; set; }
 
         public static void SetStringLibrary(StringLibrary lib)
         {
-            stringLibrary = lib;
+            StringLibrary = lib;
         }
 
         [Command("quote")]
