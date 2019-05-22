@@ -1,6 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using SekiDiscord.Commands;
 using System;
 using System.Threading.Tasks;
@@ -147,12 +148,12 @@ namespace SekiDiscord
                     }
                     else
                     {
-                        await BotTalk.BotThink(e, StringLib, botName);
+                        await Think(e, StringLib, botName);
                     }
                 }
                 else if (e.Message.Content.EndsWith(botName, StringComparison.OrdinalIgnoreCase))
                 {
-                    await BotTalk.BotThink(e, StringLib, botName);
+                    await Think(e, StringLib, botName);
                 }
 
                 //waifunator
@@ -211,6 +212,20 @@ namespace SekiDiscord
             }
 
             await GetDiscordClient.DisconnectAsync();
+        }
+
+        private static async Task Think(MessageCreateEventArgs e, StringLibrary stringLib, string bot)
+        {
+            if (string.IsNullOrWhiteSpace(Settings.Default.CleverbotAPI))
+                return;
+
+            string input = e.Message.Content;
+
+            //Show the "bot is typing..." message
+            await e.Channel.TriggerTypingAsync();
+
+            string response = await BotTalk.BotThinkAsync(input, stringLib, bot);
+            await e.Message.RespondAsync(response);
         }
     }
 }

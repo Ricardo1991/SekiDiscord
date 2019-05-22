@@ -1,8 +1,6 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
+﻿using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SekiDiscord.Commands
 {
@@ -69,52 +67,35 @@ namespace SekiDiscord.Commands
             return message;
         }
 
-        public static async Task Choose(CommandContext ctx)
+        public static string Choose(string arg, string user)
         {
-            string message = string.Empty;
-            string arg;
-            string user = ctx.Member.DisplayName;
-
             Random r = new Random();
             string[] choices;
-            List<string> sList = new List<string>();
-
-            try
-            {
-                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
-            }
-            catch
-            {
-                return;
-            }
 
             if (arg.Contains(','))
                 choices = arg.Split(new char[] { ',' });
             else
                 choices = arg.Split(new char[] { ' ' });
 
-            if (choices.Length != 0)
-            {
-                int random = r.Next(choices.Length);
-                message = user + ": " + choices[random].Trim();
-                await ctx.RespondAsync(message);
-            }
+            if (choices.Length == 0)
+                throw new Exception("There are no choices.");
+
+            int random = r.Next(choices.Length);
+            return user + ": " + choices[random].Trim();
         }
 
-        public static async Task PokeRandom(CommandContext ctx)
+        public static string PokeRandom(List<DiscordMember> listU, string user)
         {
             int userNumber;
             Random rnd = new Random();
-            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
 
             do
             {
                 userNumber = rnd.Next(listU.Count);
             }
-            while (listU[userNumber].DisplayName == ctx.Member.DisplayName);
+            while (listU[userNumber].DisplayName == user);
 
-            string message = "*pokes " + listU[userNumber].DisplayName + "*";
-            await ctx.RespondAsync(message);
+            return "*pokes " + listU[userNumber].DisplayName + "*";
         }
     }
 }

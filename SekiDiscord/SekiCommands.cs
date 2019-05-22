@@ -219,12 +219,25 @@ namespace SekiDiscord
         public async Task Choose(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Choose Command");
-            await Basics.Choose(ctx);
+
+            string arg;
+            string user = ctx.Member.DisplayName;
+
+            try
+            {
+                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
+                string result = Basics.Choose(arg, user);
+                await ctx.RespondAsync(result);
+            }
+            catch
+            {
+                return;
+            }
         }
 
         [Command("square")]
         [Description("square a word")]
-        [Aliases("s")]                          // alternative names for the command
+        [Aliases("s")]
         public async Task SquareText(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Square Command");
@@ -257,7 +270,12 @@ namespace SekiDiscord
         public async Task Poke(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Poke Command");
-            await Basics.PokeRandom(ctx);
+
+            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
+            string user = ctx.Member.DisplayName;
+
+            string result = Basics.PokeRandom(listU, user);
+            await ctx.RespondAsync(result);
         }
 
         [Command("youtube")]
