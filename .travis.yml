@@ -7,4 +7,4 @@ install:
 script:
   - dotnet restore
   - msbuild /p:Configuration=Release SekiDiscord.sln
-  - mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./SekiTest/bin/Release/netcoreapp2.1/SekiTest.dll
+  - dotnet test
