@@ -82,7 +82,7 @@ namespace SekiDiscord.Commands
                 message = "The user " + args + " was last seen " + timeDiff;
             }
 
-            await ctx.Message.RespondAsync(message);
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
     }
 }

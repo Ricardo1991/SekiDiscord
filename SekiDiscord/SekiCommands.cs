@@ -41,7 +41,7 @@ namespace SekiDiscord
             else //lookup or random
             {
                 string result = Quotes.PrintQuote(arg, StringLibrary);
-                await ctx.RespondAsync(result);
+                await ctx.RespondAsync(result).ConfigureAwait(false);
             }
         }
 
@@ -53,7 +53,7 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Quote Count Command");
 
             string result = Quotes.QuoteCount(StringLibrary);
-            await ctx.RespondAsync(result);
+            await ctx.RespondAsync(result).ConfigureAwait(false);
         }
 
         [Command("kill")]
@@ -80,11 +80,11 @@ namespace SekiDiscord
             switch (result.IsAction)
             {
                 case true:
-                    await ctx.RespondAsync("*" + result.Result + "*");
+                    await ctx.RespondAsync("*" + result.Result + "*").ConfigureAwait(false);
                     break;
 
                 case false:
-                    await ctx.RespondAsync(result.Result);
+                    await ctx.RespondAsync(result.Result).ConfigureAwait(false);
                     break;
             }
         }
@@ -112,11 +112,11 @@ namespace SekiDiscord
             switch (result.IsAction)
             {
                 case true:
-                    await ctx.RespondAsync("*" + result.Result.Trim() + "*");
+                    await ctx.RespondAsync("*" + result.Result.Trim() + "*").ConfigureAwait(false);
                     break;
 
                 case false:
-                    await ctx.RespondAsync(result.Result);
+                    await ctx.RespondAsync(result.Result).ConfigureAwait(false);
                     break;
             }
         }
@@ -134,7 +134,7 @@ namespace SekiDiscord
             if (CustomCommand.CommandExists(splits[0], StringLibrary.CustomCommands) == true)
             {
                 message = "Command " + splits[0] + " already exists.";
-                await ctx.RespondAsync(message);
+                await ctx.RespondAsync(message).ConfigureAwait(false);
             }
 
             StringLibrary.CustomCommands.Add(new CustomCommand(nick, splits[1], splits[2]));
@@ -156,7 +156,7 @@ namespace SekiDiscord
                 CustomCommand.RemoveCommandByName(splits[1], StringLibrary.CustomCommands);
                 CustomCommand.SaveCustomCommands(StringLibrary.CustomCommands);
                 string message = "Command " + splits[1] + " removed.";
-                await ctx.RespondAsync(message);
+                await ctx.RespondAsync(message).ConfigureAwait(false);
             }
         }
 
@@ -182,7 +182,7 @@ namespace SekiDiscord
 
             if (!string.IsNullOrWhiteSpace(msg))
             {
-                await PingUser.PingControl(ctx, StringLibrary, cmd, args);
+                await PingUser.PingControl(ctx, StringLibrary, cmd, args).ConfigureAwait(false);
             }
         }
 
@@ -198,7 +198,7 @@ namespace SekiDiscord
             int number = Basics.Roll(ctx.Message.Content);
 
             string message = nick + " rolled a " + number;
-            await ctx.RespondAsync(message);
+            await ctx.RespondAsync(message).ConfigureAwait(false);
         }
 
         [Command("shuffle")]
@@ -209,7 +209,7 @@ namespace SekiDiscord
             string result = Basics.Shuffle(ctx.Message.Content);
 
             if (!string.IsNullOrWhiteSpace(result))
-                await ctx.RespondAsync(result);
+                await ctx.RespondAsync(result).ConfigureAwait(false);
         }
 
         [Command("choose")]
@@ -225,7 +225,7 @@ namespace SekiDiscord
             {
                 arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
                 string result = Basics.Choose(arg, user);
-                await ctx.RespondAsync(result);
+                await ctx.RespondAsync(result).ConfigureAwait(false);
             }
             catch
             {
@@ -239,7 +239,7 @@ namespace SekiDiscord
         public async Task SquareText(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Square Command");
-            await Square.SquareText(ctx);
+            await Square.SquareText(ctx).ConfigureAwait(false);
         }
 
         [Command("funk")]
@@ -258,7 +258,7 @@ namespace SekiDiscord
             }
 
             if (string.IsNullOrEmpty(arg)) //lookup or random
-                await Commands.Funk.PrintFunk(ctx, StringLibrary);
+                await Commands.Funk.PrintFunk(ctx, StringLibrary).ConfigureAwait(false);
             else
                 Commands.Funk.AddFunk(ctx, StringLibrary);
         }
@@ -273,7 +273,7 @@ namespace SekiDiscord
             string user = ctx.Member.DisplayName;
 
             string result = Basics.PokeRandom(listU, user);
-            await ctx.RespondAsync(result);
+            await ctx.RespondAsync(result).ConfigureAwait(false);
         }
 
         [Command("youtube")]
@@ -291,7 +291,7 @@ namespace SekiDiscord
 
                 string result = Youtube.YoutubeSearch(query);
 
-                await ctx.Message.RespondAsync(result);
+                await ctx.Message.RespondAsync(result).ConfigureAwait(false);
             }
             catch
             {
@@ -303,7 +303,7 @@ namespace SekiDiscord
         public async Task Nick(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Nick Command");
-            await Commands.Nick.NickGen(ctx, StringLibrary);
+            await Commands.Nick.NickGen(ctx, StringLibrary).ConfigureAwait(false);
         }
 
         [Command("fact")]
@@ -311,7 +311,7 @@ namespace SekiDiscord
         public async Task Fact(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Fact Command");
-            await Commands.Fact.ShowFact(ctx, StringLibrary);
+            await Commands.Fact.ShowFact(ctx, StringLibrary).ConfigureAwait(false);
         }
 
         [Command("seen")]
@@ -319,7 +319,7 @@ namespace SekiDiscord
         public async Task Seen(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Seen Command");
-            await Commands.Seen.CheckSeen(ctx, StringLibrary);
+            await Commands.Seen.CheckSeen(ctx, StringLibrary).ConfigureAwait(false);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace SekiDiscord.Commands
             //Remove bot name from message input
             if (input.StartsWith(botName, StringComparison.OrdinalIgnoreCase))
             {
-                input = input.Substring(input.IndexOf(',') + 1).Trim();
+                input = input.Substring(input.IndexOf(',', StringComparison.OrdinalIgnoreCase) + 1).Trim();
             }
             else if (input.TrimEnd().EndsWith(botName, StringComparison.OrdinalIgnoreCase))
             {
@@ -25,7 +25,7 @@ namespace SekiDiscord.Commands
                 if (cleverbotSession == null)
                     cleverbotSession = new CleverbotSession(Settings.Default.CleverbotAPI);
 
-                CleverbotResponse answer = await cleverbotSession.GetResponseAsync(input);
+                CleverbotResponse answer = await cleverbotSession.GetResponseAsync(input).ConfigureAwait(false);
                 return answer.Response;
             }
             catch

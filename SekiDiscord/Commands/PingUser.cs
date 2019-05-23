@@ -66,11 +66,11 @@ namespace SekiDiscord.Commands
                         {
                             stringBuilder.Append("[" + ping + "] ");
                         }
-                        await Program.DMUser(discordUser, stringBuilder.ToString().Trim());
+                        await Program.DMUser(discordUser, stringBuilder.ToString().Trim()).ConfigureAwait(false);
                     }
                     else if (!stringLibrary.Pings.ContainsKey(username))
                     {
-                        await e.RespondAsync("You have no pings saved :(");
+                        await e.RespondAsync("You have no pings saved :(").ConfigureAwait(false);
                     }
                     break;
             }
@@ -86,7 +86,7 @@ namespace SekiDiscord.Commands
 
         public static async Task SendPings(MessageCreateEventArgs e, StringLibrary stringLibrary)
         {
-            DiscordChannel channel = await Program.GetDiscordClient.GetChannelAsync(Settings.Default.ping_channel_id); //get channel from channel id
+            DiscordChannel channel = await Program.GetDiscordClient.GetChannelAsync(Settings.Default.ping_channel_id).ConfigureAwait(false); //get channel from channel id
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.ChannelId != Settings.Default.ping_channel_id)
             {
@@ -111,7 +111,7 @@ namespace SekiDiscord.Commands
                         author_nickname = e.Message.Author.Username;
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.Append(mentions + "at " + e.Message.Channel.Mention + "\n" + "<" + author_nickname + "> " + e.Message.Content);
-                    await Program.GetDiscordClient.SendMessageAsync(channel, stringBuilder.ToString());
+                    await Program.GetDiscordClient.SendMessageAsync(channel, stringBuilder.ToString()).ConfigureAwait(false);
                 }
             }
         }

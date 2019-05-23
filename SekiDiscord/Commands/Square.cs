@@ -28,7 +28,7 @@ namespace SekiDiscord.Commands
             if (text.Length > MAX_TEXT)
             {
                 string message = "_farts on " + user + "_";
-                await ctx.RespondAsync(message);
+                await ctx.RespondAsync(message).ConfigureAwait(false);
                 return;
             }
             else
@@ -64,7 +64,7 @@ namespace SekiDiscord.Commands
                 }
                 string msg = builder.ToString();
                 string message = msg.ToUpper();
-                await ctx.RespondAsync(message);
+                await ctx.RespondAsync(message).ConfigureAwait(false);
             }
         }
     }

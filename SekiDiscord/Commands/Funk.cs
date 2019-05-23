@@ -14,7 +14,7 @@ namespace SekiDiscord.Commands
             Random r = new Random();
             int i = r.Next(stringLibrary.Funk.Count);
 
-            await ctx.Message.RespondAsync(stringLibrary.Funk[i]);
+            await ctx.Message.RespondAsync(stringLibrary.Funk[i]).ConfigureAwait(false);
         }
 
         public static void AddFunk(CommandContext ctx, StringLibrary stringLibrary)

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Web;
@@ -35,7 +36,7 @@ namespace SekiDiscord.Commands
 
             foreach (var searchResult in youtubeSearch.items)
             {
-                if (searchResult.id.kind.ToLower() == "youtube#video")
+                if (searchResult.id.kind.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "youtube#video")
                 {
                     try
                     {
@@ -68,42 +69,42 @@ namespace SekiDiscord.Commands
             string temp = "";
             int hours = 0, minutes = 0, seconds = 0;
 
-            duration = duration.Replace("PT", string.Empty);
+            duration = duration.Replace("PT", string.Empty, StringComparison.OrdinalIgnoreCase);
 
             for (int i = 0; i < duration.Length; i++)
             {
                 if (duration[i] != 'H' && duration[i] != 'M' && duration[i] != 'S')
                 {
-                    temp = temp + duration[i];
+                    temp += duration[i];
                 }
                 else
                     switch (duration[i])
                     {
                         case 'H':
-                            hours = Convert.ToInt32(temp);
+                            hours = Convert.ToInt32(temp, CultureInfo.CreateSpecificCulture("en-GB"));
                             temp = string.Empty;
                             break;
 
                         case 'M':
-                            minutes = Convert.ToInt32(temp);
+                            minutes = Convert.ToInt32(temp, CultureInfo.CreateSpecificCulture("en-GB"));
                             temp = string.Empty;
                             break;
 
                         case 'S':
-                            seconds = Convert.ToInt32(temp);
+                            seconds = Convert.ToInt32(temp, CultureInfo.CreateSpecificCulture("en-GB"));
                             temp = string.Empty;
                             break;
                     }
             }
 
             if (hours > 0)
-                return hours.ToString() + ":" + minutes.ToString("00") + ":" + seconds.ToString("00");
+                return hours.ToString(CultureInfo.CreateSpecificCulture("en-GB")) + ":" + minutes.ToString("00", CultureInfo.CreateSpecificCulture("en-GB")) + ":" + seconds.ToString("00", CultureInfo.CreateSpecificCulture("en-GB"));
             else
-                return minutes.ToString() + ":" + seconds.ToString("00");
+                return minutes.ToString(CultureInfo.CreateSpecificCulture("en-GB")) + ":" + seconds.ToString("00", CultureInfo.CreateSpecificCulture("en-GB"));
         }
     }
 
-    public class YoutubeSearch
+    internal class YoutubeSearch
     {
         public string kind { get; set; }
         public string etag { get; set; }
@@ -151,17 +152,17 @@ namespace SekiDiscord.Commands
 
         public class Default
         {
-            public System.Uri url { get; set; }
+            public Uri url { get; set; }
         }
 
         public class Medium
         {
-            public System.Uri url { get; set; }
+            public Uri url { get; set; }
         }
 
         public class High
         {
-            public System.Uri url { get; set; }
+            public Uri url { get; set; }
         }
     }
 
@@ -189,7 +190,7 @@ namespace SekiDiscord.Commands
 
             public class Snippet
             {
-                public System.DateTime publishedAt { get; set; }
+                public DateTime publishedAt { get; set; }
                 public string channelId { get; set; }
                 public string title { get; set; }
                 public string description { get; set; }
@@ -209,35 +210,35 @@ namespace SekiDiscord.Commands
 
                 public class Default
                 {
-                    public System.Uri url { get; set; }
+                    public Uri url { get; set; }
                     public int width { get; set; }
                     public int height { get; set; }
                 }
 
                 public class Medium
                 {
-                    public System.Uri url { get; set; }
+                    public Uri url { get; set; }
                     public int width { get; set; }
                     public int height { get; set; }
                 }
 
                 public class High
                 {
-                    public System.Uri url { get; set; }
+                    public Uri url { get; set; }
                     public int width { get; set; }
                     public int height { get; set; }
                 }
 
                 public class Standard
                 {
-                    public System.Uri url { get; set; }
+                    public Uri url { get; set; }
                     public int width { get; set; }
                     public int height { get; set; }
                 }
 
                 public class Maxres
                 {
-                    public System.Uri url { get; set; }
+                    public Uri url { get; set; }
                     public int width { get; set; }
                     public int height { get; set; }
                 }

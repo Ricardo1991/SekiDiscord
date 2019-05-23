@@ -27,7 +27,7 @@ namespace SekiDiscord.Commands
             if (stringLibrary.NickGenStrings.Count < 2)
             {
                 message = "Nickname generator was not initialized properly";
-                await ctx.RespondAsync(message);
+                await ctx.RespondAsync(message).ConfigureAwait(false);
                 return;
             }
 
@@ -59,7 +59,7 @@ namespace SekiDiscord.Commands
             else
                 message = nick + " generated the nick " + nick_;
 
-            await ctx.RespondAsync(message);
+            await ctx.RespondAsync(message).ConfigureAwait(false);
         }
     }
 

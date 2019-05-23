@@ -63,7 +63,7 @@ namespace SekiDiscord.Commands
 
             factString = Useful.FillTags(factString, nick.Trim(), target, listU);
 
-            await ctx.RespondAsync(factString);
+            await ctx.RespondAsync(factString).ConfigureAwait(false);
         }
     }
 }
