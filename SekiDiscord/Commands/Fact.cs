@@ -15,7 +15,7 @@ namespace SekiDiscord.Commands
             string target = "";
             string factString;
             int factID;
-            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
+            List<string> listU = Useful.GetOnlineNames(ctx.Channel.Guild);
             int MAX_FACTS = 300;
             string nick = ctx.Member.DisplayName;
 
@@ -36,7 +36,7 @@ namespace SekiDiscord.Commands
                 return;
 
             if (string.IsNullOrWhiteSpace(args) || args.ToLower() == "random")
-                target = listU[r.Next(listU.Count)].DisplayName;
+                target = listU[r.Next(listU.Count)];
             else
                 target = args.Trim();
 

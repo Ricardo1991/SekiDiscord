@@ -2,6 +2,7 @@
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -79,7 +80,7 @@ namespace SekiDiscord.Commands
 
         public static HashSet<ulong> GetPingedUsers(MessageCreateEventArgs e, StringLibrary stringLibrary)
         {
-            string message = e.Message.Content.ToLower();
+            string message = e.Message.Content.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
             HashSet<ulong> pinged_users = stringLibrary.Pings.Where(kvp => kvp.Value.Any(value => Regex.IsMatch(message, @"^.*\b" + value + @"\b.*$"))).Select(kvp => kvp.Key).ToHashSet(); // what the fuck, but it works
             return pinged_users;
         }

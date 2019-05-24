@@ -1,20 +1,21 @@
 ﻿using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace SekiDiscord.Commands
 {
     internal class KillUser
     {
         private const int MAX_KILLS = 500;
-        private static Random r = new Random();
+        private static readonly Random r = new Random();
 
-        public static KillResult Kill(string author, List<DiscordMember> usersOnline, StringLibrary stringLibrary, string target)
+        public static KillResult Kill(string author, List<string> usersOnline, StringLibrary stringLibrary, string target)
         {
             return KillUsername(target, author, usersOnline, stringLibrary);
         }
 
-        private static KillResult KillUsername(string args, string author, List<DiscordMember> usersOnline, StringLibrary stringLibrary)
+        private static KillResult KillUsername(string args, string author, List<string> usersOnline, StringLibrary stringLibrary)
         {
             string target;
             int killID;
@@ -22,18 +23,18 @@ namespace SekiDiscord.Commands
 
             try
             {
-                if (args.ToLower().Trim() == "la kill")
+                if (args.ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Trim() == "la kill")
                 {
                     return new KillResult(author + " lost his way", false);
                 }
-                else if (args.ToLower() == "me baby".Trim())
+                else if (args.ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Trim() == "me baby")
                 {
                     return new KillResult("WASSA WASSA https://www.youtube.com/watch?v=Yk8DAb99QeQ", false);
                 }
                 else
                 {
-                    if (string.IsNullOrWhiteSpace(args) || args.ToLower() == "random")
-                        target = usersOnline[r.Next(usersOnline.Count)].DisplayName;
+                    if (string.IsNullOrWhiteSpace(args) || args.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "random")
+                        target = usersOnline[r.Next(usersOnline.Count)];
                     else
                         target = args.Trim();
 
@@ -60,9 +61,9 @@ namespace SekiDiscord.Commands
 
                     killString = Useful.FillTags(killString, author.Trim(), target, usersOnline);
 
-                    if (killString.ToLower().Contains("<normal>"))
+                    if (killString.Contains("<normal>", StringComparison.OrdinalIgnoreCase))
                     {
-                        killString = killString.Replace("<normal>", string.Empty).Replace("<NORMAL>", string.Empty);
+                        killString = killString.Replace("<normal>", string.Empty, StringComparison.OrdinalIgnoreCase);
                         return new KillResult(killString, false);
                     }
                     else
@@ -77,7 +78,7 @@ namespace SekiDiscord.Commands
             }
         }
 
-        internal static KillResult KillRandom(string args, string author, List<DiscordMember> usersOnline, StringLibrary stringLibrary)
+        internal static KillResult KillRandom(string args, string author, List<string> usersOnline, StringLibrary stringLibrary)
         {
             Random r = new Random();
             string target = "";
@@ -85,7 +86,7 @@ namespace SekiDiscord.Commands
             KillResult message;
 
             if (string.IsNullOrWhiteSpace(args) || args.ToLower() == "random")
-                target = usersOnline[r.Next(usersOnline.Count)].DisplayName;
+                target = usersOnline[r.Next(usersOnline.Count)];
             else
                 target = args.Trim();
 

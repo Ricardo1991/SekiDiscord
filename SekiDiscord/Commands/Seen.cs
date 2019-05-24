@@ -2,7 +2,7 @@
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using System;
-using System.Threading.Tasks;
+using System.Globalization;
 
 namespace SekiDiscord.Commands
 {
@@ -10,15 +10,15 @@ namespace SekiDiscord.Commands
     {
         public static void MarkUserSeen(MessageCreateEventArgs e, StringLibrary stringLibrary)
         {
-            string username = ((DiscordMember)e.Message.Author).DisplayName.ToLower();
+            string username = ((DiscordMember)e.Message.Author).DisplayName.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
 
-            if (!stringLibrary.Seen.ContainsKey(username))
-            {
-                stringLibrary.Seen.Add(username, DateTime.UtcNow);
-            }
-            else if (stringLibrary.Seen.ContainsKey(username))
+            if (stringLibrary.Seen.ContainsKey(username))
             {
                 stringLibrary.Seen[username] = DateTime.UtcNow;
+            }
+            else
+            {
+                stringLibrary.Seen.Add(username, DateTime.UtcNow);
             }
 
             stringLibrary.SaveLibrary(StringLibrary.LibraryType.Seen);
@@ -26,39 +26,27 @@ namespace SekiDiscord.Commands
 
         private static DateTime GetUserSeenUTC(string nick, StringLibrary stringLibrary)
         {
-            string user = nick.ToLower();
+            string user = nick.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
             if (stringLibrary.Seen.ContainsKey(user))
             {
                 return stringLibrary.Seen[user];
             }
             else
-                return new DateTime(0);
+                throw new UserNotSeenException("The user " + user + " has not been seen yet, or an error has occured");
         }
 
-        public static async Task CheckSeen(CommandContext ctx, StringLibrary stringLibrary)
+        public static string CheckSeen(CommandContext ctx, StringLibrary stringLibrary)
         {
-            string args;
-
-            try
-            {
-                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch
-            {
-                args = string.Empty;
-            }
-
-            string message;
             DateTime seenTime;
             DateTime now = DateTime.UtcNow;
             TimeSpan diff;
 
-            seenTime = GetUserSeenUTC(args, stringLibrary);
+            string args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
 
-            if (seenTime.CompareTo(new DateTime(0)) == 0)
-                message = "The user has not been seen yet, or an error has occured";
-            else
+            try
             {
+                seenTime = GetUserSeenUTC(args, stringLibrary);
+
                 diff = now.Subtract(seenTime);
                 string timeDiff = string.Empty;
 
@@ -79,10 +67,27 @@ namespace SekiDiscord.Commands
                 else
                     timeDiff += diff.Minutes + " minutes ago";
 
-                message = "The user " + args + " was last seen " + timeDiff;
+                return "The user " + args + " was last seen " + timeDiff;
+            }
+            catch (UserNotSeenException ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        public class UserNotSeenException : Exception
+        {
+            public UserNotSeenException()
+            {
             }
 
-            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+            public UserNotSeenException(string user) : base(user)
+            {
+            }
+
+            public UserNotSeenException(string message, Exception innerException) : base(message, innerException)
+            {
+            }
         }
     }
 }

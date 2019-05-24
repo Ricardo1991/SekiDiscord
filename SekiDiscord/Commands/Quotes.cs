@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace SekiDiscord.Commands
 {
@@ -36,15 +37,14 @@ namespace SekiDiscord.Commands
                 return PrintRandomQuote(stringLibrary);
             }
             //Print quote by number
-            else if (args.StartsWith("#"))
+            else if (args.StartsWith("#", StringComparison.OrdinalIgnoreCase))
             {
                 string split = args.Split(new char[] { ' ' }, 2)[0];
-                int number = 0;
                 string message;
 
                 try
                 {
-                    number = Convert.ToInt32(split.Replace("#", string.Empty));
+                    int number = Convert.ToInt32(split.TrimStart('#'), CultureInfo.CreateSpecificCulture("en-GB"));
 
                     if (number <= stringLibrary.Quotes.Count && number > 0)
                         message = stringLibrary.Quotes[number - 1];
@@ -53,14 +53,14 @@ namespace SekiDiscord.Commands
                 }
                 catch
                 {
-                    message = "Invalid input";
+                    return "Invalid input";
                 }
                 return message;
             }
             //search
             else
             {
-                string[] queries = args.Trim().ToLower().Split(' ');
+                string[] queries = args.Trim().ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Split(' ');
                 List<string> restults = SearchQuotes(queries, stringLibrary);
                 string message = string.Empty;
 
@@ -84,39 +84,37 @@ namespace SekiDiscord.Commands
 
         private static List<string> SearchQuotes(string[] queries, StringLibrary stringLibrary)
         {
-            List<string> results = new List<string>();
+            List<string> searchResults = new List<string>();
 
             foreach (string quote in stringLibrary.Quotes)
             {
-                bool add = true;
+                bool addToResults = true;
                 foreach (string query in queries)
                 {
-                    if (!quote.ToLower().Contains(query))
+                    if (!quote.ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Contains(query, StringComparison.OrdinalIgnoreCase))
                     {
-                        add = false;
+                        addToResults = false;
                     }
                 }
-                if (add)
-                    results.Add(quote);
+                if (addToResults)
+                {
+                    searchResults.Add(quote);
+                }
             }
 
-            return results;
+            return searchResults;
         }
 
         private static string PrintRandomQuote(StringLibrary stringLibrary)
         {
             Random r = new Random();
-            string message;
             int i = r.Next(stringLibrary.Quotes.Count);
-            message = stringLibrary.Quotes[i];
-
-            return message;
+            return stringLibrary.Quotes[i];
         }
 
         public static string QuoteCount(StringLibrary stringLibrary)
         {
-            string message = stringLibrary.Quotes.Count.ToString();
-            return message;
+            return stringLibrary.Quotes.Count.ToString(CultureInfo.CreateSpecificCulture("en-GB"));
         }
     }
 }

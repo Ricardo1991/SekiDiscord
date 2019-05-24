@@ -99,7 +99,7 @@ namespace SekiDiscord.Commands
             string response;
             Random r = new Random();
             string nick = ((DiscordMember)e.Message.Author).DisplayName;
-            List<DiscordMember> listU = Useful.getOnlineUsers(e.Channel.Guild);
+            List<string> listU = Useful.GetOnlineNames(e.Channel.Guild);
             CustomCommand customCommand;
             var regex = new Regex(Regex.Escape("<random>"));
 

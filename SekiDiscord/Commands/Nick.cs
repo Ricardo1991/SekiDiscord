@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.CommandsNext;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,23 +34,23 @@ namespace SekiDiscord.Commands
 
             foreach (string s in args.Split(' '))
             {
-                if (s.ToLower() == "random")
+                if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "random")
                 {
                     switchLetterNumb = rnd.Next(0, 100) <= 30;
                     randomnumber = rnd.Next(0, 100) <= 30;
                     randomUpper = rnd.Next(0, 100) <= 30;
                     Ique = rnd.Next(0, 100) <= 10;
                 }
-                else if (s.ToLower() == "for")
+                else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "for")
                 {
                     targeted = true;
                     target = Useful.GetBetween(args, "for ", null);
                 }
 
-                if (s.ToLower() == "sl") switchLetterNumb = true;
-                else if (s.ToLower() == "rn") randomnumber = true;
-                else if (s.ToLower() == "ru") randomUpper = true;
-                else if (s.ToLower() == "iq") Ique = true;
+                if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "sl") switchLetterNumb = true;
+                else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "rn") randomnumber = true;
+                else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "ru") randomUpper = true;
+                else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "iq") Ique = true;
             }
 
             string nick_ = NickGenerator.GenerateNick(stringLibrary.NickGenStrings, stringLibrary.NickGenStrings.Count, randomnumber, randomUpper, switchLetterNumb, Ique);
@@ -92,12 +93,11 @@ namespace SekiDiscord.Commands
         {
             Random rnd = new Random();
             int changed = 0;
-            int i = 0;
             int letras = 0;
 
             while (changed == 0 || letras == 0)
             {
-                i = 0;
+                int i = 0;
                 while (i < nick_gen.Length)
                 {
                     letras = 1;
@@ -175,7 +175,7 @@ namespace SekiDiscord.Commands
         {
             Random rnd = new Random();
 
-            nick_gen = nick_gen + rnd.Next(0, ((int)Math.Pow(10, size) - 1));
+            nick_gen += rnd.Next(0, ((int)Math.Pow(10, size) - 1));
 
             return nick_gen;
         }
@@ -198,7 +198,7 @@ namespace SekiDiscord.Commands
                     {
                         if (rnd.Next(0, 10) <= 2)
                         {
-                            nick_gen = ReplaceCharacter(i, nick_gen, Char.ToUpper(nick_gen[i]));
+                            nick_gen = ReplaceCharacter(i, nick_gen, Char.ToUpper(nick_gen[i], CultureInfo.CreateSpecificCulture("en-GB")));
                             changed = 1;
                             letras = 0;
                         }
@@ -212,12 +212,16 @@ namespace SekiDiscord.Commands
 
         private static string AddSuffix(string nick_gen, string suffix)
         {
-            string last = nick_gen[nick_gen.Length - 1].ToString();
-            if (last == "a".ToString() || last == "e".ToString() || last == "i".ToString() || last == "o".ToString() || last == "u".ToString())
+            string last = nick_gen[nick_gen.Length - 1].ToString(CultureInfo.CreateSpecificCulture("en-GB"));
+            if (last == "a".ToString(CultureInfo.CreateSpecificCulture("en-GB")) ||
+                last == "e".ToString(CultureInfo.CreateSpecificCulture("en-GB")) ||
+                last == "i".ToString(CultureInfo.CreateSpecificCulture("en-GB")) ||
+                last == "o".ToString(CultureInfo.CreateSpecificCulture("en-GB")) ||
+                last == "u".ToString(CultureInfo.CreateSpecificCulture("en-GB")))
             {
                 nick_gen = nick_gen.Substring(0, nick_gen.Length - 1);
             }
-            nick_gen = nick_gen + suffix;
+            nick_gen += suffix;
 
             return nick_gen;
         }
