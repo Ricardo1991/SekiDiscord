@@ -1,86 +1,83 @@
-﻿using System;
+﻿using MarkovSharp.TokenisationStrategies;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 
 namespace SekiDiscord.Commands
 {
     internal class KillUser
     {
+        public static StringMarkov Killgen { get; set; } = new StringMarkov();
+        public static List<string> Kills { get; set; } = ReadKills();
+        public static List<int> KillsUsed { get; set; } = new List<int>();
+
         private const int MAX_KILLS = 500;
         private static readonly Random r = new Random();
 
-        public static KillResult Kill(string author, List<string> usersOnline, StringLibrary stringLibrary, string target)
+        public static KillResult Kill(string author, List<string> usersOnline, string target)
         {
-            return KillUsername(target, author, usersOnline, stringLibrary);
+            return KillUsername(target, author, usersOnline);
         }
 
-        private static KillResult KillUsername(string args, string author, List<string> usersOnline, StringLibrary stringLibrary)
+        private static KillResult KillUsername(string args, string author, List<string> usersOnline)
         {
             string target;
             int killID;
             string killString;
 
-            try
+            if (args.ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Trim() == "la kill")
             {
-                if (args.ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Trim() == "la kill")
-                {
-                    return new KillResult(author + " lost his way", false);
-                }
-                else if (args.ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Trim() == "me baby")
-                {
-                    return new KillResult("WASSA WASSA https://www.youtube.com/watch?v=Yk8DAb99QeQ", false);
-                }
-                else
-                {
-                    if (string.IsNullOrWhiteSpace(args) || args.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "random")
-                        target = usersOnline[r.Next(usersOnline.Count)];
-                    else
-                        target = args.Trim();
-
-                    if (stringLibrary.Kill.Count <= MAX_KILLS)
-                    {
-                        stringLibrary.KillsUsed.Clear();
-                        killID = r.Next(stringLibrary.Kill.Count);
-                        stringLibrary.KillsUsed.Insert(0, killID);
-                    }
-                    else
-                    {
-                        do killID = r.Next(stringLibrary.Kill.Count);
-                        while (stringLibrary.KillsUsed.Contains(killID));
-                    }
-
-                    if (stringLibrary.KillsUsed.Count >= MAX_KILLS)
-                    {
-                        stringLibrary.KillsUsed.Remove(stringLibrary.KillsUsed[stringLibrary.KillsUsed.Count - 1]);
-                    }
-
-                    stringLibrary.KillsUsed.Insert(0, killID);
-
-                    killString = stringLibrary.Kill[killID];
-
-                    killString = Useful.FillTags(killString, author.Trim(), target, usersOnline);
-
-                    if (killString.Contains("<normal>", StringComparison.OrdinalIgnoreCase))
-                    {
-                        killString = killString.Replace("<normal>", string.Empty, StringComparison.OrdinalIgnoreCase);
-                        return new KillResult(killString, false);
-                    }
-                    else
-                    {
-                        return new KillResult(killString, true);
-                    }
-                }
+                return new KillResult(author + " lost his way", false);
             }
-            catch
+            if (args.ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Trim() == "me baby")
             {
-                return null;
+                return new KillResult("WASSA WASSA https://www.youtube.com/watch?v=Yk8DAb99QeQ", false);
+            }
+
+            if (string.IsNullOrWhiteSpace(args) || args.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "random")
+                target = usersOnline[r.Next(usersOnline.Count)];
+            else
+                target = args.Trim();
+
+            if (Kills.Count <= MAX_KILLS)
+            {
+                KillsUsed.Clear();
+                killID = r.Next(Kills.Count);
+                KillsUsed.Insert(0, killID);
+            }
+            else
+            {
+                do killID = r.Next(Kills.Count);
+                while (KillsUsed.Contains(killID));
+            }
+
+            if (KillsUsed.Count >= MAX_KILLS)
+            {
+                KillsUsed.Remove(KillsUsed[KillsUsed.Count - 1]);
+            }
+
+            KillsUsed.Insert(0, killID);
+
+            killString = Kills[killID];
+
+            killString = Useful.FillTags(killString, author.Trim(), target, usersOnline);
+
+            if (killString.Contains("<normal>", StringComparison.OrdinalIgnoreCase))
+            {
+                killString = killString.Replace("<normal>", string.Empty, StringComparison.OrdinalIgnoreCase);
+                return new KillResult(killString, false);
+            }
+            else
+            {
+                return new KillResult(killString, true);
             }
         }
 
-        internal static KillResult KillRandom(string args, string author, List<string> usersOnline, StringLibrary stringLibrary)
+        internal static KillResult KillRandom(string args, string author, List<string> usersOnline)
         {
             Random r = new Random();
-            string target = "";
+            string target;
             string killString;
             KillResult message;
 
@@ -91,12 +88,12 @@ namespace SekiDiscord.Commands
 
             try
             {
-                killString = stringLibrary.GetRandomKillString();
-                killString = Useful.FillTags(killString, author.Trim(), target, usersOnline).Replace("  ", " ");
+                killString = GetRandomKillString();
+                killString = Useful.FillTags(killString, author.Trim(), target, usersOnline).Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
 
-                if (killString.ToLower().Contains("<normal>"))
+                if (killString.Contains("<normal>", StringComparison.OrdinalIgnoreCase))
                 {
-                    killString = killString.Replace("<normal>", string.Empty).Replace("<NORMAL>", string.Empty);
+                    killString = killString.Replace("<normal>", string.Empty, StringComparison.OrdinalIgnoreCase);
                     message = new KillResult(killString, false);
                 }
                 else
@@ -109,6 +106,50 @@ namespace SekiDiscord.Commands
             }
 
             return message;
+        }
+
+        public static List<string> ReadKills()
+        {
+            List<string> kills = new List<string>();
+            KillsUsed.Clear();
+            Killgen = new StringMarkov();
+
+            if (File.Exists("TextFiles/kills.txt"))
+            {
+                try
+                {
+                    StreamReader sr = new StreamReader("TextFiles/kills.txt");
+                    while (sr.Peek() >= 0)
+                    {
+                        string killS = sr.ReadLine();
+
+                        if (killS.Length > 1 && !(killS[0] == '/' && killS[1] == '/'))
+                        {
+                            kills.Add(killS);
+                            Killgen.Learn(killS);
+                        }
+                    }
+
+                    sr.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read kills. " + e.Message);
+                }
+            }
+            else
+            {
+                //TODO: Save settings
+                //Settings.Default.killEnabled = false;
+                //Settings.Default.Save();
+            }
+
+            return kills;
+        }
+
+        private static string GetRandomKillString()
+        {
+            return Killgen.RebuildPhrase(Killgen.Walk());
         }
 
         public class KillResult

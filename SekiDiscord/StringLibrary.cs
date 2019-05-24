@@ -1,5 +1,4 @@
-﻿using MarkovSharp.TokenisationStrategies;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SekiDiscord.Commands;
 using System;
 using System.Collections.Generic;
@@ -10,16 +9,12 @@ namespace SekiDiscord
     public class StringLibrary
     {
         public List<string> Rules { get; set; } = new List<string>();
-        public List<string> Help { get; set; } = new List<string>();
         public List<string> Trivia { get; set; } = new List<string>();
-        public List<string> Kill { get; set; } = new List<string>();
         public List<string> Facts { get; set; } = new List<string>();
         public List<string> Funk { get; set; } = new List<string>();
-        public List<string> NickGenStrings { get; set; }
         public List<CustomCommand> CustomCommands { get; set; } = new List<CustomCommand>();
-        public List<int> KillsUsed { get; set; } = new List<int>();
+        public List<string> NickGenStrings { get; set; }
         public List<int> FactsUsed { get; set; } = new List<int>();
-        public StringMarkov Killgen { get; set; } = new StringMarkov();
         public Dictionary<ulong, HashSet<string>> Pings { get; set; } = new Dictionary<ulong, HashSet<string>>();
         public Dictionary<string, DateTime> Seen { get; set; } = new Dictionary<string, DateTime>();
 
@@ -31,7 +26,7 @@ namespace SekiDiscord
         public bool ReloadLibrary()
         {
             Trivia = ReadTrivia();              //Trivia strings
-            Kill = ReadKills();                 //Read the killstrings
+            KillUser.Kills = KillUser.ReadKills();
             Facts = ReadFacts();                //Read the factStrings
             NickGenStrings = ReadNickGen();     //For the Nick generator
             Funk = ReadFunk();
@@ -80,7 +75,7 @@ namespace SekiDiscord
                     break;
 
                 case LibraryType.Kill:
-                    Kill = ReadKills();
+                    KillUser.Kills = KillUser.ReadKills();
                     break;
 
                 case LibraryType.Fact:
@@ -212,50 +207,6 @@ namespace SekiDiscord
             catch
             {
             }
-        }
-
-        private List<string> ReadKills()
-        {
-            List<string> kills = new List<string>();
-            KillsUsed.Clear();
-            Killgen = new StringMarkov();
-
-            if (File.Exists("TextFiles/kills.txt"))
-            {
-                try
-                {
-                    StreamReader sr = new StreamReader("TextFiles/kills.txt");
-                    while (sr.Peek() >= 0)
-                    {
-                        string killS = sr.ReadLine();
-
-                        if (killS.Length > 1 && !(killS[0] == '/' && killS[1] == '/'))
-                        {
-                            kills.Add(killS);
-                            Killgen.Learn(killS);
-                        }
-                    }
-
-                    sr.Close();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read kills. " + e.Message);
-                }
-            }
-            else
-            {
-                //TODO: Save settings
-                //Settings.Default.killEnabled = false;
-                //Settings.Default.Save();
-            }
-
-            return kills;
-        }
-
-        internal string GetRandomKillString()
-        {
-            return Killgen.RebuildPhrase(Killgen.Walk());
         }
 
         private List<string> ReadFacts()

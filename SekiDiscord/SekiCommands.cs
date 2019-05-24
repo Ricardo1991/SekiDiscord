@@ -23,7 +23,7 @@ namespace SekiDiscord
         [Aliases("q")]                          // alternative names for the command
         public async Task Quote(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Quote Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Quote Command");
             string arg;
 
             try
@@ -51,7 +51,7 @@ namespace SekiDiscord
         [Aliases("qc")]
         public async Task QuoteCount(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Quote Count Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Quote Count Command");
 
             string result = Quotes.QuoteCount();
             await ctx.RespondAsync(result).ConfigureAwait(false);
@@ -60,7 +60,7 @@ namespace SekiDiscord
         [Command("kill")]
         public async Task Kill(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Kill Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Kill Command");
 
             string author = ctx.Member.DisplayName;
             List<string> usersOnline = Useful.GetOnlineNames(ctx.Channel.Guild);
@@ -76,7 +76,7 @@ namespace SekiDiscord
                 args = string.Empty;
             }
 
-            KillUser.KillResult result = KillUser.Kill(author, usersOnline, StringLibrary, args);
+            KillUser.KillResult result = KillUser.Kill(author, usersOnline, args);
 
             switch (result.IsAction)
             {
@@ -93,7 +93,7 @@ namespace SekiDiscord
         [Command("rkill")]
         public async Task RKill(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "RKill Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "RKill Command");
 
             string args;
             string author = ctx.Member.DisplayName;
@@ -108,7 +108,7 @@ namespace SekiDiscord
                 args = string.Empty;
             }
 
-            KillUser.KillResult result = KillUser.KillRandom(args, author, listU, StringLibrary);
+            KillUser.KillResult result = KillUser.KillRandom(args, author, listU);
 
             switch (result.IsAction)
             {
@@ -126,7 +126,7 @@ namespace SekiDiscord
         [Description("Add a command to the custom commands list")]
         public async Task AddCustomCommand(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "addcmd Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "addcmd Command");
             string nick = ctx.User.Username;
             string[] splits;
             string message;
@@ -146,7 +146,7 @@ namespace SekiDiscord
         [Description("Remove a command to the custom commands list")]
         public async Task RemoveCustomCommand(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "removecmd Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "removecmd Command");
 
             string[] splits;
 
@@ -166,7 +166,7 @@ namespace SekiDiscord
         [Aliases("p")]                          // alternative names for the command
         public async Task Ping(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "ping Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "ping Command");
 
             string msg, cmd, args;
 
@@ -191,7 +191,7 @@ namespace SekiDiscord
         [Description("Roll a number between 0 and 100")]
         public async Task Roll(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Roll Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Roll Command");
 
             string nick = ctx.Member.DisplayName;
             nick = nick.Replace("\r", "");
@@ -206,7 +206,7 @@ namespace SekiDiscord
         [Description("Shuffle words randomly. Can be phrases if separated by commas")]
         public async Task Shuffle(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Shuffle Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Shuffle Command");
             string result = Basics.Shuffle(ctx.Message.Content);
 
             if (!string.IsNullOrWhiteSpace(result))
@@ -217,7 +217,7 @@ namespace SekiDiscord
         [Description("Choose an item from the presented list randomly")]
         public async Task Choose(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Choose Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Choose Command");
 
             string arg;
             string user = ctx.Member.DisplayName;
@@ -239,7 +239,7 @@ namespace SekiDiscord
         [Aliases("s")]
         public async Task SquareText(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Square Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Square Command");
             string message = Square.SquareText(ctx);
             await ctx.RespondAsync(message).ConfigureAwait(false);
         }
@@ -248,7 +248,7 @@ namespace SekiDiscord
         [Description("gimme music")]
         public async Task Funk(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Funk Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Funk Command");
             string arg;
             try
             {
@@ -269,7 +269,7 @@ namespace SekiDiscord
         [Description("poke someone randomly")]
         public async Task Poke(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Poke Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Poke Command");
 
             List<DiscordMember> listU = Useful.GetOnlineMembers(ctx.Channel.Guild);
             string user = ctx.Member.DisplayName;
@@ -283,7 +283,7 @@ namespace SekiDiscord
         [Aliases("yt")]                          // alternative names for the command
         public async Task YoutubeSearch(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Youtube Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Youtube Command");
 
             string query;
 
