@@ -37,11 +37,11 @@ namespace SekiDiscord
 
             if (string.Compare(arg.ToLower().Split(new char[] { ' ' }, 2)[0], "add") == 0)  //add
             {
-                Quotes.AddQuote(arg, StringLibrary);
+                Quotes.AddQuote(arg);
             }
             else //lookup or random
             {
-                string result = Quotes.PrintQuote(arg, StringLibrary);
+                string result = Quotes.PrintQuote(arg);
                 await ctx.RespondAsync(result).ConfigureAwait(false);
             }
         }
@@ -53,7 +53,7 @@ namespace SekiDiscord
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Quote Count Command");
 
-            string result = Quotes.QuoteCount(StringLibrary);
+            string result = Quotes.QuoteCount();
             await ctx.RespondAsync(result).ConfigureAwait(false);
         }
 

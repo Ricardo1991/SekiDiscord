@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 
 namespace SekiDiscord.Commands
 {
     public static class Quotes
     {
-        public static void AddQuote(string args, StringLibrary stringLibrary)
+        public static List<string> QuotesList { get; set; } = ReadQuotes();
+
+        public static void AddQuote(string args)
         {
             string add;
 
-            if (stringLibrary.Quotes == null)
-                stringLibrary.Quotes = new List<string>();
+            if (QuotesList == null)
+                QuotesList = new List<string>();
 
             if (string.Compare(args.Split(new char[] { ' ' }, 2)[0], "add", StringComparison.OrdinalIgnoreCase) == 0)
                 add = Useful.GetBetween(args, "add ", null);
@@ -19,22 +22,22 @@ namespace SekiDiscord.Commands
                 add = args;
 
             if (!string.IsNullOrWhiteSpace(add))
-                stringLibrary.Quotes.Add(add);
+                QuotesList.Add(add);
 
-            stringLibrary.SaveLibrary(StringLibrary.LibraryType.Quote);
+            SaveQuotes(QuotesList);
         }
 
-        public static string PrintQuote(string args, StringLibrary stringLibrary)
+        public static string PrintQuote(string args)
         {
             Random r = new Random();
 
-            if (stringLibrary.Quotes.Count == 0)
+            if (QuotesList.Count == 0)
                 return string.Empty;
 
             //print random
             if (string.IsNullOrWhiteSpace(args))
             {
-                return PrintRandomQuote(stringLibrary);
+                return PrintRandomQuote();
             }
             //Print quote by number
             else if (args.StartsWith("#", StringComparison.OrdinalIgnoreCase))
@@ -46,8 +49,8 @@ namespace SekiDiscord.Commands
                 {
                     int number = Convert.ToInt32(split.TrimStart('#'), CultureInfo.CreateSpecificCulture("en-GB"));
 
-                    if (number <= stringLibrary.Quotes.Count && number > 0)
-                        message = stringLibrary.Quotes[number - 1];
+                    if (number <= QuotesList.Count && number > 0)
+                        message = QuotesList[number - 1];
                     else
                         message = "Quote number " + number + " does not exist";
                 }
@@ -61,7 +64,7 @@ namespace SekiDiscord.Commands
             else
             {
                 string[] queries = args.Trim().ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Split(' ');
-                List<string> restults = SearchQuotes(queries, stringLibrary);
+                List<string> restults = SearchQuotes(queries);
                 string message = string.Empty;
 
                 if (restults.Count > 0)
@@ -82,11 +85,11 @@ namespace SekiDiscord.Commands
             }
         }
 
-        private static List<string> SearchQuotes(string[] queries, StringLibrary stringLibrary)
+        private static List<string> SearchQuotes(string[] queries)
         {
             List<string> searchResults = new List<string>();
 
-            foreach (string quote in stringLibrary.Quotes)
+            foreach (string quote in QuotesList)
             {
                 bool addToResults = true;
                 foreach (string query in queries)
@@ -105,16 +108,50 @@ namespace SekiDiscord.Commands
             return searchResults;
         }
 
-        private static string PrintRandomQuote(StringLibrary stringLibrary)
+        private static string PrintRandomQuote()
         {
             Random r = new Random();
-            int i = r.Next(stringLibrary.Quotes.Count);
-            return stringLibrary.Quotes[i];
+            int i = r.Next(QuotesList.Count);
+            return QuotesList[i];
         }
 
-        public static string QuoteCount(StringLibrary stringLibrary)
+        public static string QuoteCount()
         {
-            return stringLibrary.Quotes.Count.ToString(CultureInfo.CreateSpecificCulture("en-GB"));
+            return QuotesList.Count.ToString(CultureInfo.CreateSpecificCulture("en-GB"));
+        }
+
+        public static List<string> ReadQuotes()
+        {
+            List<string> quotes = new List<string>();
+
+            if (File.Exists("TextFiles/quotes.txt"))
+            {
+                try
+                {
+                    StreamReader sr = new StreamReader("TextFiles/quotes.txt");
+                    while (sr.Peek() >= 0)
+                    {
+                        quotes.Add(sr.ReadLine());
+                    }
+                    sr.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read quotes. " + e.Message);
+                }
+            }
+            return quotes;
+        }
+
+        public static void SaveQuotes(List<string> quotes)
+        {
+            using (StreamWriter newTask = new StreamWriter("TextFiles/quotes.txt", false))
+            {
+                foreach (string q in quotes)
+                {
+                    newTask.WriteLine(q);
+                }
+            }
         }
     }
 }

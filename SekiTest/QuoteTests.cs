@@ -1,35 +1,28 @@
-using SekiDiscord;
+using SekiDiscord.Commands;
 using Xunit;
 
 namespace SekiTest
 {
     public class QuoteTests
     {
-        private StringLibrary stringLibrary;
-
-        public QuoteTests()
-        {
-            stringLibrary = new StringLibrary();
-        }
-
         [Fact]
         public void AddQuoteWithAdd()
         {
-            int quoteSize = stringLibrary.Quotes.Count;
+            int quoteSize = Quotes.QuotesList.Count;
 
-            SekiDiscord.Commands.Quotes.AddQuote("add <Me> Quote with 'add'", stringLibrary);
+            Quotes.AddQuote("add <Me> Quote with 'add'");
 
-            Assert.Equal("<Me> Quote with 'add'", SekiDiscord.Commands.Quotes.PrintQuote("#" + (quoteSize + 1), stringLibrary));
+            Assert.Equal("<Me> Quote with 'add'", Quotes.PrintQuote("#" + (quoteSize + 1)));
         }
 
         [Fact]
         public void AddQuoteWithoutAdd()
         {
-            int quoteSize = stringLibrary.Quotes.Count;
+            int quoteSize = Quotes.QuotesList.Count;
 
-            SekiDiscord.Commands.Quotes.AddQuote("<Me> Second quote", stringLibrary);
+            Quotes.AddQuote("<Me> Second quote");
 
-            Assert.Equal("<Me> Second quote", SekiDiscord.Commands.Quotes.PrintQuote("#" + (quoteSize + 1), stringLibrary));
+            Assert.Equal("<Me> Second quote", Quotes.PrintQuote("#" + (quoteSize + 1)));
         }
     }
 }

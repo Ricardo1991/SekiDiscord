@@ -14,7 +14,6 @@ namespace SekiDiscord
         public List<string> Trivia { get; set; } = new List<string>();
         public List<string> Kill { get; set; } = new List<string>();
         public List<string> Facts { get; set; } = new List<string>();
-        public List<string> Quotes { get; set; } = new List<string>();
         public List<string> Funk { get; set; } = new List<string>();
         public List<string> NickGenStrings { get; set; }
         public List<CustomCommand> CustomCommands { get; set; } = new List<CustomCommand>();
@@ -35,7 +34,6 @@ namespace SekiDiscord
             Kill = ReadKills();                 //Read the killstrings
             Facts = ReadFacts();                //Read the factStrings
             NickGenStrings = ReadNickGen();     //For the Nick generator
-            Quotes = ReadQuotes();
             Funk = ReadFunk();
             Rules = ReadRules();
             Pings = ReadPings();                //Read ping file
@@ -54,7 +52,7 @@ namespace SekiDiscord
                     break;
 
                 case LibraryType.Quote:
-                    Quotes = ReadQuotes();
+                    Quotes.QuotesList = Quotes.ReadQuotes();
                     break;
 
                 case LibraryType.Funk:
@@ -98,7 +96,7 @@ namespace SekiDiscord
         public bool SaveLibrary()
         {
             SaveFunk(Funk);
-            SaveQuotes(Quotes);
+            Quotes.SaveQuotes(Quotes.QuotesList);
             SavePings(Pings);        // Save pings to file
             SaveSeen(Seen);
 
@@ -116,7 +114,7 @@ namespace SekiDiscord
                     break;
 
                 case LibraryType.Quote:
-                    SaveQuotes(Quotes);
+                    Quotes.SaveQuotes(Quotes.QuotesList);
                     break;
 
                 case LibraryType.Funk:
@@ -379,40 +377,6 @@ namespace SekiDiscord
             }
 
             return nickGenStrings;
-        }
-
-        private static List<string> ReadQuotes()
-        {
-            List<string> quotes = new List<string>();
-
-            if (File.Exists("TextFiles/quotes.txt"))
-            {
-                try
-                {
-                    StreamReader sr = new StreamReader("TextFiles/quotes.txt");
-                    while (sr.Peek() >= 0)
-                    {
-                        quotes.Add(sr.ReadLine());
-                    }
-                    sr.Close();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read quotes. " + e.Message);
-                }
-            }
-            return quotes;
-        }
-
-        private static void SaveQuotes(List<string> quotes)
-        {
-            using (StreamWriter newTask = new StreamWriter("TextFiles/quotes.txt", false))
-            {
-                foreach (string q in quotes)
-                {
-                    newTask.WriteLine(q);
-                }
-            }
         }
 
         private static List<string> ReadFunk()
