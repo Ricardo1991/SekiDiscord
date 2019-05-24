@@ -4,6 +4,7 @@ using DSharpPlus.Entities;
 using SekiDiscord.Commands;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace SekiDiscord
@@ -62,7 +63,7 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Kill Command");
 
             string author = ctx.Member.DisplayName;
-            List<DiscordMember> usersOnline = Useful.getOnlineUsers(ctx.Channel.Guild);
+            List<string> usersOnline = Useful.GetOnlineNames(ctx.Channel.Guild);
 
             string args;
 
@@ -96,7 +97,7 @@ namespace SekiDiscord
 
             string args;
             string author = ctx.Member.DisplayName;
-            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
+            List<string> listU = Useful.GetOnlineNames(ctx.Channel.Guild);
 
             try
             {
@@ -239,7 +240,8 @@ namespace SekiDiscord
         public async Task SquareText(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Square Command");
-            await Square.SquareText(ctx).ConfigureAwait(false);
+            string message = Square.SquareText(ctx);
+            await ctx.RespondAsync(message).ConfigureAwait(false);
         }
 
         [Command("funk")]
@@ -269,7 +271,7 @@ namespace SekiDiscord
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Poke Command");
 
-            List<DiscordMember> listU = Useful.getOnlineUsers(ctx.Channel.Guild);
+            List<DiscordMember> listU = Useful.GetOnlineMembers(ctx.Channel.Guild);
             string user = ctx.Member.DisplayName;
 
             string result = Basics.PokeRandom(listU, user);
@@ -302,7 +304,7 @@ namespace SekiDiscord
         [Description("generate a nickname")]
         public async Task Nick(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Nick Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Nick Command");
             await Commands.Nick.NickGen(ctx, StringLibrary).ConfigureAwait(false);
         }
 
@@ -310,7 +312,7 @@ namespace SekiDiscord
         [Description("Show a random fun made up fact")]
         public async Task Fact(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Fact Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Fact Command");
             await Commands.Fact.ShowFact(ctx, StringLibrary).ConfigureAwait(false);
         }
 
@@ -318,8 +320,9 @@ namespace SekiDiscord
         [Description("Check how long ago a user was last seen")]
         public async Task Seen(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Seen Command");
-            await Commands.Seen.CheckSeen(ctx, StringLibrary).ConfigureAwait(false);
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Seen Command");
+            string message = Commands.Seen.CheckSeen(ctx, StringLibrary);
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
     }
 }

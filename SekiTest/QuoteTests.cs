@@ -5,26 +5,31 @@ namespace SekiTest
 {
     public class QuoteTests
     {
+        private StringLibrary stringLibrary;
+
+        public QuoteTests()
+        {
+            stringLibrary = new StringLibrary();
+        }
+
         [Fact]
         public void AddQuoteWithAdd()
         {
-            StringLibrary stringLibrary = new StringLibrary();
             int quoteSize = stringLibrary.Quotes.Count;
 
             SekiDiscord.Commands.Quotes.AddQuote("add <Me> Quote with 'add'", stringLibrary);
 
-            Assert.True(string.Compare(SekiDiscord.Commands.Quotes.PrintQuote("#" + (quoteSize + 1), stringLibrary), "<Me> Quote with 'add'", System.StringComparison.Ordinal) == 0);
+            Assert.Equal("<Me> Quote with 'add'", SekiDiscord.Commands.Quotes.PrintQuote("#" + (quoteSize + 1), stringLibrary));
         }
 
         [Fact]
         public void AddQuoteWithoutAdd()
         {
-            StringLibrary stringLibrary = new StringLibrary();
             int quoteSize = stringLibrary.Quotes.Count;
 
             SekiDiscord.Commands.Quotes.AddQuote("<Me> Second quote", stringLibrary);
 
-            Assert.True(string.Compare(SekiDiscord.Commands.Quotes.PrintQuote("#" + (quoteSize + 1), stringLibrary), "<Me> Second quote", System.StringComparison.Ordinal) == 0);
+            Assert.Equal("<Me> Second quote", SekiDiscord.Commands.Quotes.PrintQuote("#" + (quoteSize + 1), stringLibrary));
         }
     }
 }
