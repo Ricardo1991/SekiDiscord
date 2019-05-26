@@ -8,11 +8,17 @@ namespace SekiDiscord.Commands
 {
     internal class KillUser
     {
-        public static StringMarkov Killgen { get; set; } = new StringMarkov();
-        public static List<string> Kills { get; set; } = ReadKills();
-        public static List<int> KillsUsed { get; set; } = new List<int>();
-
+        public static StringMarkov Killgen { get; set; }
+        public static List<string> Kills { get; set; }
+        public static List<int> KillsUsed { get; set; }
         private const int MAX_KILLS = 500;
+
+        static KillUser()
+        {
+            KillsUsed = new List<int>();
+            Killgen = new StringMarkov();
+            Kills = ReadKills();
+        }
 
         public static KillResult Kill(string author, List<string> usersOnline, string target)
         {

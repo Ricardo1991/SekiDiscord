@@ -7,7 +7,12 @@ namespace SekiDiscord.Commands
 {
     public static class Quotes
     {
-        public static List<string> QuotesList { get; set; } = ReadQuotes();
+        public static List<string> QuotesList { get; set; }
+
+        static Quotes()
+        {
+            QuotesList = ReadQuotes();
+        }
 
         public static void AddQuote(string args)
         {
