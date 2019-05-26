@@ -13,7 +13,6 @@ namespace SekiDiscord.Commands
         public static List<int> KillsUsed { get; set; } = new List<int>();
 
         private const int MAX_KILLS = 500;
-        private static readonly Random r = new Random();
 
         public static KillResult Kill(string author, List<string> usersOnline, string target)
         {
@@ -25,6 +24,8 @@ namespace SekiDiscord.Commands
             string target;
             int killID;
             string killString;
+
+            Random r = new Random();
 
             if (args.ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Trim() == "la kill")
             {
