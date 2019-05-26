@@ -30,12 +30,12 @@ namespace SekiDiscord
             {
                 arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
             }
-            catch
+            catch (IndexOutOfRangeException)
             {
                 arg = string.Empty;
             }
 
-            if (string.Compare(arg.ToLower().Split(new char[] { ' ' }, 2)[0], "add") == 0)  //add
+            if (string.Compare(arg.Split(new char[] { ' ' }, 2)[0], "add", StringComparison.OrdinalIgnoreCase) == 0)  //add
             {
                 Quotes.AddQuote(arg);
             }
@@ -71,7 +71,7 @@ namespace SekiDiscord
             {
                 args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
             }
-            catch
+            catch (IndexOutOfRangeException)
             {
                 args = string.Empty;
             }
@@ -103,7 +103,7 @@ namespace SekiDiscord
             {
                 args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
             }
-            catch
+            catch (IndexOutOfRangeException)
             {
                 args = string.Empty;
             }
@@ -172,13 +172,13 @@ namespace SekiDiscord
 
             try
             {
-                msg = ctx.Message.Content.ToLower().Split(new char[] { ' ' }, 2)[1]; // remove !p or !ping
+                msg = ctx.Message.Content.ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Split(new char[] { ' ' }, 2)[1]; // remove !p or !ping
                 cmd = msg.Split(new char[] { ' ' }, 2)[0]; // get command word
                 args = Useful.GetBetween(msg, cmd + " ", null); // get words after command, add a space to cmd word so args doesnt start with one
             }
-            catch
+            catch (IndexOutOfRangeException)
             {
-                msg = cmd = args = string.Empty;
+                return;
             }
 
             if (!string.IsNullOrWhiteSpace(msg))
@@ -194,7 +194,6 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Roll Command");
 
             string nick = ctx.Member.DisplayName;
-            nick = nick.Replace("\r", "");
 
             int number = Basics.Roll(ctx.Message.Content);
 
@@ -224,11 +223,11 @@ namespace SekiDiscord
 
             try
             {
-                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
+                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
                 string result = Basics.Choose(arg, user);
                 await ctx.RespondAsync(result).ConfigureAwait(false);
             }
-            catch
+            catch (IndexOutOfRangeException)
             {
                 return;
             }
@@ -254,7 +253,7 @@ namespace SekiDiscord
             {
                 arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
             }
-            catch
+            catch (IndexOutOfRangeException)
             {
                 arg = string.Empty;
             }
@@ -285,17 +284,13 @@ namespace SekiDiscord
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Youtube Command");
 
-            string query;
-
             try
             {
-                query = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-
+                string query = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
                 string result = Youtube.YoutubeSearch(query);
-
                 await ctx.Message.RespondAsync(result).ConfigureAwait(false);
             }
-            catch
+            catch (IndexOutOfRangeException)
             {
             }
         }

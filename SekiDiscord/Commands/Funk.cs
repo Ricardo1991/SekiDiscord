@@ -19,31 +19,23 @@ namespace SekiDiscord.Commands
 
         public static void AddFunk(CommandContext ctx, StringLibrary stringLibrary)
         {
-            //if (userlist.UserIsMuted(nick) || !Settings.Default.funkEnabled) return;
-
             string args;
             try
             {
                 args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
             }
-            catch
+            catch (IndexOutOfRangeException)
             {
-                args = string.Empty;
+                return;
             }
 
-            try
-            {
-                string[] splits = ctx.Message.Content.Split();
-                if (string.Compare(splits[0].ToLower(), "add") == 0)
-                    args = args.Replace("add ", string.Empty);
+            string[] splits = ctx.Message.Content.Split();
+            if (string.Compare(splits[0], "add", StringComparison.OrdinalIgnoreCase) == 0)
+                args = args.Replace("add ", string.Empty, StringComparison.OrdinalIgnoreCase);
 
-                stringLibrary.Funk.Add(args);
+            stringLibrary.Funk.Add(args);
 
-                stringLibrary.SaveLibrary(StringLibrary.LibraryType.Funk);
-            }
-            catch
-            {
-            }
+            stringLibrary.SaveLibrary(StringLibrary.LibraryType.Funk);
         }
     }
 }

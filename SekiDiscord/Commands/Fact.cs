@@ -24,7 +24,7 @@ namespace SekiDiscord.Commands
             {
                 args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
             }
-            catch
+            catch (IndexOutOfRangeException)
             {
                 args = string.Empty;
             }
@@ -34,7 +34,7 @@ namespace SekiDiscord.Commands
             if (stringLibrary.Facts.Count < 1)
                 return;
 
-            if (string.IsNullOrWhiteSpace(args) || args.ToLower() == "random")
+            if (string.IsNullOrWhiteSpace(args) || string.Compare(args, "random", StringComparison.OrdinalIgnoreCase) == 0)
                 target = listU[r.Next(listU.Count)];
             else
                 target = args.Trim();

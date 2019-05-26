@@ -2,6 +2,7 @@
 using DSharpPlus.EventArgs;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -80,8 +81,9 @@ namespace SekiDiscord.Commands
                     }
                     sr.Close();
                 }
-                catch
+                catch (IndexOutOfRangeException)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Not enough arguments on a custom command, while loading file");
                 }
             }
             else
@@ -139,7 +141,7 @@ namespace SekiDiscord.Commands
         {
             foreach (CustomCommand q in commands)
             {
-                if (string.Compare(q.Name, name, true) == 0)
+                if (string.Compare(q.Name, name, StringComparison.OrdinalIgnoreCase) == 0)
                     return true;
             }
 
@@ -150,7 +152,7 @@ namespace SekiDiscord.Commands
         {
             foreach (CustomCommand q in commands)
             {
-                if (string.Compare(q.Name, name, true) == 0)
+                if (string.Compare(q.Name, name, StringComparison.OrdinalIgnoreCase) == 0)
                     return q;
             }
 
@@ -161,7 +163,7 @@ namespace SekiDiscord.Commands
         {
             foreach (CustomCommand q in commands)
             {
-                if (string.Compare(q.Name, name, true) == 0)
+                if (string.Compare(q.Name, name, StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     commands.Remove(GetCustomCommandByName(name, commands));
                     return;

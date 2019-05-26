@@ -5,6 +5,8 @@ using System.Net;
 using System.Text;
 using System.Web;
 
+#pragma warning disable IDE1006 // Naming Styles
+
 namespace SekiDiscord.Commands
 {
     internal class Youtube

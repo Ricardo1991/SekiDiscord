@@ -54,10 +54,15 @@ namespace SekiDiscord.Commands
                     else
                         message = "Quote number " + number + " does not exist";
                 }
-                catch
+                catch (FormatException)
                 {
                     return "Invalid input";
                 }
+                catch (OverflowException)
+                {
+                    return "Number Overflow";
+                }
+
                 return message;
             }
             //search
@@ -135,9 +140,9 @@ namespace SekiDiscord.Commands
                     }
                     sr.Close();
                 }
-                catch (Exception e)
+                catch (IOException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read quotes. " + e.Message);
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read quotes. " + e.Message);
                 }
             }
             return quotes;

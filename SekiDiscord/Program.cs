@@ -117,7 +117,7 @@ namespace SekiDiscord
 
             GetDiscordClient.MessageCreated += async e =>
             {
-                if (e.Message.Content.ToLower().StartsWith("!quit"))
+                if (e.Message.Content.StartsWith("!quit", StringComparison.OrdinalIgnoreCase))
                 {
                     DiscordMember author = await e.Guild.GetMemberAsync(e.Author.Id).ConfigureAwait(false);
                     bool isBotAdmin = Useful.MemberIsBotOperator(author);
@@ -160,7 +160,7 @@ namespace SekiDiscord
                 //waifunator
                 if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.Author.Id == Settings.Default.limid) //lims shitty id lul
                 {
-                    if (e.Message.Content.ToLower().Contains("wife"))
+                    if (e.Message.Content.Contains("wife", StringComparison.OrdinalIgnoreCase))
                     {
                         await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_w:")).ConfigureAwait(false);
                         await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_a:")).ConfigureAwait(false);

@@ -81,7 +81,7 @@ namespace SekiDiscord.Commands
             string killString;
             KillResult message;
 
-            if (string.IsNullOrWhiteSpace(args) || args.ToLower() == "random")
+            if (string.IsNullOrWhiteSpace(args) || string.Compare(args, "random", StringComparison.OrdinalIgnoreCase) == 0)
                 target = usersOnline[r.Next(usersOnline.Count)];
             else
                 target = args.Trim();
