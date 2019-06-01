@@ -1,48 +1,82 @@
-﻿using DSharpPlus.CommandsNext;
-using System;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 
 namespace SekiDiscord.Commands
 {
     internal class Funk
     {
-        public static async Task PrintFunk(CommandContext ctx, StringLibrary stringLibrary)
+        public static List<string> FunkList { get; set; }
+
+        static Funk()
         {
-            if (stringLibrary.Funk.Count == 0)
-                return;
-
-            Random r = new Random();
-            int i = r.Next(stringLibrary.Funk.Count);
-
-            await ctx.Message.RespondAsync(stringLibrary.Funk[i]);
+            FunkList = new List<string>();
         }
 
-        public static void AddFunk(CommandContext ctx, StringLibrary stringLibrary)
+        public static string PrintFunk()
         {
-            //if (userlist.UserIsMuted(nick) || !Settings.Default.funkEnabled) return;
+            if (FunkList.Count == 0)
+                return string.Empty;
 
+            Random r = new Random();
+            int i = r.Next(FunkList.Count);
+
+            return FunkList[i];
+        }
+
+        public static void AddFunk(string content)
+        {
             string args;
             try
             {
-                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
+                args = content.Split(new char[] { ' ' }, 2)[1];
             }
-            catch
+            catch (IndexOutOfRangeException)
             {
-                args = string.Empty;
+                return;
             }
 
-            try
+            string[] splits = content.Split();
+            if (string.Compare(splits[0], "add", StringComparison.OrdinalIgnoreCase) == 0)
+                args = args.Replace("add ", string.Empty, StringComparison.OrdinalIgnoreCase);
+
+            FunkList.Add(args);
+
+            StringLibrary.SaveLibrary(StringLibrary.LibraryType.Funk);
+        }
+
+        public static List<string> ReadFunk()
+        {
+            List<string> funk = new List<string>();
+
+            if (File.Exists("TextFiles/funk.txt"))
             {
-                string[] splits = ctx.Message.Content.Split();
-                if (string.Compare(splits[0].ToLower(), "add") == 0)
-                    args = args.Replace("add ", string.Empty);
-
-                stringLibrary.Funk.Add(args);
-
-                stringLibrary.SaveLibrary(StringLibrary.LibraryType.Funk);
+                try
+                {
+                    StreamReader sr = new StreamReader("TextFiles/funk.txt");
+                    while (sr.Peek() >= 0)
+                    {
+                        funk.Add(sr.ReadLine());
+                    }
+                    sr.Close();
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read funk. " + e.Message);
+                }
             }
-            catch
+            return funk;
+        }
+
+        public static void SaveFunk(List<string> funk)
+        {
+            using (StreamWriter newTask = new StreamWriter("TextFiles/Funk.txt", false))
             {
+                foreach (string q in funk)
+                {
+                    newTask.WriteLine(q);
+                }
             }
         }
     }

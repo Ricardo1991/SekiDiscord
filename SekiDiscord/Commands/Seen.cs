@@ -1,64 +1,53 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
+﻿using Newtonsoft.Json;
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 
 namespace SekiDiscord.Commands
 {
     internal class Seen
     {
-        public static void MarkUserSeen(MessageCreateEventArgs e, StringLibrary stringLibrary)
+        public static Dictionary<string, DateTime> SeenTime { get; set; }
+
+        static Seen()
         {
-            string username = ((DiscordMember)e.Message.Author).DisplayName.ToLower();
-
-            if (!stringLibrary.Seen.ContainsKey(username))
-            {
-                stringLibrary.Seen.Add(username, DateTime.UtcNow);
-            }
-            else if (stringLibrary.Seen.ContainsKey(username))
-            {
-                stringLibrary.Seen[username] = DateTime.UtcNow;
-            }
-
-            stringLibrary.SaveLibrary(StringLibrary.LibraryType.Seen);
+            SeenTime = new Dictionary<string, DateTime>();
         }
 
-        private static DateTime GetUserSeenUTC(string nick, StringLibrary stringLibrary)
+        public static void MarkUserSeen(string userName)
         {
-            string user = nick.ToLower();
-            if (stringLibrary.Seen.ContainsKey(user))
+            if (SeenTime.ContainsKey(userName))
             {
-                return stringLibrary.Seen[user];
+                SeenTime[userName] = DateTime.UtcNow;
             }
             else
-                return new DateTime(0);
+            {
+                SeenTime.Add(userName, DateTime.UtcNow);
+            }
         }
 
-        public static async Task CheckSeen(CommandContext ctx, StringLibrary stringLibrary)
+        private static DateTime GetUserSeenUTC(string nick)
         {
-            string args;
-
-            try
+            string user = nick.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
+            if (SeenTime.ContainsKey(user))
             {
-                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
+                return SeenTime[user];
             }
-            catch
-            {
-                args = string.Empty;
-            }
+            else
+                throw new UserNotSeenException("The user " + user + " has not been seen yet, or an error has occured");
+        }
 
-            string message;
+        public static string CheckSeen(string args)
+        {
             DateTime seenTime;
             DateTime now = DateTime.UtcNow;
             TimeSpan diff;
 
-            seenTime = GetUserSeenUTC(args, stringLibrary);
-
-            if (seenTime.CompareTo(new DateTime(0)) == 0)
-                message = "The user has not been seen yet, or an error has occured";
-            else
+            try
             {
+                seenTime = GetUserSeenUTC(args);
+
                 diff = now.Subtract(seenTime);
                 string timeDiff = string.Empty;
 
@@ -79,10 +68,64 @@ namespace SekiDiscord.Commands
                 else
                     timeDiff += diff.Minutes + " minutes ago";
 
-                message = "The user " + args + " was last seen " + timeDiff;
+                return "The user " + args + " was last seen " + timeDiff;
+            }
+            catch (UserNotSeenException ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        public class UserNotSeenException : Exception
+        {
+            public UserNotSeenException()
+            {
             }
 
-            await ctx.Message.RespondAsync(message);
+            public UserNotSeenException(string user) : base(user)
+            {
+            }
+
+            public UserNotSeenException(string message, Exception innerException) : base(message, innerException)
+            {
+            }
+        }
+
+        public static Dictionary<string, DateTime> ReadSeen()
+        {
+            Dictionary<string, DateTime> seen = new Dictionary<string, DateTime>();
+
+            if (File.Exists("TextFiles/seen.json"))
+            {
+                try
+                {
+                    using (StreamReader r = new StreamReader("TextFiles/seen.json"))
+                    {
+                        string json = r.ReadToEnd();
+                        seen = JsonConvert.DeserializeObject<Dictionary<string, DateTime>>(json);
+                    }
+                }
+                catch (JsonException)
+                {
+                }
+            }
+
+            return seen;
+        }
+
+        public static void SaveSeen(Dictionary<string, DateTime> seen)
+        {
+            try
+            {
+                using (StreamWriter w = File.CreateText("TextFiles/seen.json"))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(w, seen);
+                }
+            }
+            catch (JsonException)
+            {
+            }
         }
     }
 }

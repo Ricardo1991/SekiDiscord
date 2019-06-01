@@ -1,35 +1,21 @@
-﻿using DSharpPlus.CommandsNext;
-using System;
+﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SekiDiscord.Commands
 {
-    internal class Square
+    public class Square
     {
-        public static async Task SquareText(CommandContext ctx)
+        public const int MAX_TEXT = 10;
+
+        public static string SquareText(string text, string name)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Square Command");
-            int MAX_TEXT = 10;
-
-            string text;
-            string user = ctx.Member.DisplayName;
-
-            try
-            {
-                text = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch
-            {
-                text = string.Empty;
-            }
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Square Command");
 
             if (text.Length > MAX_TEXT)
             {
-                string message = "_farts on " + user + "_";
-                await ctx.RespondAsync(message);
-                return;
+                return "_farts on " + name + "_";
             }
             else
             {
@@ -63,8 +49,7 @@ namespace SekiDiscord.Commands
                     }
                 }
                 string msg = builder.ToString();
-                string message = msg.ToUpper();
-                await ctx.RespondAsync(message);
+                return msg.ToUpper(CultureInfo.CreateSpecificCulture("en-GB"));
             }
         }
     }

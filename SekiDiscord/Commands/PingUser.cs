@@ -1,7 +1,9 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
+﻿using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,21 +13,27 @@ namespace SekiDiscord.Commands
 {
     internal class PingUser
     {
-        public static async Task PingControl(CommandContext e, StringLibrary stringLibrary, string cmd, string args)
+        public static Dictionary<ulong, HashSet<string>> Pings { get; set; }
+
+        static PingUser()
         {
-            ulong username = e.Member.Id; // get message creators username in lower case
+            Pings = new Dictionary<ulong, HashSet<string>>();
+        }
+
+        public static async Task PingControl(ulong userNameID, DiscordUser discordUser, string cmd, string args)
+        {
             switch (cmd)
             {
                 case "add":
                     if (!string.IsNullOrWhiteSpace(args))
                     {
-                        if (!stringLibrary.Pings.ContainsKey(username))
+                        if (!Pings.ContainsKey(userNameID))
                         {
-                            stringLibrary.Pings.Add(username, new HashSet<string>() { args });
+                            Pings.Add(userNameID, new HashSet<string>() { args });
                         }
-                        else if (stringLibrary.Pings.ContainsKey(username))
+                        else if (Pings.ContainsKey(userNameID))
                         {
-                            stringLibrary.Pings[username].Add(args);
+                            Pings[userNameID].Add(args);
                         }
                     }
                     break;
@@ -33,9 +41,9 @@ namespace SekiDiscord.Commands
                 case "remove":
                     if (!string.IsNullOrWhiteSpace(args))
                     {
-                        if (stringLibrary.Pings.ContainsKey(username))
+                        if (Pings.ContainsKey(userNameID))
                         {
-                            stringLibrary.Pings[username].Remove(args);
+                            Pings[userNameID].Remove(args);
                         }
                     }
                     break;
@@ -43,54 +51,52 @@ namespace SekiDiscord.Commands
                 //case "copy":
                 //    if (!string.IsNullOrWhiteSpace(args))
                 //    {
-                //        bool user = stringLibrary.Pings.ContainsKey(username);
-                //        bool userToCopyFrom = stringLibrary.Pings.ContainsKey(args);
+                //        bool user = Pings.ContainsKey(username);
+                //        bool userToCopyFrom = Pings.ContainsKey(args);
                 //        if (!user && userToCopyFrom)
                 //        {
-                //            stringLibrary.Pings.Add(username, stringLibrary.Pings[args]);
+                //              Pings.Add(username, Pings[args]);
                 //        }
                 //        else if (user && userToCopyFrom)
                 //        {
-                //            stringLibrary.Pings[username].UnionWith(stringLibrary.Pings[args]);
+                //              Pings[username].UnionWith(Pings[args]);
                 //        }
                 //    }
                 //    break;
 
                 case "info":
-                    if (stringLibrary.Pings.ContainsKey(username))
+                    if (Pings.ContainsKey(userNameID))
                     {
-                        var discordUser = e.Message.Author;
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.Append("Your pings: ");
-                        foreach (string ping in stringLibrary.Pings[username])
+                        foreach (string ping in Pings[userNameID])
                         {
                             stringBuilder.Append("[" + ping + "] ");
                         }
-                        await Program.DMUser(discordUser, stringBuilder.ToString().Trim());
+                        await Program.DMUser(discordUser, stringBuilder.ToString().Trim()).ConfigureAwait(false);
                     }
-                    else if (!stringLibrary.Pings.ContainsKey(username))
+                    else if (!Pings.ContainsKey(userNameID))
                     {
-                        await e.RespondAsync("You have no pings saved :(");
+                        await Program.DMUser(discordUser, "You have no pings saved").ConfigureAwait(false);
                     }
                     break;
             }
-            stringLibrary.SaveLibrary(StringLibrary.LibraryType.Ping);
         }
 
-        public static HashSet<ulong> GetPingedUsers(MessageCreateEventArgs e, StringLibrary stringLibrary)
+        public static HashSet<ulong> GetPingedUsers(string message)
         {
-            string message = e.Message.Content.ToLower();
-            HashSet<ulong> pinged_users = stringLibrary.Pings.Where(kvp => kvp.Value.Any(value => Regex.IsMatch(message, @"^.*\b" + value + @"\b.*$"))).Select(kvp => kvp.Key).ToHashSet(); // what the fuck, but it works
+            HashSet<ulong> pinged_users = Pings.Where(kvp => kvp.Value.Any(value => Regex.IsMatch(message, @"^.*\b" + value + @"\b.*$"))).Select(kvp => kvp.Key).ToHashSet(); // what the fuck, but it works
             return pinged_users;
         }
 
-        public static async Task SendPings(MessageCreateEventArgs e, StringLibrary stringLibrary)
+        public static async Task SendPings(MessageCreateEventArgs e)
         {
-            DiscordChannel channel = await Program.GetDiscordClient.GetChannelAsync(Settings.Default.ping_channel_id); //get channel from channel id
+            DiscordChannel channel = await Program.GetDiscordClient.GetChannelAsync(Settings.Default.ping_channel_id).ConfigureAwait(false); //get channel from channel id
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.ChannelId != Settings.Default.ping_channel_id)
             {
-                HashSet<ulong> pinged_users = GetPingedUsers(e, stringLibrary);
+                string message = e.Message.Content.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
+                HashSet<ulong> pinged_users = GetPingedUsers(message);
                 string mentions = string.Empty;
                 DiscordMember member;
 
@@ -111,8 +117,45 @@ namespace SekiDiscord.Commands
                         author_nickname = e.Message.Author.Username;
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.Append(mentions + "at " + e.Message.Channel.Mention + "\n" + "<" + author_nickname + "> " + e.Message.Content);
-                    await Program.GetDiscordClient.SendMessageAsync(channel, stringBuilder.ToString());
+                    await Program.GetDiscordClient.SendMessageAsync(channel, stringBuilder.ToString()).ConfigureAwait(false);
                 }
+            }
+        }
+
+        public static Dictionary<ulong, HashSet<string>> ReadPings()
+        {
+            Dictionary<ulong, HashSet<string>> ping = new Dictionary<ulong, HashSet<string>>();
+
+            if (File.Exists("TextFiles/pings.json"))
+            {
+                try
+                {
+                    using (StreamReader r = new StreamReader("TextFiles/pings.json"))
+                    {
+                        string json = r.ReadToEnd();
+                        ping = JsonConvert.DeserializeObject<Dictionary<ulong, HashSet<string>>>(json);
+                    }
+                }
+                catch (JsonException)
+                {
+                }
+            }
+
+            return ping;
+        }
+
+        public static void SavePings(Dictionary<ulong, HashSet<string>> ping)
+        {
+            try
+            {
+                using (StreamWriter w = File.CreateText("TextFiles/pings.json"))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(w, ping);
+                }
+            }
+            catch (JsonException)
+            {
             }
         }
     }

@@ -4,6 +4,8 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using SekiDiscord.Commands;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace SekiDiscord
@@ -12,13 +14,11 @@ namespace SekiDiscord
     {
         private static CommandsNextModule commands;
 
-        private static StringLibrary StringLib { get; set; } = new StringLibrary();
-
         public static async Task DMUser(DiscordUser user, string msg)
         {
             if (!string.IsNullOrWhiteSpace(msg))
             {
-                await GetDiscordClient.SendMessageAsync(await GetDiscordClient.CreateDmAsync(user), msg);
+                await GetDiscordClient.SendMessageAsync(await GetDiscordClient.CreateDmAsync(user).ConfigureAwait(false), msg).ConfigureAwait(false);
             }
         }
 
@@ -28,7 +28,7 @@ namespace SekiDiscord
         {
             if (args.Length < 1)
             {
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Not enough arguments. Usage: SekiDiscord <discord-api-key>. Quitting.");
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Not enough arguments. Usage: SekiDiscord <discord-api-key>. Quitting.");
                 return;
             }
 
@@ -50,7 +50,7 @@ namespace SekiDiscord
                 Settings.Default.Save();
             }*/
 
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Starting...");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Starting...");
 
             if (string.IsNullOrWhiteSpace(Settings.Default.apikey))
             {
@@ -100,31 +100,31 @@ namespace SekiDiscord
             GetDiscordClient.SocketErrored += async a =>
             {
                 tryReconnect = true;
-                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ") + "Error: " + a.Exception.Message);
+                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Error: " + a.Exception.Message).ConfigureAwait(false);
             };
 
             GetDiscordClient.Ready += async a =>
             {
-                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ") + "Ready!");
+                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Ready!").ConfigureAwait(false);
                 tryReconnect = false;
             };
 
             GetDiscordClient.UnknownEvent += async unk =>
             {
-                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ") + "Unknown Event: " + unk.EventName);
+                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Unknown Event: " + unk.EventName).ConfigureAwait(false);
             };
 
             GetDiscordClient.MessageCreated += async e =>
             {
-                if (e.Message.Content.ToLower().StartsWith("!quit"))
+                if (e.Message.Content.StartsWith("!quit", StringComparison.OrdinalIgnoreCase))
                 {
-                    DiscordMember author = await e.Guild.GetMemberAsync(e.Author.Id);
+                    DiscordMember author = await e.Guild.GetMemberAsync(e.Author.Id).ConfigureAwait(false);
                     bool isBotAdmin = Useful.MemberIsBotOperator(author);
 
                     if (author.IsOwner || isBotAdmin)
                     {
                         quit = true;
-                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Quitting...");
+                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Quitting...");
                     }
                 }
 
@@ -135,9 +135,12 @@ namespace SekiDiscord
                     string[] split = e.Message.Content.Split(new char[] { ' ' }, 2);
                     string command = split[0];
                     if (split.Length > 1) arguments = split[1];
-                    string result = CustomCommand.UseCustomCommand(command.TrimStart('!'), arguments, e, StringLib);
+
+                    string nick = ((DiscordMember)e.Message.Author).DisplayName;
+                    List<string> listU = Useful.GetOnlineNames(e.Channel.Guild);
+                    string result = CustomCommand.UseCustomCommand(command.TrimStart('!'), arguments, nick, listU);
                     if (!string.IsNullOrEmpty(result))
-                        await e.Message.RespondAsync(result);
+                        await e.Message.RespondAsync(result).ConfigureAwait(false);
                 }
 
                 //Bot Talk and Cleverbot
@@ -148,31 +151,33 @@ namespace SekiDiscord
                     }
                     else
                     {
-                        await Think(e, botName);
+                        await Think(e, botName).ConfigureAwait(false);
                     }
                 }
                 else if (e.Message.Content.EndsWith(botName, StringComparison.OrdinalIgnoreCase))
                 {
-                    await Think(e, botName);
+                    await Think(e, botName).ConfigureAwait(false);
                 }
 
                 //waifunator
                 if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.Author.Id == Settings.Default.limid) //lims shitty id lul
                 {
-                    if (e.Message.Content.ToLower().Contains("wife"))
+                    if (e.Message.Content.Contains("wife", StringComparison.OrdinalIgnoreCase))
                     {
-                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_w:"));
-                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_a:"));
-                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_i:"));
-                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_f:"));
-                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_u:"));
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_w:")).ConfigureAwait(false);
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_a:")).ConfigureAwait(false);
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_i:")).ConfigureAwait(false);
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_f:")).ConfigureAwait(false);
+                        await e.Message.CreateReactionAsync(DiscordEmoji.FromName(GetDiscordClient, ":regional_indicator_u:")).ConfigureAwait(false);
                     }
                 }
 
                 //Update "last seen" for user that sent the message
-                Seen.MarkUserSeen(e, StringLib);
+                string username = ((DiscordMember)e.Message.Author).DisplayName.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
+                Seen.MarkUserSeen(username);
+                StringLibrary.SaveLibrary(StringLibrary.LibraryType.Seen);
                 //Ping users, leave this last cause it's sloooooooow
-                await PingUser.SendPings(e, StringLib);
+                await PingUser.SendPings(e).ConfigureAwait(false);
             };
 
             //Register the commands defined on SekiCommands.cs
@@ -184,11 +189,10 @@ namespace SekiDiscord
                 EnableMentionPrefix = false
             });
 
-            SekiCommands.SetStringLibrary(StringLib);
             commands.RegisterCommands<SekiCommands>();
 
             //Connect to Discord
-            await GetDiscordClient.ConnectAsync();
+            await GetDiscordClient.ConnectAsync().ConfigureAwait(false);
 
             botName = GetDiscordClient.CurrentUser.Username;
 
@@ -198,20 +202,20 @@ namespace SekiDiscord
                 {
                     try
                     {
-                        await GetDiscordClient.DisconnectAsync();
+                        await GetDiscordClient.DisconnectAsync().ConfigureAwait(false);
                     }
                     finally
                     {
-                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Attempting to Reconnect...");
-                        await GetDiscordClient.ConnectAsync();
+                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Attempting to Reconnect...");
+                        await GetDiscordClient.ConnectAsync().ConfigureAwait(false);
                     }
                 }
 
                 //Wait a bit
-                await Task.Delay(10 * 1000);
+                await Task.Delay(10 * 1000).ConfigureAwait(false);
             }
 
-            await GetDiscordClient.DisconnectAsync();
+            await GetDiscordClient.DisconnectAsync().ConfigureAwait(false);
         }
 
         private static async Task Think(MessageCreateEventArgs e, string bot)
@@ -222,10 +226,10 @@ namespace SekiDiscord
             string input = e.Message.Content;
 
             //Show the "bot is typing..." message
-            await e.Channel.TriggerTypingAsync();
+            await e.Channel.TriggerTypingAsync().ConfigureAwait(false);
 
-            string response = await BotTalk.BotThinkAsync(input, bot);
-            await e.Message.RespondAsync(response);
+            string response = await BotTalk.BotThinkAsync(input, bot).ConfigureAwait(false);
+            await e.Message.RespondAsync(response).ConfigureAwait(false);
         }
     }
 }

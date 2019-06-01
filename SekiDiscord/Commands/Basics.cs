@@ -1,6 +1,6 @@
-﻿using DSharpPlus.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace SekiDiscord.Commands
 {
@@ -9,18 +9,23 @@ namespace SekiDiscord.Commands
         public static int Roll(string content)
         {
             Random random = new Random();
-            string arg = string.Empty;
             int max = 100;
 
             try
             {
-                arg = content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
-                int parseMax = int.Parse(arg);
+                string arg = content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
+                int parseMax = int.Parse(arg, CultureInfo.CreateSpecificCulture("en-GB"));
 
                 if (parseMax > 0)
                     max = parseMax;
             }
-            catch
+            catch (IndexOutOfRangeException)
+            {
+            }
+            catch (FormatException)
+            {
+            }
+            catch (OverflowException)
             {
             }
 
@@ -36,16 +41,9 @@ namespace SekiDiscord.Commands
             string[] choices;
             List<string> sList = new List<string>();
 
-            try
-            {
-                arg = content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ");
-            }
-            catch
-            {
-                return message;
-            }
+            arg = content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
 
-            if (arg.Contains(','))
+            if (arg.Contains(',', StringComparison.OrdinalIgnoreCase))
                 choices = arg.Split(new char[] { ',' });
             else
                 choices = arg.Split(new char[] { ' ' });
@@ -72,7 +70,7 @@ namespace SekiDiscord.Commands
             Random r = new Random();
             string[] choices;
 
-            if (arg.Contains(','))
+            if (arg.Contains(',', StringComparison.OrdinalIgnoreCase))
                 choices = arg.Split(new char[] { ',' });
             else
                 choices = arg.Split(new char[] { ' ' });
@@ -84,7 +82,7 @@ namespace SekiDiscord.Commands
             return user + ": " + choices[random].Trim();
         }
 
-        public static string PokeRandom(List<DiscordMember> listU, string user)
+        public static string PokeRandom(List<string> listU, string user)
         {
             int userNumber;
             Random rnd = new Random();
@@ -93,9 +91,9 @@ namespace SekiDiscord.Commands
             {
                 userNumber = rnd.Next(listU.Count);
             }
-            while (listU[userNumber].DisplayName == user);
+            while (listU[userNumber] == user);
 
-            return "*pokes " + listU[userNumber].DisplayName + "*";
+            return "*pokes " + listU[userNumber] + "*";
         }
     }
 }
