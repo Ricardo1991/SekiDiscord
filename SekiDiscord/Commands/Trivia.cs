@@ -5,13 +5,23 @@ using System.IO;
 
 namespace SekiDiscord.Commands
 {
-    internal class Trivia
+    public class Trivia
     {
         public static List<string> TriviaList { get; set; }
 
         static Trivia()
         {
             TriviaList = new List<string>();
+        }
+
+        public static string GetTrivia()
+        {
+            Random rnd = new Random();
+            string message;
+
+            message = TriviaList[rnd.Next(TriviaList.Count)];
+
+            return message;
         }
 
         public static List<string> ReadTrivia() //Reads the Trivia stuff

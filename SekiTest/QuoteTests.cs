@@ -24,5 +24,11 @@ namespace SekiTest
 
             Assert.Equal("<Me> Second quote", Quotes.PrintQuote("#" + (quoteSize + 1)));
         }
+
+        [Fact]
+        public void GetQuoteTest()
+        {
+            Assert.True(!string.IsNullOrWhiteSpace(Quotes.PrintQuote(string.Empty)));
+        }
     }
 }

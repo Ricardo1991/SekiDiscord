@@ -234,7 +234,8 @@ namespace SekiDiscord
         public async Task SquareText(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Square Command");
-            string message = Square.SquareText(ctx);
+            string text = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
+            string message = Square.SquareText(text, ctx.Member.DisplayName);
             await ctx.RespondAsync(message).ConfigureAwait(false);
         }
 
@@ -336,6 +337,16 @@ namespace SekiDiscord
 
             string args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
             string message = Commands.Seen.CheckSeen(args);
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
+
+        [Command("trivia")]
+        [Description("Get a piece of trivia")]
+        public async Task Trivia(CommandContext ctx)
+        {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Trivia Command");
+
+            string message = Commands.Trivia.GetTrivia();
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
     }

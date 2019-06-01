@@ -1,24 +1,21 @@
-﻿using DSharpPlus.CommandsNext;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 
 namespace SekiDiscord.Commands
 {
-    internal class Square
+    public class Square
     {
-        private const int MAX_TEXT = 10;
+        public const int MAX_TEXT = 10;
 
-        public static string SquareText(CommandContext ctx)
+        public static string SquareText(string text, string name)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Square Command");
 
-            string text = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-
             if (text.Length > MAX_TEXT)
             {
-                return "_farts on " + ctx.Member.DisplayName + "_";
+                return "_farts on " + name + "_";
             }
             else
             {

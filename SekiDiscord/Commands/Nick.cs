@@ -60,7 +60,7 @@ namespace SekiDiscord.Commands
             return message;
         }
 
-        public static List<string> ReadNickGen()//These are for the Nick gen
+        public static List<string> ReadNickGen()
         {
             List<string> nickGenStrings = new List<string>();
             if (File.Exists("TextFiles/nickGen.txt"))
