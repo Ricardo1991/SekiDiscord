@@ -11,8 +11,6 @@ namespace SekiDiscord.Commands
 
         public static string SquareText(string text, string name)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Square Command");
-
             if (text.Length > MAX_TEXT)
             {
                 return "_farts on " + name + "_";
