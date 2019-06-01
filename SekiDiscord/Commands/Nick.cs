@@ -1,15 +1,16 @@
-﻿using DSharpPlus.CommandsNext;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SekiDiscord.Commands
 {
     internal class Nick
     {
-        public static async Task NickGen(CommandContext ctx, StringLibrary stringLibrary)
+        public static List<string> NickGenStrings { get; set; }
+
+        public static string NickGen(string args, string nick)
         {
             Random rnd = new Random();
 
@@ -22,14 +23,10 @@ namespace SekiDiscord.Commands
             string target = null;
             string message;
 
-            string args = ctx.Message.Content;
-            string nick = ctx.Member.DisplayName;
-
-            if (stringLibrary.NickGenStrings.Count < 2)
+            if (NickGenStrings.Count < 2)
             {
                 message = "Nickname generator was not initialized properly";
-                await ctx.RespondAsync(message).ConfigureAwait(false);
-                return;
+                return message;
             }
 
             foreach (string s in args.Split(' '))
@@ -53,14 +50,42 @@ namespace SekiDiscord.Commands
                 else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "iq") Ique = true;
             }
 
-            string nick_ = NickGenerator.GenerateNick(stringLibrary.NickGenStrings, stringLibrary.NickGenStrings.Count, randomnumber, randomUpper, switchLetterNumb, Ique);
+            string nick_ = NickGenerator.GenerateNick(NickGenStrings, NickGenStrings.Count, randomnumber, randomUpper, switchLetterNumb, Ique);
 
             if (targeted)
                 message = nick + " generated a nick for " + target + ": " + nick_;
             else
                 message = nick + " generated the nick " + nick_;
 
-            await ctx.RespondAsync(message).ConfigureAwait(false);
+            return message;
+        }
+
+        public static List<string> ReadNickGen()//These are for the Nick gen
+        {
+            List<string> nickGenStrings = new List<string>();
+            if (File.Exists("TextFiles/nickGen.txt"))
+            {
+                try
+                {
+                    StreamReader sr = new StreamReader("TextFiles/nickGen.txt");
+                    while (sr.Peek() >= 0)
+                    {
+                        nickGenStrings.Add(sr.ReadLine());
+                    }
+                    sr.Close();
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read nickGen. " + e.Message);
+                }
+            }
+            else
+            {
+                //Settings.Default.nickEnabled = false;
+                //Settings.Default.Save();
+            }
+
+            return nickGenStrings;
         }
     }
 

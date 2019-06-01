@@ -106,7 +106,7 @@ namespace SekiDiscord.Commands
                 else
                     message = new KillResult(killString, true);
             }
-            catch (Exception ex)
+            catch (IOException ex)
             {
                 Console.WriteLine("Error BOT randomkill :" + ex.Message);
                 message = new KillResult("Sorry, i can't think of a random kill right now.", false);
@@ -139,9 +139,9 @@ namespace SekiDiscord.Commands
 
                     sr.Close();
                 }
-                catch (Exception e)
+                catch (IOException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Failed to read kills. " + e.Message);
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read kills. " + e.Message);
                 }
             }
             else

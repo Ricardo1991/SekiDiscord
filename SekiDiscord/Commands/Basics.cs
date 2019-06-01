@@ -1,5 +1,4 @@
-﻿using DSharpPlus.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -20,7 +19,13 @@ namespace SekiDiscord.Commands
                 if (parseMax > 0)
                     max = parseMax;
             }
-            catch
+            catch (IndexOutOfRangeException)
+            {
+            }
+            catch (FormatException)
+            {
+            }
+            catch (OverflowException)
             {
             }
 
@@ -77,7 +82,7 @@ namespace SekiDiscord.Commands
             return user + ": " + choices[random].Trim();
         }
 
-        public static string PokeRandom(List<DiscordMember> listU, string user)
+        public static string PokeRandom(List<string> listU, string user)
         {
             int userNumber;
             Random rnd = new Random();
@@ -86,9 +91,9 @@ namespace SekiDiscord.Commands
             {
                 userNumber = rnd.Next(listU.Count);
             }
-            while (listU[userNumber].DisplayName == user);
+            while (listU[userNumber] == user);
 
-            return "*pokes " + listU[userNumber].DisplayName + "*";
+            return "*pokes " + listU[userNumber] + "*";
         }
     }
 }

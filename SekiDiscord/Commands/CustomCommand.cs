@@ -1,6 +1,4 @@
-﻿using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -10,6 +8,7 @@ namespace SekiDiscord.Commands
 {
     public class CustomCommand
     {
+        public static List<CustomCommand> CustomCommands { get; set; }
         private string name;
         private string format;
         private string author;
@@ -53,11 +52,16 @@ namespace SekiDiscord.Commands
             }
         }
 
+        public CustomCommand()
+        {
+            CustomCommands = new List<CustomCommand>();
+        }
+
         public CustomCommand(string author, string name, string format)
         {
-            this.Name = name;
-            this.Format = format;
-            this.Author = author;
+            Name = name;
+            Format = format;
+            Author = author;
         }
 
         public static List<CustomCommand> LoadCustomCommands()
@@ -96,16 +100,14 @@ namespace SekiDiscord.Commands
             return command;
         }
 
-        internal static string UseCustomCommand(string command, string arguments, MessageCreateEventArgs e, StringLibrary stringLibrary)
+        internal static string UseCustomCommand(string command, string arguments, string nick, List<string> listU)
         {
             string response;
             Random r = new Random();
-            string nick = ((DiscordMember)e.Message.Author).DisplayName;
-            List<string> listU = Useful.GetOnlineNames(e.Channel.Guild);
             CustomCommand customCommand;
             var regex = new Regex(Regex.Escape("<random>"));
 
-            if (CommandExists(command, stringLibrary.CustomCommands) == false)
+            if (CommandExists(command, CustomCommands) == false)
             {
                 //message = new Privmsg(CHANNEL, "Command " + cmd + " doesn't exist.");
                 //sendMessage(message);
@@ -113,7 +115,7 @@ namespace SekiDiscord.Commands
                 return string.Empty;
             }
 
-            customCommand = GetCustomCommandByName(command, stringLibrary.CustomCommands);
+            customCommand = GetCustomCommandByName(command, CustomCommands);
 
             if (customCommand == null)
             {

@@ -1,51 +1,52 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
+﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 
 namespace SekiDiscord.Commands
 {
     internal class Seen
     {
-        public static void MarkUserSeen(MessageCreateEventArgs e, StringLibrary stringLibrary)
-        {
-            string username = ((DiscordMember)e.Message.Author).DisplayName.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
+        public static Dictionary<string, DateTime> SeenTime { get; set; }
 
-            if (stringLibrary.Seen.ContainsKey(username))
+        static Seen()
+        {
+            SeenTime = new Dictionary<string, DateTime>();
+        }
+
+        public static void MarkUserSeen(string userName)
+        {
+            if (SeenTime.ContainsKey(userName))
             {
-                stringLibrary.Seen[username] = DateTime.UtcNow;
+                SeenTime[userName] = DateTime.UtcNow;
             }
             else
             {
-                stringLibrary.Seen.Add(username, DateTime.UtcNow);
+                SeenTime.Add(userName, DateTime.UtcNow);
             }
-
-            stringLibrary.SaveLibrary(StringLibrary.LibraryType.Seen);
         }
 
-        private static DateTime GetUserSeenUTC(string nick, StringLibrary stringLibrary)
+        private static DateTime GetUserSeenUTC(string nick)
         {
             string user = nick.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
-            if (stringLibrary.Seen.ContainsKey(user))
+            if (SeenTime.ContainsKey(user))
             {
-                return stringLibrary.Seen[user];
+                return SeenTime[user];
             }
             else
                 throw new UserNotSeenException("The user " + user + " has not been seen yet, or an error has occured");
         }
 
-        public static string CheckSeen(CommandContext ctx, StringLibrary stringLibrary)
+        public static string CheckSeen(string args)
         {
             DateTime seenTime;
             DateTime now = DateTime.UtcNow;
             TimeSpan diff;
 
-            string args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-
             try
             {
-                seenTime = GetUserSeenUTC(args, stringLibrary);
+                seenTime = GetUserSeenUTC(args);
 
                 diff = now.Subtract(seenTime);
                 string timeDiff = string.Empty;
@@ -86,6 +87,43 @@ namespace SekiDiscord.Commands
             }
 
             public UserNotSeenException(string message, Exception innerException) : base(message, innerException)
+            {
+            }
+        }
+
+        public static Dictionary<string, DateTime> ReadSeen()
+        {
+            Dictionary<string, DateTime> seen = new Dictionary<string, DateTime>();
+
+            if (File.Exists("TextFiles/seen.json"))
+            {
+                try
+                {
+                    using (StreamReader r = new StreamReader("TextFiles/seen.json"))
+                    {
+                        string json = r.ReadToEnd();
+                        seen = JsonConvert.DeserializeObject<Dictionary<string, DateTime>>(json);
+                    }
+                }
+                catch (JsonException)
+                {
+                }
+            }
+
+            return seen;
+        }
+
+        public static void SaveSeen(Dictionary<string, DateTime> seen)
+        {
+            try
+            {
+                using (StreamWriter w = File.CreateText("TextFiles/seen.json"))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(w, seen);
+                }
+            }
+            catch (JsonException)
             {
             }
         }

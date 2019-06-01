@@ -1,6 +1,5 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using SekiDiscord.Commands;
 using System;
 using System.Collections.Generic;
@@ -11,13 +10,6 @@ namespace SekiDiscord
 {
     public class SekiCommands
     {
-        internal static StringLibrary StringLibrary { get; set; }
-
-        public static void SetStringLibrary(StringLibrary lib)
-        {
-            StringLibrary = lib;
-        }
-
         [Command("quote")]
         [Description("Show or add quotes")]     // this will be displayed to tell users what this command does when they invoke help
         [Aliases("q")]                          // alternative names for the command
@@ -132,14 +124,14 @@ namespace SekiDiscord
             string message;
             splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
 
-            if (CustomCommand.CommandExists(splits[0], StringLibrary.CustomCommands) == true)
+            if (CustomCommand.CommandExists(splits[0], CustomCommand.CustomCommands) == true)
             {
                 message = "Command " + splits[0] + " already exists.";
                 await ctx.RespondAsync(message).ConfigureAwait(false);
             }
 
-            StringLibrary.CustomCommands.Add(new CustomCommand(nick, splits[1], splits[2]));
-            CustomCommand.SaveCustomCommands(StringLibrary.CustomCommands);
+            CustomCommand.CustomCommands.Add(new CustomCommand(nick, splits[1], splits[2]));
+            CustomCommand.SaveCustomCommands(CustomCommand.CustomCommands);
         }
 
         [Command("removecmd")]
@@ -154,8 +146,8 @@ namespace SekiDiscord
 
             if (Useful.MemberIsBotOperator(ctx.Member) || ctx.Member.IsOwner)
             {
-                CustomCommand.RemoveCommandByName(splits[1], StringLibrary.CustomCommands);
-                CustomCommand.SaveCustomCommands(StringLibrary.CustomCommands);
+                CustomCommand.RemoveCommandByName(splits[1], CustomCommand.CustomCommands);
+                CustomCommand.SaveCustomCommands(CustomCommand.CustomCommands);
                 string message = "Command " + splits[1] + " removed.";
                 await ctx.RespondAsync(message).ConfigureAwait(false);
             }
@@ -183,7 +175,10 @@ namespace SekiDiscord
 
             if (!string.IsNullOrWhiteSpace(msg))
             {
-                await PingUser.PingControl(ctx, StringLibrary, cmd, args).ConfigureAwait(false);
+                ulong userNameID = ctx.Member.Id; // get message creators username in lower case
+                var discordUser = ctx.Message.Author;
+                await PingUser.PingControl(userNameID, discordUser, cmd, args).ConfigureAwait(false);
+                StringLibrary.SaveLibrary(StringLibrary.LibraryType.Ping);
             }
         }
 
@@ -259,9 +254,11 @@ namespace SekiDiscord
             }
 
             if (string.IsNullOrEmpty(arg)) //lookup or random
-                await Commands.Funk.PrintFunk(ctx, StringLibrary).ConfigureAwait(false);
+            {
+                await ctx.Message.RespondAsync(Commands.Funk.PrintFunk()).ConfigureAwait(false);
+            }
             else
-                Commands.Funk.AddFunk(ctx, StringLibrary);
+                Commands.Funk.AddFunk(ctx.Message.Content);
         }
 
         [Command("poke")]
@@ -270,7 +267,7 @@ namespace SekiDiscord
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Poke Command");
 
-            List<DiscordMember> listU = Useful.GetOnlineMembers(ctx.Channel.Guild);
+            List<string> listU = Useful.GetOnlineNames(ctx.Channel.Guild);
             string user = ctx.Member.DisplayName;
 
             string result = Basics.PokeRandom(listU, user);
@@ -300,7 +297,12 @@ namespace SekiDiscord
         public async Task Nick(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Nick Command");
-            await Commands.Nick.NickGen(ctx, StringLibrary).ConfigureAwait(false);
+
+            string args = ctx.Message.Content;
+            string nick = ctx.Member.DisplayName;
+            string result = Commands.Nick.NickGen(args, nick);
+
+            await ctx.RespondAsync(result).ConfigureAwait(false);
         }
 
         [Command("fact")]
@@ -308,7 +310,22 @@ namespace SekiDiscord
         public async Task Fact(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Fact Command");
-            await Commands.Fact.ShowFact(ctx, StringLibrary).ConfigureAwait(false);
+
+            List<string> listU = Useful.GetOnlineNames(ctx.Channel.Guild);
+            string user = ctx.Member.DisplayName;
+            string args;
+            try
+            {
+                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
+            }
+            catch (IndexOutOfRangeException)
+            {
+                args = string.Empty;
+            }
+
+            string result = Commands.Fact.ShowFact(args, listU, user);
+
+            await ctx.Message.RespondAsync(result).ConfigureAwait(false);
         }
 
         [Command("seen")]
@@ -316,7 +333,9 @@ namespace SekiDiscord
         public async Task Seen(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Seen Command");
-            string message = Commands.Seen.CheckSeen(ctx, StringLibrary);
+
+            string args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
+            string message = Commands.Seen.CheckSeen(args);
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
     }

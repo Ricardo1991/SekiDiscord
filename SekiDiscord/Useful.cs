@@ -31,7 +31,7 @@ namespace SekiDiscord
                     if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle)
                         ul.Add(u);
                 }
-                catch
+                catch (NullReferenceException)
                 {
                 }
             }
@@ -49,7 +49,7 @@ namespace SekiDiscord
                     if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle)
                         ul.Add(u.DisplayName);
                 }
-                catch
+                catch (NullReferenceException)
                 {
                 }
             }

@@ -4,6 +4,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using SekiDiscord.Commands;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 
@@ -12,8 +13,6 @@ namespace SekiDiscord
     internal class Program
     {
         private static CommandsNextModule commands;
-
-        private static StringLibrary StringLib { get; set; } = new StringLibrary();
 
         public static async Task DMUser(DiscordUser user, string msg)
         {
@@ -136,7 +135,10 @@ namespace SekiDiscord
                     string[] split = e.Message.Content.Split(new char[] { ' ' }, 2);
                     string command = split[0];
                     if (split.Length > 1) arguments = split[1];
-                    string result = CustomCommand.UseCustomCommand(command.TrimStart('!'), arguments, e, StringLib);
+
+                    string nick = ((DiscordMember)e.Message.Author).DisplayName;
+                    List<string> listU = Useful.GetOnlineNames(e.Channel.Guild);
+                    string result = CustomCommand.UseCustomCommand(command.TrimStart('!'), arguments, nick, listU);
                     if (!string.IsNullOrEmpty(result))
                         await e.Message.RespondAsync(result).ConfigureAwait(false);
                 }
@@ -171,9 +173,11 @@ namespace SekiDiscord
                 }
 
                 //Update "last seen" for user that sent the message
-                Seen.MarkUserSeen(e, StringLib);
+                string username = ((DiscordMember)e.Message.Author).DisplayName.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
+                Seen.MarkUserSeen(username);
+                StringLibrary.SaveLibrary(StringLibrary.LibraryType.Seen);
                 //Ping users, leave this last cause it's sloooooooow
-                await PingUser.SendPings(e, StringLib).ConfigureAwait(false);
+                await PingUser.SendPings(e).ConfigureAwait(false);
             };
 
             //Register the commands defined on SekiCommands.cs
@@ -185,7 +189,6 @@ namespace SekiDiscord
                 EnableMentionPrefix = false
             });
 
-            SekiCommands.SetStringLibrary(StringLib);
             commands.RegisterCommands<SekiCommands>();
 
             //Connect to Discord
