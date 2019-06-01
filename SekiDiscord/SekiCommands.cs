@@ -189,11 +189,22 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Roll Command");
 
             string nick = ctx.Member.DisplayName;
+            string message;
 
-            int number = Basics.Roll(ctx.Message.Content);
-
-            string message = nick + " rolled a " + number;
-            await ctx.RespondAsync(message).ConfigureAwait(false);
+            try
+            {
+                int number = Basics.Roll(ctx.Message.Content);
+                message = nick + " rolled a " + number;
+                await ctx.RespondAsync(message).ConfigureAwait(false);
+            }
+            catch (FormatException)
+            {
+                await ctx.RespondAsync("Wrong Format").ConfigureAwait(false);
+            }
+            catch (OverflowException)
+            {
+                await ctx.RespondAsync("Number too large").ConfigureAwait(false);
+            }
         }
 
         [Command("shuffle")]

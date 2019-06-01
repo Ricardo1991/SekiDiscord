@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace SekiDiscord.Commands
 {
-    internal class Basics
+    public static class Basics
     {
         public static int Roll(string content)
         {
@@ -21,12 +21,7 @@ namespace SekiDiscord.Commands
             }
             catch (IndexOutOfRangeException)
             {
-            }
-            catch (FormatException)
-            {
-            }
-            catch (OverflowException)
-            {
+                return random.Next(0, 100);
             }
 
             return random.Next(0, max) + 1;
