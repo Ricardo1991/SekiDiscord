@@ -54,7 +54,7 @@ namespace SekiDiscord.Commands
 
         public CustomCommand()
         {
-            CustomCommands = new List<CustomCommand>();
+            CustomCommands = LoadCustomCommands();
         }
 
         public CustomCommand(string author, string name, string format)
@@ -67,9 +67,6 @@ namespace SekiDiscord.Commands
         public static List<CustomCommand> LoadCustomCommands()
         {
             List<CustomCommand> command = new List<CustomCommand>();
-            string line;
-
-            command.Clear();
 
             if (File.Exists("TextFiles/customCommands.txt"))
             {
@@ -78,7 +75,7 @@ namespace SekiDiscord.Commands
                     StreamReader sr = new StreamReader("TextFiles/customCommands.txt");
                     while (sr.Peek() >= 0)
                     {
-                        line = sr.ReadLine();
+                        string line = sr.ReadLine();
                         string[] splitLine = line.Split(new char[] { ' ' }, 3);
 
                         command.Add(new CustomCommand(splitLine[0], splitLine[1], splitLine[2]));

@@ -11,7 +11,7 @@ namespace SekiDiscord.Commands
 
         static Trivia()
         {
-            TriviaList = new List<string>();
+            TriviaList = ReadTrivia();
         }
 
         public static string GetTrivia()

@@ -175,7 +175,7 @@ namespace SekiDiscord
                 //Update "last seen" for user that sent the message
                 string username = ((DiscordMember)e.Message.Author).DisplayName.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
                 Seen.MarkUserSeen(username);
-                StringLibrary.SaveLibrary(StringLibrary.LibraryType.Seen);
+                Seen.SaveSeen(Seen.SeenTime);
                 //Ping users, leave this last cause it's sloooooooow
                 await PingUser.SendPings(e).ConfigureAwait(false);
             };

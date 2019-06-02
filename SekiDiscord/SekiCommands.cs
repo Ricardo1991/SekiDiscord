@@ -178,7 +178,7 @@ namespace SekiDiscord
                 ulong userNameID = ctx.Member.Id; // get message creators username in lower case
                 var discordUser = ctx.Message.Author;
                 await PingUser.PingControl(userNameID, discordUser, cmd, args).ConfigureAwait(false);
-                StringLibrary.SaveLibrary(StringLibrary.LibraryType.Ping);
+                PingUser.SavePings(PingUser.Pings);
             }
         }
 

@@ -13,7 +13,7 @@ namespace SekiDiscord.Commands
 
         static Fact()
         {
-            Facts = new List<string>();
+            Facts = ReadFacts();
             FactsUsed = new List<int>();
         }
 

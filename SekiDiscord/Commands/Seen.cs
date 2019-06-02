@@ -12,7 +12,7 @@ namespace SekiDiscord.Commands
 
         static Seen()
         {
-            SeenTime = new Dictionary<string, DateTime>();
+            SeenTime = ReadSeen();
         }
 
         public static void MarkUserSeen(string userName)

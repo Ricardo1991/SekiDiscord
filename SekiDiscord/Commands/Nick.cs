@@ -10,6 +10,11 @@ namespace SekiDiscord.Commands
     {
         public static List<string> NickGenStrings { get; set; }
 
+        static Nick()
+        {
+            NickGenStrings = ReadNickGen();
+        }
+
         public static string NickGen(string args, string nick)
         {
             Random rnd = new Random();

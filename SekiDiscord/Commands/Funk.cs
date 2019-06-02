@@ -11,7 +11,7 @@ namespace SekiDiscord.Commands
 
         static Funk()
         {
-            FunkList = new List<string>();
+            FunkList = ReadFunk();
         }
 
         public static string PrintFunk()
@@ -43,7 +43,7 @@ namespace SekiDiscord.Commands
 
             FunkList.Add(args);
 
-            StringLibrary.SaveLibrary(StringLibrary.LibraryType.Funk);
+            SaveFunk(FunkList);
         }
 
         public static List<string> ReadFunk()
