@@ -17,7 +17,7 @@ namespace SekiDiscord.Commands
 
         static PingUser()
         {
-            Pings = new Dictionary<ulong, HashSet<string>>();
+            Pings = ReadPings();
         }
 
         public static async Task PingControl(ulong userNameID, DiscordUser discordUser, string cmd, string args)
