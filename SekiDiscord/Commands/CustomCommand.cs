@@ -52,7 +52,7 @@ namespace SekiDiscord.Commands
             }
         }
 
-        public CustomCommand()
+        static CustomCommand()
         {
             CustomCommands = LoadCustomCommands();
         }
