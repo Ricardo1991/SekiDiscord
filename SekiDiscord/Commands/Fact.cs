@@ -8,22 +8,22 @@ namespace SekiDiscord.Commands
 {
     internal class Fact
     {
+        public static int MAX_FACTS = 300;
         public static List<string> Facts { get; set; }
         public static List<int> FactsUsed { get; set; }
 
         static Fact()
         {
-            Facts = ReadFacts();
             FactsUsed = new List<int>();
+            Facts = ReadFacts();
         }
 
         public static string ShowFact(string args, List<string> listU, string nick)
         {
             Random r = new Random();
-            string target = "";
+            string target;
             string factString;
             int factID;
-            int MAX_FACTS = 300;
 
             var regex = new Regex(Regex.Escape("<random>"));
 
