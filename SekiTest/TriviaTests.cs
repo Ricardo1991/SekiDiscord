@@ -8,14 +8,12 @@ namespace SekiTest
         [Fact]
         public void LoadTriviaTest()
         {
-            Trivia.TriviaList = Trivia.ReadTrivia();
-            Assert.True(Trivia.TriviaList.Count > 0);
+            Assert.True(Trivia.TriviaCount() > 0);
         }
 
         [Fact]
         public void GetTriviaTest()
         {
-            Trivia.TriviaList = Trivia.ReadTrivia();
             Assert.True(!string.IsNullOrWhiteSpace(Trivia.GetTrivia()));
         }
     }

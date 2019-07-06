@@ -6,11 +6,11 @@ using System.Text.RegularExpressions;
 
 namespace SekiDiscord.Commands
 {
-    internal class Fact
+    public static class Fact
     {
-        public static int MAX_FACTS = 300;
-        public static List<string> Facts { get; set; }
-        public static List<int> FactsUsed { get; set; }
+        private const int MAX_FACTS_REMEMBER = 300;
+        private static List<string> Facts { get; set; }
+        private static List<int> FactsUsed { get; set; }
 
         static Fact()
         {
@@ -18,45 +18,48 @@ namespace SekiDiscord.Commands
             Facts = ReadFacts();
         }
 
-        public static string ShowFact(string args, List<string> listU, string nick)
+        public static int FactCount()
+        {
+            return Facts.Count;
+        }
+
+        public static string ShowFact(string args, List<string> listU, string user)
         {
             Random r = new Random();
             string target;
-            string factString;
             int factID;
 
             var regex = new Regex(Regex.Escape("<random>"));
 
             if (Facts.Count < 1)
-                return string.Empty;
+                throw new Exception("No facts loaded.");
 
             if (string.IsNullOrWhiteSpace(args) || string.Compare(args, "random", StringComparison.OrdinalIgnoreCase) == 0)
-                target = listU[r.Next(listU.Count)];
+                target = listU[r.Next(listU.Count)];        //Random target
             else
                 target = args.Trim();
 
-            if (Facts.Count <= MAX_FACTS)
+            // Not enough facts to care for anti repeat
+            if (Facts.Count <= MAX_FACTS_REMEMBER)
             {
-                FactsUsed.Clear();
                 factID = r.Next(Facts.Count);
-                FactsUsed.Insert(0, factID);
             }
+            //Anti-repeat
             else
             {
                 do factID = r.Next(Facts.Count);
                 while (FactsUsed.Contains(factID));
+
+                FactsUsed.Insert(0, factID);
             }
 
-            if (FactsUsed.Count >= MAX_FACTS)
+            //Clear the oldest entry if the list reaches the limit
+            if (FactsUsed.Count >= MAX_FACTS_REMEMBER)
             {
                 FactsUsed.Remove(FactsUsed[FactsUsed.Count - 1]);
             }
 
-            FactsUsed.Insert(0, factID);
-
-            factString = Facts[factID];
-
-            return Useful.FillTags(factString, nick.Trim(), target, listU);
+            return Useful.FillTags(Facts[factID], user.Trim(), target, listU);
         }
 
         public static List<string> ReadFacts()

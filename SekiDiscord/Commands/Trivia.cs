@@ -5,13 +5,18 @@ using System.IO;
 
 namespace SekiDiscord.Commands
 {
-    public class Trivia
+    public static class Trivia
     {
-        public static List<string> TriviaList { get; set; }
+        private static List<string> TriviaList { get; set; }
 
         static Trivia()
         {
             TriviaList = ReadTrivia();
+        }
+
+        public static int TriviaCount()
+        {
+            return TriviaList.Count;
         }
 
         public static string GetTrivia()
@@ -24,7 +29,8 @@ namespace SekiDiscord.Commands
             return message;
         }
 
-        public static List<string> ReadTrivia() //Reads the Trivia stuff
+        //Reads Trivia messages into memory
+        public static List<string> ReadTrivia()
         {
             List<string> trivia = new List<string>();
 
