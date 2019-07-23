@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -136,11 +137,11 @@ namespace SekiDiscord.Commands
                         ping = JsonConvert.DeserializeObject<Dictionary<ulong, HashSet<string>>>(json);
                     }
                 }
-                catch (JsonException)
+                catch (JsonException e)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "PINGUSER::READPINGS::COULD NOT READ PINGS:: " + e.Message);
                 }
             }
-
             return ping;
         }
 
@@ -154,8 +155,9 @@ namespace SekiDiscord.Commands
                     serializer.Serialize(w, ping);
                 }
             }
-            catch (JsonException)
+            catch (JsonException e)
             {
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "PINGUSER::SAVEPINGS::COULD NOT SAVE PINGS:: " + e.Message);
             }
         }
     }
