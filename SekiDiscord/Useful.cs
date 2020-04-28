@@ -28,7 +28,8 @@ namespace SekiDiscord
             {
                 try
                 {
-                    if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle)
+                    if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle
+                        && u.Id != 152322300954411008) // if user id is not chibi)
                         ul.Add(u);
                 }
                 catch (NullReferenceException)
@@ -46,7 +47,8 @@ namespace SekiDiscord
             {
                 try
                 {
-                    if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle)
+                    if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle 
+                        && u.Id != 152322300954411008) // if user id is not chibi
                         ul.Add(u.DisplayName);
                 }
                 catch (NullReferenceException)

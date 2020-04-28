@@ -360,5 +360,25 @@ namespace SekiDiscord
             string message = Commands.Trivia.GetTrivia();
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
+
+        [Command("version")]
+        [Description("Get GIT information about current build")]
+        [Aliases("v")]
+        public async Task Version(CommandContext ctx)
+        {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Trivia Command");
+
+            await ctx.Message.RespondAsync(Commands.Version.VersionString).ConfigureAwait(false);
+        }
+
+        [Command("fortune")]
+        [Description("Get today's fortune for yourself")]
+        public async Task Fortune(CommandContext ctx)
+        {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Fortune Command");
+
+            string message = Commands.Fortune.GetFortune(DateTime.Now, ctx.User);
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
     }
 }
