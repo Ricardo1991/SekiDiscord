@@ -370,5 +370,15 @@ namespace SekiDiscord
 
             await ctx.Message.RespondAsync(Commands.Version.VersionString).ConfigureAwait(false);
         }
+
+        [Command("fortune")]
+        [Description("Get today's fortune for yourself")]
+        public async Task Fortune(CommandContext ctx)
+        {
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Fortune Command");
+
+            string message = Commands.Fortune.GetFortune(DateTime.Now, ctx.User);
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
     }
 }

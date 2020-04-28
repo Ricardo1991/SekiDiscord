@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace SekiDiscord.Commands
 {
@@ -28,8 +27,6 @@ namespace SekiDiscord.Commands
             Random r = new Random();
             string target;
             int factID;
-
-            var regex = new Regex(Regex.Escape("<random>"));
 
             if (Facts.Count < 1)
                 throw new Exception("No facts loaded.");
