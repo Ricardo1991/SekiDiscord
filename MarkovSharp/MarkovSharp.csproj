@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{D3003B4E-0007-43EB-B350-2410286C6DB5}</ProjectGuid>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyTitle>MarkovSharp</AssemblyTitle>
     <Product>MarkovSharp</Product>
     <Description>An easy to use C# implementation of an N-state Markov model.</Description>
@@ -15,7 +15,7 @@
     <PackageTags>markov model machine learning text generation</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lines.json" />
