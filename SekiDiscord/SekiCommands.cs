@@ -377,7 +377,7 @@ namespace SekiDiscord
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Fortune Command");
 
-            string message = Commands.Fortune.GetFortune(DateTime.Now, ctx.User);
+            string message = Commands.Fortune.GetFortune(DateTime.Today, ctx.User);
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
     }
