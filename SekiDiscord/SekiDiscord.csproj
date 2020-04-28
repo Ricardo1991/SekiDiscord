@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <StartupObject>SekiDiscord.Program</StartupObject>
   </PropertyGroup>
 
@@ -47,6 +47,9 @@
     </None>
     <None Update="TextFiles\facts.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TextFiles\fortune.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="TextFiles\funk.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
