@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SekiDiscord.Commands
 {
-    internal class Seen
+    public class Seen
     {
         public static Dictionary<string, DateTime> SeenTime { get; set; }
 
@@ -17,6 +17,7 @@ namespace SekiDiscord.Commands
 
         public static void MarkUserSeen(string userName)
         {
+            userName = userName.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
             if (SeenTime.ContainsKey(userName))
             {
                 SeenTime[userName] = DateTime.UtcNow;
@@ -25,6 +26,8 @@ namespace SekiDiscord.Commands
             {
                 SeenTime.Add(userName, DateTime.UtcNow);
             }
+
+            SaveSeen();
         }
 
         private static DateTime GetUserSeenUTC(string nick)
@@ -91,7 +94,7 @@ namespace SekiDiscord.Commands
             }
         }
 
-        public static Dictionary<string, DateTime> ReadSeen()
+        private static Dictionary<string, DateTime> ReadSeen()
         {
             Dictionary<string, DateTime> seen = new Dictionary<string, DateTime>();
 
@@ -99,11 +102,9 @@ namespace SekiDiscord.Commands
             {
                 try
                 {
-                    using (StreamReader r = new StreamReader("TextFiles/seen.json"))
-                    {
-                        string json = r.ReadToEnd();
-                        seen = JsonConvert.DeserializeObject<Dictionary<string, DateTime>>(json);
-                    }
+                    using StreamReader r = new StreamReader("TextFiles/seen.json");
+                    string json = r.ReadToEnd();
+                    seen = JsonConvert.DeserializeObject<Dictionary<string, DateTime>>(json);
                 }
                 catch (JsonException)
                 {
@@ -113,15 +114,13 @@ namespace SekiDiscord.Commands
             return seen;
         }
 
-        public static void SaveSeen(Dictionary<string, DateTime> seen)
+        private static void SaveSeen()
         {
             try
             {
-                using (StreamWriter w = File.CreateText("TextFiles/seen.json"))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(w, seen);
-                }
+                using StreamWriter w = File.CreateText("TextFiles/seen.json");
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(w, SeenTime);
             }
             catch (JsonException)
             {

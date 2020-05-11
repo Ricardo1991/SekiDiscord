@@ -1,8 +1,8 @@
-﻿using System;
-using DSharpPlus.Entities;
+﻿using DSharpPlus.Entities;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Globalization;
+using System.IO;
 
 namespace SekiDiscord.Commands
 {

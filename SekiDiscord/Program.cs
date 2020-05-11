@@ -41,6 +41,7 @@ namespace SekiDiscord
             bool quit = false;
             bool tryReconnect = false;
             string botName = string.Empty;
+            char commandChar = '!';
 
             //TODO: This should be fixed once .net Core 3.0 is released
             /*if (Settings.Default.UpgradeNeeded)
@@ -114,9 +115,20 @@ namespace SekiDiscord
                 await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Unknown Event: " + unk.EventName).ConfigureAwait(false);
             };
 
+            //Register the commands defined on SekiCommands.cs
+
+            commands = GetDiscordClient.UseCommandsNext(new CommandsNextConfiguration
+            {
+                StringPrefix = commandChar.ToString(),
+                CaseSensitive = false,
+                EnableMentionPrefix = false
+            });
+
+            commands.RegisterCommands<SekiCommands>();
+
             GetDiscordClient.MessageCreated += async e =>
             {
-                if (e.Message.Content.StartsWith("!quit", StringComparison.OrdinalIgnoreCase))
+                if (e.Message.Content.StartsWith(commandChar + "quit", StringComparison.OrdinalIgnoreCase))
                 {
                     DiscordMember author = await e.Guild.GetMemberAsync(e.Author.Id).ConfigureAwait(false);
                     bool isBotAdmin = Useful.MemberIsBotOperator(author);
@@ -129,7 +141,7 @@ namespace SekiDiscord
                 }
 
                 //CustomCommands
-                else if (e.Message.Content.StartsWith('!'))
+                else if (e.Message.Content.StartsWith(commandChar))
                 {
                     string arguments = string.Empty;
                     string[] split = e.Message.Content.Split(new char[] { ' ' }, 2);
@@ -138,23 +150,16 @@ namespace SekiDiscord
 
                     string nick = ((DiscordMember)e.Message.Author).DisplayName;
                     List<string> listU = Useful.GetOnlineNames(e.Channel.Guild);
-                    string result = CustomCommand.UseCustomCommand(command.TrimStart('!'), arguments, nick, listU);
+                    string result = CustomCommand.UseCustomCommand(command.TrimStart(commandChar), arguments, nick, listU);
                     if (!string.IsNullOrEmpty(result))
                         await e.Message.RespondAsync(result).ConfigureAwait(false);
                 }
 
                 //Bot Talk and Cleverbot
-                else if (e.Message.Content.StartsWith(botName + ",", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (e.Message.Content.EndsWith('?'))
-                    {
-                    }
-                    else
-                    {
-                        await Think(e, botName).ConfigureAwait(false);
-                    }
-                }
-                else if (e.Message.Content.EndsWith(botName, StringComparison.OrdinalIgnoreCase))
+                else if (
+                e.Message.Content.StartsWith(botName + ",", StringComparison.OrdinalIgnoreCase)
+                || e.Message.Content.EndsWith(botName, StringComparison.OrdinalIgnoreCase)
+                )
                 {
                     await Think(e, botName).ConfigureAwait(false);
                 }
@@ -173,23 +178,12 @@ namespace SekiDiscord
                 }
 
                 //Update "last seen" for user that sent the message
-                string username = ((DiscordMember)e.Message.Author).DisplayName.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
+                string username = ((DiscordMember)e.Message.Author).DisplayName;
                 Seen.MarkUserSeen(username);
-                Seen.SaveSeen(Seen.SeenTime);
+
                 //Ping users, leave this last cause it's sloooooooow
                 await PingUser.SendPings(e).ConfigureAwait(false);
             };
-
-            //Register the commands defined on SekiCommands.cs
-
-            commands = GetDiscordClient.UseCommandsNext(new CommandsNextConfiguration
-            {
-                StringPrefix = "!",
-                CaseSensitive = false,
-                EnableMentionPrefix = false
-            });
-
-            commands.RegisterCommands<SekiCommands>();
 
             //Connect to Discord
             await GetDiscordClient.ConnectAsync().ConfigureAwait(false);

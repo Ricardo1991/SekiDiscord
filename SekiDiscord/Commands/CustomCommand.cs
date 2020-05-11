@@ -127,12 +127,10 @@ namespace SekiDiscord.Commands
 
         public static void SaveCustomCommands(List<CustomCommand> commands)
         {
-            using (StreamWriter newTask = new StreamWriter("TextFiles/customCommands.txt", false))
+            using StreamWriter newTask = new StreamWriter("TextFiles/customCommands.txt", false);
+            foreach (CustomCommand q in commands)
             {
-                foreach (CustomCommand q in commands)
-                {
-                    newTask.WriteLine(q.Author + " " + q.Name + " " + q.Format);
-                }
+                newTask.WriteLine(q.Author + " " + q.Name + " " + q.Format);
             }
         }
 

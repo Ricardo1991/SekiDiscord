@@ -131,11 +131,9 @@ namespace SekiDiscord.Commands
             {
                 try
                 {
-                    using (StreamReader r = new StreamReader("TextFiles/pings.json"))
-                    {
-                        string json = r.ReadToEnd();
-                        ping = JsonConvert.DeserializeObject<Dictionary<ulong, HashSet<string>>>(json);
-                    }
+                    using StreamReader r = new StreamReader("TextFiles/pings.json");
+                    string json = r.ReadToEnd();
+                    ping = JsonConvert.DeserializeObject<Dictionary<ulong, HashSet<string>>>(json);
                 }
                 catch (JsonException e)
                 {
@@ -149,11 +147,9 @@ namespace SekiDiscord.Commands
         {
             try
             {
-                using (StreamWriter w = File.CreateText("TextFiles/pings.json"))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(w, ping);
-                }
+                using StreamWriter w = File.CreateText("TextFiles/pings.json");
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(w, ping);
             }
             catch (JsonException e)
             {

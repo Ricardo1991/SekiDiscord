@@ -41,21 +41,23 @@ namespace SekiDiscord
 
         public static List<string> GetOnlineNames(DiscordGuild discordGuild)
         {
-            List<string> ul = new List<string>();
+            List<string> userList = new List<string>();
 
             foreach (DiscordMember u in discordGuild.Members)
             {
                 try
                 {
-                    if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle 
-                        && u.Id != 152322300954411008) // if user id is not chibi
-                        ul.Add(u.DisplayName);
+                    if (!(u.Presence is null) &&
+                        (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle) &&
+                        u.Id != 152322300954411008) // if user id is not chibi
+
+                        userList.Add(u.DisplayName);
                 }
                 catch (NullReferenceException)
                 {
                 }
             }
-            return ul;
+            return userList;
         }
 
         public static string GetBetween(string strSource, string strStart, string strEnd)
@@ -78,7 +80,7 @@ namespace SekiDiscord
                     Start = strSource.IndexOf(strStart, 0, StringComparison.Ordinal) + strStart.Length;
 
                 End = strSource.Length;
-                return strSource.Substring(Start, End - Start);
+                return strSource[Start..End];
             }
 
             if (strSource.Contains(strStart, StringComparison.Ordinal) && strSource.Contains(strEnd, StringComparison.Ordinal))
@@ -89,7 +91,7 @@ namespace SekiDiscord
                     Start = strSource.IndexOf(strStart, 0, StringComparison.Ordinal) + strStart.Length;
                 End = strSource.IndexOf(strEnd, Start, StringComparison.Ordinal);
                 if (End < 0) End = strSource.Length;
-                return strSource.Substring(Start, End - Start);
+                return strSource[Start..End];
             }
             else
             {
@@ -98,7 +100,7 @@ namespace SekiDiscord
                 else
                     Start = strSource.IndexOf(strStart, 0, StringComparison.Ordinal) + strStart.Length;
                 End = strSource.Length;
-                return strSource.Substring(Start, End - Start);
+                return strSource[Start..End];
             }
         }
 

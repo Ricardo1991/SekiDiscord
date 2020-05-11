@@ -155,12 +155,10 @@ namespace SekiDiscord.Commands
 
         public static void SaveQuotes(List<string> quotes)
         {
-            using (StreamWriter newTask = new StreamWriter("TextFiles/quotes.txt", false))
+            using StreamWriter newTask = new StreamWriter("TextFiles/quotes.txt", false);
+            foreach (string q in quotes)
             {
-                foreach (string q in quotes)
-                {
-                    newTask.WriteLine(q);
-                }
+                newTask.WriteLine(q);
             }
         }
     }

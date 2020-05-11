@@ -242,14 +242,14 @@ namespace SekiDiscord.Commands
 
         private static string AddSuffix(string nick_gen, string suffix)
         {
-            string last = nick_gen[nick_gen.Length - 1].ToString(CultureInfo.CreateSpecificCulture("en-GB"));
+            string last = nick_gen[^1].ToString(CultureInfo.CreateSpecificCulture("en-GB"));
             if (last == "a".ToString(CultureInfo.CreateSpecificCulture("en-GB")) ||
                 last == "e".ToString(CultureInfo.CreateSpecificCulture("en-GB")) ||
                 last == "i".ToString(CultureInfo.CreateSpecificCulture("en-GB")) ||
                 last == "o".ToString(CultureInfo.CreateSpecificCulture("en-GB")) ||
                 last == "u".ToString(CultureInfo.CreateSpecificCulture("en-GB")))
             {
-                nick_gen = nick_gen.Substring(0, nick_gen.Length - 1);
+                nick_gen = nick_gen[0..^1];
             }
             nick_gen += suffix;
 

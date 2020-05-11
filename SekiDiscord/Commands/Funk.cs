@@ -71,12 +71,10 @@ namespace SekiDiscord.Commands
 
         public static void SaveFunk(List<string> funk)
         {
-            using (StreamWriter newTask = new StreamWriter("TextFiles/Funk.txt", false))
+            using StreamWriter newTask = new StreamWriter("TextFiles/Funk.txt", false);
+            foreach (string q in funk)
             {
-                foreach (string q in funk)
-                {
-                    newTask.WriteLine(q);
-                }
+                newTask.WriteLine(q);
             }
         }
     }
