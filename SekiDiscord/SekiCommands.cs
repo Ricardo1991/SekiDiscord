@@ -166,7 +166,7 @@ namespace SekiDiscord
             {
                 msg = ctx.Message.Content.ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Split(new char[] { ' ' }, 2)[1]; // remove !p or !ping
                 cmd = msg.Split(new char[] { ' ' }, 2)[0]; // get command word
-                args = Useful.GetBetween(msg, cmd + " ", null); // get words after command, add a space to cmd word so args doesnt start with one
+                args = Useful.GetBetween(msg, cmd, null).TrimStart(); // get words after command, add a space to cmd word so args doesnt start with one
             }
             catch (IndexOutOfRangeException)
             {
