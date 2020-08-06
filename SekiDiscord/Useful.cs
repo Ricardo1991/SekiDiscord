@@ -1,4 +1,5 @@
-﻿using DSharpPlus.Entities;
+﻿using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,6 +9,17 @@ namespace SekiDiscord
 {
     public static class Useful
     {
+        public static string GetUsername(CommandContext ctx)
+        {
+            string author;
+            if (ctx.Member != null)
+                author = ctx.Member.DisplayName;
+            else
+                author = ctx.User.Username;
+
+            return author;
+        }
+
         public static bool MemberIsBotOperator(DiscordMember member)
         {
             foreach (DiscordRole role in member.Roles)

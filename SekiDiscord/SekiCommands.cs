@@ -54,7 +54,7 @@ namespace SekiDiscord
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Kill Command");
 
-            string author = ctx.Member.DisplayName;
+            string author = Useful.GetUsername(ctx);
             List<string> usersOnline = Useful.GetOnlineNames(ctx.Channel.Guild);
 
             string args;
@@ -88,7 +88,7 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "RKill Command");
 
             string args;
-            string author = ctx.Member.DisplayName;
+            string author = Useful.GetUsername(ctx);
             List<string> listU = Useful.GetOnlineNames(ctx.Channel.Guild);
 
             try
@@ -188,7 +188,7 @@ namespace SekiDiscord
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Roll Command");
 
-            string nick = ctx.Member.DisplayName;
+            string nick = Useful.GetUsername(ctx);
             string message;
 
             try
@@ -224,12 +224,11 @@ namespace SekiDiscord
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Choose Command");
 
-            string arg;
-            string user = ctx.Member.DisplayName;
+            string user = Useful.GetUsername(ctx);
 
             try
             {
-                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
+                string arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
                 string result = Basics.Choose(arg, user);
                 await ctx.RespondAsync(result).ConfigureAwait(false);
             }
@@ -246,7 +245,7 @@ namespace SekiDiscord
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Square Command");
             string text = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            string message = Square.SquareText(text, ctx.Member.DisplayName);
+            string message = Square.SquareText(text, Useful.GetUsername(ctx));
             await ctx.RespondAsync(message).ConfigureAwait(false);
         }
 
@@ -280,7 +279,7 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Poke Command");
 
             List<string> listU = Useful.GetOnlineNames(ctx.Channel.Guild);
-            string user = ctx.Member.DisplayName;
+            string user = Useful.GetUsername(ctx);
 
             string result = Basics.PokeRandom(listU, user);
             await ctx.RespondAsync(result).ConfigureAwait(false);
@@ -311,7 +310,7 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Nick Command");
 
             string args = ctx.Message.Content;
-            string nick = ctx.Member.DisplayName;
+            string nick = Useful.GetUsername(ctx);
             string result = Commands.Nick.NickGen(args, nick);
 
             await ctx.RespondAsync(result).ConfigureAwait(false);
@@ -324,7 +323,7 @@ namespace SekiDiscord
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Fact Command");
 
             List<string> listU = Useful.GetOnlineNames(ctx.Channel.Guild);
-            string user = ctx.Member.DisplayName;
+            string user = Useful.GetUsername(ctx);
             string args;
             try
             {
