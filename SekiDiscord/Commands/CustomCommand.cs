@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace SekiDiscord.Commands
 {
@@ -100,9 +99,7 @@ namespace SekiDiscord.Commands
         internal static string UseCustomCommand(string command, string arguments, string nick, List<string> listU)
         {
             string response;
-            Random r = new Random();
             CustomCommand customCommand;
-            var regex = new Regex(Regex.Escape("<random>"));
 
             if (CommandExists(command, CustomCommands) == false)
             {
