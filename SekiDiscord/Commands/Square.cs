@@ -11,9 +11,9 @@ namespace SekiDiscord.Commands
 
         public static string SquareText(string text, string name)
         {
-            if (text.Length > MAX_TEXT)
+            if (text == null || text.Length > MAX_TEXT)
             {
-                return "_farts on " + name + "_";
+                return "_farts on " + name + '_';
             }
             else
             {
@@ -29,21 +29,21 @@ namespace SekiDiscord.Commands
                         builder.Append("```");
                         foreach (char value in text.ToCharArray())
                         {
-                            builder.Append(value + " ");
+                            builder.Append(value + ' ');
                         }
-                        builder.Append("\n");
+                        builder.Append('\n');
                     }
                     else if (i == text.Length - 1)
                     {
                         foreach (char value in text.ToCharArray().Reverse())
                         {
-                            builder.Append(value + " ");
+                            builder.Append(value + ' ');
                         }
                         builder.Append("```");
                     }
                     else
                     {
-                        builder.Append(text[i] + new string(' ', text.Length + (text.Length - 3)) + text[text.Length - 1 - i] + "\n");
+                        builder.Append(text[i] + new string(' ', text.Length + (text.Length - 3)) + text[text.Length - 1 - i] + '\n');
                     }
                 }
                 string msg = builder.ToString();

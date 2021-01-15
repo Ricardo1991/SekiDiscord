@@ -11,8 +11,8 @@ namespace SekiDiscord
     public class SekiCommands
     {
         [Command("quote")]
-        [Description("Show or add quotes")]     // this will be displayed to tell users what this command does when they invoke help
-        [Aliases("q")]                          // alternative names for the command
+        [Description("Show or add quotes. Add argument \"add\" after the command to add quote. If a different argument is used it will perform a search. If no arguments are shown, a random quote is shown")]     // this will be displayed to tell users what this command does when they invoke help
+        [Aliases("q")]
         public async Task Quote(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Quote Command");
@@ -50,6 +50,7 @@ namespace SekiDiscord
         }
 
         [Command("kill")]
+        [Description("Perform a kill action on a user. Indicate user with arguments, or leave black for a random target.")]
         public async Task Kill(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Kill Command");
@@ -83,6 +84,7 @@ namespace SekiDiscord
         }
 
         [Command("rkill")]
+        [Description("Perform a randomly generated kill action on a user. Indicate user with arguments, or leave black for a random target.")]
         public async Task RKill(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "RKill Command");
@@ -183,7 +185,7 @@ namespace SekiDiscord
         }
 
         [Command("roll")]
-        [Description("Roll a number between 0 and 100")]
+        [Description("Roll a number between 0 and the indicated number. 100 will be used as default if no valid number is presented")]
         public async Task Roll(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Roll Command");
@@ -208,7 +210,7 @@ namespace SekiDiscord
         }
 
         [Command("shuffle")]
-        [Description("Shuffle words randomly. Can be phrases if separated by commas")]
+        [Description("Shuffle provided words randomly. Can be phrases if separated by commas")]
         public async Task Shuffle(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Shuffle Command");
@@ -219,7 +221,7 @@ namespace SekiDiscord
         }
 
         [Command("choose")]
-        [Description("Choose an item from the presented list randomly")]
+        [Description("Choose a word from the argument list, randomly")]
         public async Task Choose(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Choose Command");
@@ -239,7 +241,7 @@ namespace SekiDiscord
         }
 
         [Command("square")]
-        [Description("square a word")]
+        [Description("squarify a word. Limited to lenght of 10 characters")]
         [Aliases("s")]
         public async Task SquareText(CommandContext ctx)
         {
@@ -250,7 +252,7 @@ namespace SekiDiscord
         }
 
         [Command("funk")]
-        [Description("gimme music")]
+        [Description("Provide link to a song from the stored list")]
         public async Task Funk(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Funk Command");
@@ -273,7 +275,7 @@ namespace SekiDiscord
         }
 
         [Command("poke")]
-        [Description("poke someone randomly")]
+        [Description("poke a user randomly")]
         public async Task Poke(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Poke Command");
@@ -286,7 +288,7 @@ namespace SekiDiscord
         }
 
         [Command("youtube")]
-        [Description("poke someone randomly")]
+        [Description("Search youtube for the arguments provided, and return the top result")]
         [Aliases("yt")]                          // alternative names for the command
         public async Task YoutubeSearch(CommandContext ctx)
         {
@@ -304,7 +306,7 @@ namespace SekiDiscord
         }
 
         [Command("nick")]
-        [Description("generate a nickname")]
+        [Description("Generate a nickname")]
         public async Task Nick(CommandContext ctx)
         {
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Nick Command");

@@ -6,7 +6,9 @@ using SekiDiscord.Commands;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace SekiDiscord
 {
@@ -130,13 +132,21 @@ namespace SekiDiscord
             {
                 if (e.Message.Content.StartsWith(commandChar + "quit", StringComparison.OrdinalIgnoreCase))
                 {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Quit request received, confirming...");
+
+                    if (e.Guild == null)
+                    {
+                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Message sent via DM, ignoring.");
+                        return;
+                    }
+
                     DiscordMember author = await e.Guild.GetMemberAsync(e.Author.Id).ConfigureAwait(false);
                     bool isBotAdmin = Useful.MemberIsBotOperator(author);
 
                     if (author.IsOwner || isBotAdmin)
                     {
                         quit = true;
-                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Quitting...");
+                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Request validated, quitting now...");
                     }
                 }
 
@@ -148,8 +158,15 @@ namespace SekiDiscord
                     string command = split[0];
                     if (split.Length > 1) arguments = split[1];
 
-                    string nick = ((DiscordMember)e.Message.Author).DisplayName;
-                    List<string> listU = Useful.GetOnlineNames(e.Channel.Guild);
+                    string nick = Useful.GetUsername(e);
+                    List<string> listU;
+                    if (e.Channel.Guild != null)
+                        listU = Useful.GetOnlineNames(e.Channel.Guild);
+                    else
+                    {
+                        listU = new List<string>();
+                        listU.Add(nick);
+                    }
                     string result = CustomCommand.UseCustomCommand(command.TrimStart(commandChar), arguments, nick, listU);
                     if (!string.IsNullOrEmpty(result))
                         await e.Message.RespondAsync(result).ConfigureAwait(false);
@@ -190,6 +207,11 @@ namespace SekiDiscord
 
             botName = GetDiscordClient.CurrentUser.Username;
 
+            await GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus())).ConfigureAwait(false);
+            Timer statusTimer = new Timer(6 * 60 * 60 * 1000); //six hours in milliseconds
+            statusTimer.Elapsed += new ElapsedEventHandler(OnUpdateStatusEvent);
+            statusTimer.Start();
+
             while (!quit)
             {
                 if (tryReconnect)
@@ -212,6 +234,17 @@ namespace SekiDiscord
             await GetDiscordClient.DisconnectAsync().ConfigureAwait(false);
         }
 
+        private static void OnUpdateStatusEvent(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus())).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         private static async Task Think(MessageCreateEventArgs e, string bot)
         {
             if (string.IsNullOrWhiteSpace(Settings.Default.CleverbotAPI))
@@ -224,6 +257,47 @@ namespace SekiDiscord
 
             string response = await BotTalk.BotThinkAsync(input, bot).ConfigureAwait(false);
             await e.Message.RespondAsync(response).ConfigureAwait(false);
+        }
+
+        private static async Task UpdateUserStatus(DiscordClient GetDiscordClient)
+        {
+            try
+            {
+                await GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus())).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private static string getRandomStatus()
+        {
+            List<string> status = new List<string>();
+
+            if (File.Exists("TextFiles/status.txt"))
+            {
+                try
+                {
+                    var sr = new StreamReader("TextFiles/status.txt");
+                    while (sr.Peek() >= 0)
+                    {
+                        status.Add(sr.ReadLine());
+                    }
+                    sr.Close();
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read status. " + e.Message);
+                }
+            }
+
+            if (status.Count == 0)
+                throw new Exception("No status on file");
+
+            Random r = new Random();
+            int i = r.Next(status.Count);
+
+            return status[i];
         }
     }
 }
