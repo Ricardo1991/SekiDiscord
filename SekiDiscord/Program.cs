@@ -238,6 +238,7 @@ namespace SekiDiscord
         {
             try
             {
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Attempting to update user status");
                 GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus())).ConfigureAwait(false);
             }
             catch (Exception)
@@ -257,18 +258,6 @@ namespace SekiDiscord
 
             string response = await BotTalk.BotThinkAsync(input, bot).ConfigureAwait(false);
             await e.Message.RespondAsync(response).ConfigureAwait(false);
-        }
-
-        private static async Task UpdateUserStatus(DiscordClient GetDiscordClient)
-        {
-            try
-            {
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Attempting to update user status");
-                await GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus())).ConfigureAwait(false);
-            }
-            catch (Exception)
-            {
-            }
         }
 
         private static string getRandomStatus()
