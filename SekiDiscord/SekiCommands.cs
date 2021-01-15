@@ -367,7 +367,7 @@ namespace SekiDiscord
         [Aliases("v")]
         public async Task Version(CommandContext ctx)
         {
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Trivia Command");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Version Command");
 
             await ctx.Message.RespondAsync(Commands.Version.VersionString).ConfigureAwait(false);
         }
