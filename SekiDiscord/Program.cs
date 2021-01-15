@@ -263,6 +263,7 @@ namespace SekiDiscord
         {
             try
             {
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Attempting to update user status");
                 await GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus())).ConfigureAwait(false);
             }
             catch (Exception)
