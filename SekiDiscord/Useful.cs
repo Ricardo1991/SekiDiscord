@@ -4,6 +4,7 @@ using DSharpPlus.EventArgs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace SekiDiscord
@@ -12,121 +13,74 @@ namespace SekiDiscord
     {
         public static string GetUsername(CommandContext ctx)
         {
-            string author;
-            if (ctx.Member != null)
-                author = ctx.Member.DisplayName;
-            else
-                author = ctx.User.Username;
+            if (ctx.Member != null) {
+                return ctx.Member.DisplayName;
+            }
+            return ctx.User.Username;
+        }
 
-            return author;
+        internal static string GetUsername(MessageCreateEventArgs e) {
+            if (e.Message.Author != null) {
+                return e.Message.Author.Username;
+            }
+            return e.Author.Username;
         }
 
         public static string GetDiscordName(CommandContext ctx) {
             return ctx.User.Username + '#' + ctx.User.Discriminator;
         }
 
-        internal static string GetUsername(MessageCreateEventArgs e)
-        {
-            if (e.Message.Author != null)
-                return e.Message.Author.Username;
-            else
-                return e.Author.Username;
-        }
-
         public static bool MemberIsBotOperator(DiscordMember member)
         {
-            foreach (DiscordRole role in member.Roles)
-            {
-                if (role.Name == "bot-admin")
-                {
-                    return true;
-                }
-            }
-            return false;
+            return member != null && member.Roles.Any(role => role.Name.Equals("bot-admin", StringComparison.Ordinal));
         }
 
         public static List<DiscordMember> GetOnlineMembers(DiscordGuild discordGuild)
         {
-            List<DiscordMember> ul = new List<DiscordMember>();
-
-            foreach (DiscordMember u in discordGuild.Members)
-            {
-                try
-                {
-                    if (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle
-                        && u.Id != 152322300954411008) // if user id is not chibi)
-                        ul.Add(u);
-                }
-                catch (NullReferenceException)
-                {
-                }
+            if (discordGuild != null) {
+                return discordGuild.Members
+                    .Where(user => user.Presence != null && new[] { UserStatus.Online, UserStatus.Idle }.Contains(user.Presence.Status) && user.Id != 152322300954411008)
+                    .ToList();
             }
-            return ul;
+            return null;
         }
 
         public static List<string> GetOnlineNames(DiscordGuild discordGuild)
         {
-            List<string> userList = new List<string>();
-
-            foreach (DiscordMember u in discordGuild.Members)
-            {
-                try
-                {
-                    if (!(u.Presence is null) &&
-                        (u.Presence.Status == UserStatus.Online || u.Presence.Status == UserStatus.Idle) &&
-                        u.Id != 152322300954411008) // if user id is not chibi
-
-                        userList.Add(u.DisplayName);
-                }
-                catch (NullReferenceException)
-                {
-                }
+            if (discordGuild != null) {
+                return discordGuild.Members
+                    .Where(user => user.Presence != null && new[] { UserStatus.Online, UserStatus.Idle }.Contains(user.Presence.Status) && user.Id != 152322300954411008)
+                    .Select(user => user.DisplayName)
+                    .ToList();
             }
-            return userList;
+            return null;
         }
 
         public static string GetBetween(string strSource, string strStart, string strEnd)
         {
-            int Start, End;
-
             if (string.IsNullOrWhiteSpace(strSource)) return string.Empty;
 
             if (!strSource.Contains(strStart, StringComparison.Ordinal))
             {
-                throw new Exception("Source does not contain Start");
+                throw new ArgumentException("Source does not contain Start");
             }
 
-            //Get to the end
-            if (string.IsNullOrEmpty(strEnd))
-            {
-                if (string.IsNullOrEmpty(strStart))
-                    Start = 0;
-                else
-                    Start = strSource.IndexOf(strStart, 0, StringComparison.Ordinal) + strStart.Length;
+            int Start = GetBetweenStringStart(strStart, strSource);
+            int End = strSource.Length;
 
-                End = strSource.Length;
-                return strSource[Start..End];
-            }
-
-            if (strSource.Contains(strStart, StringComparison.Ordinal) && strSource.Contains(strEnd, StringComparison.Ordinal))
-            {
-                if (string.IsNullOrEmpty(strStart))
-                    Start = 0;
-                else
-                    Start = strSource.IndexOf(strStart, 0, StringComparison.Ordinal) + strStart.Length;
+            if (!string.IsNullOrEmpty(strEnd) && strSource.Contains(strEnd, StringComparison.Ordinal)) {
                 End = strSource.IndexOf(strEnd, Start, StringComparison.Ordinal);
                 if (End < 0) End = strSource.Length;
-                return strSource[Start..End];
             }
-            else
-            {
-                if (string.IsNullOrEmpty(strStart))
-                    Start = 0;
-                else
-                    Start = strSource.IndexOf(strStart, 0, StringComparison.Ordinal) + strStart.Length;
-                End = strSource.Length;
-                return strSource[Start..End];
+
+            return strSource[Start..End];
+        }
+
+        private static int GetBetweenStringStart(string strStart, string strSource) {
+            if (string.IsNullOrEmpty(strStart)) {
+                return 0;
             }
+            return strSource.IndexOf(strStart, 0, StringComparison.Ordinal) + strStart.Length;
         }
 
         public static string FillTags(string template, string user, string target, List<string> userlist)
