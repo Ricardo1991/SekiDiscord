@@ -104,19 +104,19 @@ namespace SekiDiscord
             GetDiscordClient.SocketErrored += async a =>
             {
                 tryReconnect = true;
-                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Error: " + a.Exception.Message).ConfigureAwait(false);
+                await logger.ErrorAsync(a.Exception.Message).ConfigureAwait(false);
             };
 
             GetDiscordClient.Ready += async a =>
             {
-                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Ready!").ConfigureAwait(false);
+                await logger.InfoAsync("Ready!").ConfigureAwait(false);
                 tryReconnect = false;
                 await GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus())).ConfigureAwait(false);
             };
 
             GetDiscordClient.UnknownEvent += async unk =>
             {
-                await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Unknown Event: " + unk.EventName).ConfigureAwait(false);
+                await logger.InfoAsync("Unknown Event: " + unk.EventName).ConfigureAwait(false);
             };
 
             //Register the commands defined on SekiCommands.cs
