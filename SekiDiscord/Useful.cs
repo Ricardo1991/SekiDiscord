@@ -35,11 +35,13 @@ namespace SekiDiscord
             return member != null && member.Roles.Any(role => role.Name.Equals("bot-admin", StringComparison.Ordinal));
         }
 
+        private static readonly List<UserStatus> UserStatuses = new List<UserStatus>() { UserStatus.Online, UserStatus.Idle };
+
         public static List<DiscordMember> GetOnlineMembers(DiscordGuild discordGuild)
         {
             if (discordGuild != null) {
                 return discordGuild.Members
-                    .Where(user => user.Presence != null && new[] { UserStatus.Online, UserStatus.Idle }.Contains(user.Presence.Status) && user.Id != 152322300954411008)
+                    .Where(user => user.Presence != null && UserStatuses.Contains(user.Presence.Status) && user.Id != 152322300954411008)
                     .ToList();
             }
             return null;
@@ -49,7 +51,7 @@ namespace SekiDiscord
         {
             if (discordGuild != null) {
                 return discordGuild.Members
-                    .Where(user => user.Presence != null && new[] { UserStatus.Online, UserStatus.Idle }.Contains(user.Presence.Status) && user.Id != 152322300954411008)
+                    .Where(user => user.Presence != null && UserStatuses.Contains(user.Presence.Status) && user.Id != 152322300954411008)
                     .Select(user => user.DisplayName)
                     .ToList();
             }
