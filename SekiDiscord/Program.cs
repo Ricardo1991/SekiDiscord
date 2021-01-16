@@ -110,6 +110,7 @@ namespace SekiDiscord
             {
                 await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Ready!").ConfigureAwait(false);
                 tryReconnect = false;
+                await GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus())).ConfigureAwait(false);
             };
 
             GetDiscordClient.UnknownEvent += async unk =>
@@ -157,26 +158,21 @@ namespace SekiDiscord
                     string[] split = e.Message.Content.Split(new char[] { ' ' }, 2);
                     string command = split[0];
                     if (split.Length > 1) arguments = split[1];
+                    string senderUsername = Useful.GetUsername(e);
 
-                    string nick = Useful.GetUsername(e);
-                    List<string> listU;
+                    List<string> userList;
                     if (e.Channel.Guild != null)
-                        listU = Useful.GetOnlineNames(e.Channel.Guild);
+                        userList = Useful.GetOnlineNames(e.Channel.Guild);
                     else
-                    {
-                        listU = new List<string>();
-                        listU.Add(nick);
-                    }
-                    string result = CustomCommand.UseCustomCommand(command.TrimStart(commandChar), arguments, nick, listU);
+                        userList = new List<string> { senderUsername };
+
+                    string result = CustomCommand.UseCustomCommand(command.TrimStart(commandChar), arguments, senderUsername, userList);
                     if (!string.IsNullOrEmpty(result))
                         await e.Message.RespondAsync(result).ConfigureAwait(false);
                 }
 
                 //Bot Talk and Cleverbot
-                else if (
-                e.Message.Content.StartsWith(botName + ",", StringComparison.OrdinalIgnoreCase)
-                || e.Message.Content.EndsWith(botName, StringComparison.OrdinalIgnoreCase)
-                )
+                else if (e.Message.Content.StartsWith(botName + ",", StringComparison.OrdinalIgnoreCase) || e.Message.Content.EndsWith(botName, StringComparison.OrdinalIgnoreCase))
                 {
                     await Think(e, botName).ConfigureAwait(false);
                 }
@@ -207,7 +203,6 @@ namespace SekiDiscord
 
             botName = GetDiscordClient.CurrentUser.Username;
 
-            await GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus())).ConfigureAwait(false);
             Timer statusTimer = new Timer(6 * 60 * 60 * 1000); //six hours in milliseconds
             statusTimer.Elapsed += new ElapsedEventHandler(OnUpdateStatusEvent);
             statusTimer.Start();
@@ -239,10 +234,11 @@ namespace SekiDiscord
             try
             {
                 Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Attempting to update user status");
-                GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus())).ConfigureAwait(false);
+                GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus()));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + ex.Message);
             }
         }
 
@@ -277,7 +273,7 @@ namespace SekiDiscord
                 }
                 catch (IOException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read status. " + e.Message);
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read status." + e.Message);
                 }
             }
 
