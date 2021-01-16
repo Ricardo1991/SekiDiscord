@@ -1,5 +1,6 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -18,6 +19,14 @@ namespace SekiDiscord
                 author = ctx.User.Username;
 
             return author;
+        }
+
+        internal static string GetUsername(MessageCreateEventArgs e)
+        {
+            if (e.Message.Author != null)
+                return e.Message.Author.Username;
+            else
+                return e.Author.Username;
         }
 
         public static bool MemberIsBotOperator(DiscordMember member)

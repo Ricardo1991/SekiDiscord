@@ -6,7 +6,9 @@ using SekiDiscord.Commands;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace SekiDiscord
 {
@@ -108,6 +110,7 @@ namespace SekiDiscord
             {
                 await Console.Out.WriteLineAsync(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Ready!").ConfigureAwait(false);
                 tryReconnect = false;
+                await GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus())).ConfigureAwait(false);
             };
 
             GetDiscordClient.UnknownEvent += async unk =>
@@ -130,13 +133,21 @@ namespace SekiDiscord
             {
                 if (e.Message.Content.StartsWith(commandChar + "quit", StringComparison.OrdinalIgnoreCase))
                 {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Quit request received, confirming...");
+
+                    if (e.Guild == null)
+                    {
+                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Message sent via DM, ignoring.");
+                        return;
+                    }
+
                     DiscordMember author = await e.Guild.GetMemberAsync(e.Author.Id).ConfigureAwait(false);
                     bool isBotAdmin = Useful.MemberIsBotOperator(author);
 
                     if (author.IsOwner || isBotAdmin)
                     {
                         quit = true;
-                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Quitting...");
+                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Request validated, quitting now...");
                     }
                 }
 
@@ -147,19 +158,21 @@ namespace SekiDiscord
                     string[] split = e.Message.Content.Split(new char[] { ' ' }, 2);
                     string command = split[0];
                     if (split.Length > 1) arguments = split[1];
+                    string senderUsername = Useful.GetUsername(e);
 
-                    string nick = ((DiscordMember)e.Message.Author).DisplayName;
-                    List<string> listU = Useful.GetOnlineNames(e.Channel.Guild);
-                    string result = CustomCommand.UseCustomCommand(command.TrimStart(commandChar), arguments, nick, listU);
+                    List<string> userList;
+                    if (e.Channel.Guild != null)
+                        userList = Useful.GetOnlineNames(e.Channel.Guild);
+                    else
+                        userList = new List<string> { senderUsername };
+
+                    string result = CustomCommand.UseCustomCommand(command.TrimStart(commandChar), arguments, senderUsername, userList);
                     if (!string.IsNullOrEmpty(result))
                         await e.Message.RespondAsync(result).ConfigureAwait(false);
                 }
 
                 //Bot Talk and Cleverbot
-                else if (
-                e.Message.Content.StartsWith(botName + ",", StringComparison.OrdinalIgnoreCase)
-                || e.Message.Content.EndsWith(botName, StringComparison.OrdinalIgnoreCase)
-                )
+                else if (e.Message.Content.StartsWith(botName + ",", StringComparison.OrdinalIgnoreCase) || e.Message.Content.EndsWith(botName, StringComparison.OrdinalIgnoreCase))
                 {
                     await Think(e, botName).ConfigureAwait(false);
                 }
@@ -190,6 +203,10 @@ namespace SekiDiscord
 
             botName = GetDiscordClient.CurrentUser.Username;
 
+            Timer statusTimer = new Timer(6 * 60 * 60 * 1000); //six hours in milliseconds
+            statusTimer.Elapsed += new ElapsedEventHandler(OnUpdateStatusEvent);
+            statusTimer.Start();
+
             while (!quit)
             {
                 if (tryReconnect)
@@ -212,6 +229,19 @@ namespace SekiDiscord
             await GetDiscordClient.DisconnectAsync().ConfigureAwait(false);
         }
 
+        private static void OnUpdateStatusEvent(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Attempting to update user status");
+                GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus()));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + ex.Message);
+            }
+        }
+
         private static async Task Think(MessageCreateEventArgs e, string bot)
         {
             if (string.IsNullOrWhiteSpace(Settings.Default.CleverbotAPI))
@@ -224,6 +254,36 @@ namespace SekiDiscord
 
             string response = await BotTalk.BotThinkAsync(input, bot).ConfigureAwait(false);
             await e.Message.RespondAsync(response).ConfigureAwait(false);
+        }
+
+        private static string getRandomStatus()
+        {
+            List<string> status = new List<string>();
+
+            if (File.Exists("TextFiles/status.txt"))
+            {
+                try
+                {
+                    var sr = new StreamReader("TextFiles/status.txt");
+                    while (sr.Peek() >= 0)
+                    {
+                        status.Add(sr.ReadLine());
+                    }
+                    sr.Close();
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read status." + e.Message);
+                }
+            }
+
+            if (status.Count == 0)
+                throw new Exception("No status on file");
+
+            Random r = new Random();
+            int i = r.Next(status.Count);
+
+            return status[i];
         }
     }
 }
