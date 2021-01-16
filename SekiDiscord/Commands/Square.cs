@@ -29,7 +29,7 @@ namespace SekiDiscord.Commands
                         builder.Append("```");
                         foreach (char value in text.ToCharArray())
                         {
-                            builder.Append(value + ' ');
+                            builder.Append(value + " ");
                         }
                         builder.Append('\n');
                     }
@@ -37,7 +37,7 @@ namespace SekiDiscord.Commands
                     {
                         foreach (char value in text.ToCharArray().Reverse())
                         {
-                            builder.Append(value + ' ');
+                            builder.Append(value + " ");
                         }
                         builder.Append("```");
                     }
