@@ -7,6 +7,8 @@ namespace SekiDiscord.Commands
 {
     internal class Funk
     {
+        private static readonly Logger logger = new Logger(typeof(Funk));
+
         public static List<string> FunkList { get; set; }
 
         static Funk()
@@ -63,7 +65,7 @@ namespace SekiDiscord.Commands
                 }
                 catch (IOException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read funk. " + e.Message);
+                    logger.Error("Failed to read funk. " + e.Message);
                 }
             }
             return funk;

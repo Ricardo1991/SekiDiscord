@@ -21,6 +21,10 @@ namespace SekiDiscord
             return author;
         }
 
+        public static string GetDiscordName(CommandContext ctx) {
+            return ctx.User.Username + '#' + ctx.User.Discriminator;
+        }
+
         internal static string GetUsername(MessageCreateEventArgs e)
         {
             if (e.Message.Author != null)

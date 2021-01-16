@@ -7,6 +7,8 @@ namespace SekiDiscord.Commands
 {
     public static class Fact
     {
+        private static readonly Logger logger = new Logger(typeof(Fact));
+
         private const int MAX_FACTS_REMEMBER = 300;
         private static List<string> Facts { get; set; }
         private static List<int> FactsUsed { get; set; }
@@ -83,7 +85,7 @@ namespace SekiDiscord.Commands
                 }
                 catch (IOException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read facts. " + e.Message);
+                    logger.Error("Failed to read facts. " + e.Message);
                 }
             }
             else

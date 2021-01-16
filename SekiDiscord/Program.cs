@@ -14,6 +14,7 @@ namespace SekiDiscord
 {
     internal class Program
     {
+        private static readonly Logger logger = new Logger(typeof(Program));
         private static CommandsNextModule commands;
 
         public static async Task DMUser(DiscordUser user, string msg)
@@ -30,7 +31,7 @@ namespace SekiDiscord
         {
             if (args.Length < 1)
             {
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Not enough arguments. Usage: SekiDiscord <discord-api-key>. Quitting.");
+                logger.Error("Not enough arguments. Usage: SekiDiscord <discord-api-key>. Quitting.");
                 return;
             }
 
@@ -53,7 +54,7 @@ namespace SekiDiscord
                 Settings.Default.Save();
             }*/
 
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Starting...");
+            logger.Info("Starting...");
 
             if (string.IsNullOrWhiteSpace(Settings.Default.apikey))
             {
@@ -64,7 +65,7 @@ namespace SekiDiscord
                 }
                 else
                 {
-                    Console.WriteLine("Add api key for youtube search (or enter to ignore): ");
+                    logger.Info("Add api key for youtube search (or enter to ignore): ");
                     api = Console.ReadLine();
                 }
                 if (!string.IsNullOrWhiteSpace(api))
@@ -83,7 +84,7 @@ namespace SekiDiscord
                 }
                 else
                 {
-                    Console.WriteLine("Add api key for Cleverbot (or enter to ignore): ");
+                    logger.Info("Add api key for Cleverbot (or enter to ignore): ");
                     api = Console.ReadLine();
                 }
                 if (!string.IsNullOrWhiteSpace(api))
@@ -133,11 +134,11 @@ namespace SekiDiscord
             {
                 if (e.Message.Content.StartsWith(commandChar + "quit", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Quit request received, confirming...");
+                    logger.Info("Quit request received, confirming...");
 
                     if (e.Guild == null)
                     {
-                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Message sent via DM, ignoring.");
+                        logger.Info("Message sent via DM, ignoring.");
                         return;
                     }
 
@@ -146,8 +147,8 @@ namespace SekiDiscord
 
                     if (author.IsOwner || isBotAdmin)
                     {
+                        logger.Info("Request validated, quitting now...");
                         quit = true;
-                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Request validated, quitting now...");
                     }
                 }
 
@@ -217,7 +218,7 @@ namespace SekiDiscord
                     }
                     finally
                     {
-                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Attempting to Reconnect...");
+                        logger.Info("Attempting to Reconnect...");
                         await GetDiscordClient.ConnectAsync().ConfigureAwait(false);
                     }
                 }
@@ -233,12 +234,12 @@ namespace SekiDiscord
         {
             try
             {
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Attempting to update user status");
+                logger.Info("Attempting to update user status");
                 GetDiscordClient.UpdateStatusAsync(new DiscordGame(getRandomStatus()));
             }
             catch (Exception ex)
             {
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + ex.Message);
+                logger.Error(ex.Message);
             }
         }
 
@@ -273,7 +274,7 @@ namespace SekiDiscord
                 }
                 catch (IOException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read status." + e.Message);
+                    logger.Error("Failed to read status." + e.Message);
                 }
             }
 

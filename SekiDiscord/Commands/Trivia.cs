@@ -7,6 +7,8 @@ namespace SekiDiscord.Commands
 {
     public static class Trivia
     {
+        private static readonly Logger logger = new Logger(typeof(Trivia));
+
         private static List<string> TriviaList { get; set; }
 
         static Trivia()
@@ -47,7 +49,7 @@ namespace SekiDiscord.Commands
                 }
                 catch (IOException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read trivia. " + e.Message);
+                    logger.Error("Failed to read trivia. " + e.Message);
                 }
             }
             else

@@ -2,15 +2,21 @@
 using System.Globalization;
 
 namespace SekiDiscord {
-    public class Logger<T> {
+    public class Logger {
         private Type ClassType { get; set; }
 
-        public Logger() {
-            ClassType = typeof(T);
+        public Logger(Type classType) {
+            ClassType = classType;
         }
 
-        public void Info(string message) {
-            Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "[{0}][{1}]: {2}", GetDateTimeString(), ClassType.ToString(), message));
+        public void Info(string message, string user = "") {
+            Console.WriteLine(string.Format(CultureInfo.InvariantCulture, "[{0}][{1}][{2}]: {3}", GetDateTimeString(), ClassType.ToString(), user, message));
+        }
+
+        public void Error(string message, string user = "") {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine(string.Format(CultureInfo.InvariantCulture, "[{0}][{1}][{2}]ERROR: {3}", GetDateTimeString(), ClassType.ToString(), user, message));
+            Console.ResetColor();
         }
 
         private string GetDateTimeString() {
