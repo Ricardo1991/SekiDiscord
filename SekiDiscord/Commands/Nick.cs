@@ -8,6 +8,8 @@ namespace SekiDiscord.Commands
 {
     internal class Nick
     {
+        private static readonly Logger logger = new Logger(typeof(Nick));
+
         public static List<string> NickGenStrings { get; set; }
 
         static Nick()
@@ -81,7 +83,7 @@ namespace SekiDiscord.Commands
                 }
                 catch (IOException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read nickGen. " + e.Message);
+                    logger.Error("Failed to read nickGen. " + e.Message);
                 }
             }
             else

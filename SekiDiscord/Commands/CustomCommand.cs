@@ -7,6 +7,8 @@ namespace SekiDiscord.Commands
 {
     public class CustomCommand
     {
+        private static readonly Logger logger = new Logger(typeof(CustomCommand));
+
         public static List<CustomCommand> CustomCommands { get; set; }
         private string name;
         private string format;
@@ -83,7 +85,7 @@ namespace SekiDiscord.Commands
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Not enough arguments on a custom command, while loading file");
+                    logger.Error("Not enough arguments on a custom command, while loading file");
                 }
             }
             else

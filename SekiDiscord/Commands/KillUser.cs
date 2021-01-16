@@ -8,6 +8,8 @@ namespace SekiDiscord.Commands
 {
     internal class KillUser
     {
+        private static readonly Logger logger = new Logger(typeof(KillUser));
+
         public static StringMarkov Killgen { get; set; }
         public static List<string> Kills { get; set; }
         public static List<int> KillsUsed { get; set; }
@@ -108,7 +110,7 @@ namespace SekiDiscord.Commands
             }
             catch (IOException ex)
             {
-                Console.WriteLine("Error BOT randomkill :" + ex.Message);
+                logger.Error("Error BOT randomkill: " + ex.Message);
                 message = new KillResult("Sorry, i can't think of a random kill right now.", false);
             }
 
@@ -141,7 +143,7 @@ namespace SekiDiscord.Commands
                 }
                 catch (IOException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read kills. " + e.Message);
+                    logger.Error("Failed to read kills. " + e.Message);
                 }
             }
             else

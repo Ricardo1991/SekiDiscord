@@ -14,6 +14,8 @@ namespace SekiDiscord.Commands
 {
     internal class PingUser
     {
+        private static readonly Logger logger = new Logger(typeof(PingUser));
+
         public static Dictionary<ulong, HashSet<string>> Pings { get; set; }
 
         static PingUser()
@@ -137,7 +139,7 @@ namespace SekiDiscord.Commands
                 }
                 catch (JsonException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "PINGUSER::READPINGS::COULD NOT READ PINGS:: " + e.Message);
+                    logger.Error("COULD NOT READ PINGS: " + e.Message);
                 }
             }
             return ping;
@@ -153,7 +155,7 @@ namespace SekiDiscord.Commands
             }
             catch (JsonException e)
             {
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "PINGUSER::SAVEPINGS::COULD NOT SAVE PINGS:: " + e.Message);
+                logger.Error("COULD NOT SAVE PINGS: " + e.Message);
             }
         }
     }

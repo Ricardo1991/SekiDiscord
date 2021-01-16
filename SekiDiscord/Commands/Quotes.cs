@@ -7,6 +7,8 @@ namespace SekiDiscord.Commands
 {
     public static class Quotes
     {
+        private static readonly Logger logger = new Logger(typeof(Quotes));
+
         public static List<string> QuotesList { get; set; }
 
         static Quotes()
@@ -147,7 +149,7 @@ namespace SekiDiscord.Commands
                 }
                 catch (IOException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read quotes. " + e.Message);
+                    logger.Error("Failed to read quotes. " + e.Message);
                 }
             }
             return quotes;
