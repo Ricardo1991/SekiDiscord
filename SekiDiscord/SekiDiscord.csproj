@@ -57,9 +57,6 @@
     <None Update="TextFiles\funk.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TextFiles\help.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="TextFiles\kills.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
