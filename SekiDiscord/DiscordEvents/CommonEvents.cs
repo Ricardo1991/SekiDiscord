@@ -8,10 +8,15 @@ using System.Timers;
 namespace SekiDiscord.DiscordEvents {
     static class CommonEvents {
         private static readonly Logger logger = new Logger(typeof(CommonEvents));
+#if DEBUG
+        private static UserStatus status = UserStatus.Idle;
+#else
+        private static UserStatus status = UserStatus.Online
+#endif
 
         public static async Task ReadyEvent(ReadyEventArgs a) {
             SekiMain.TryReconnect = false;
-            await SekiMain.DiscordClient.UpdateStatusAsync(new DiscordGame(GetRandomStatus(FileHandler.GetStatusList()))).ConfigureAwait(false);
+            await SekiMain.DiscordClient.UpdateStatusAsync(new DiscordGame(GetRandomStatus(FileHandler.GetStatusList())), status).ConfigureAwait(false);
             await logger.InfoAsync("Ready!").ConfigureAwait(false);
         }
 
@@ -33,7 +38,7 @@ namespace SekiDiscord.DiscordEvents {
         private static void OnUpdateStatusEvent(object sender, ElapsedEventArgs e) {
             try {
                 logger.Info("Attempting to update user status");
-                SekiMain.DiscordClient.UpdateStatusAsync(new DiscordGame(GetRandomStatus(FileHandler.GetStatusList())));
+                SekiMain.DiscordClient.UpdateStatusAsync(new DiscordGame(GetRandomStatus(FileHandler.GetStatusList())), status);
             }
             catch (Exception ex) {
                 logger.Error(ex.Message);
