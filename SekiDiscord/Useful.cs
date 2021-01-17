@@ -41,7 +41,7 @@ namespace SekiDiscord
         {
             if (discordGuild != null) {
                 return discordGuild.Members
-                    .Where(user => user.Presence != null && UserStatuses.Contains(user.Presence.Status) && user.Id != 152322300954411008)
+                    .Where(user => user.Presence != null && UserStatuses.Contains(user.Presence.Status) && user.Id != Settings.Default.ChibiID)
                     .ToList();
             }
             return null;
@@ -51,7 +51,7 @@ namespace SekiDiscord
         {
             if (discordGuild != null) {
                 return discordGuild.Members
-                    .Where(user => user.Presence != null && UserStatuses.Contains(user.Presence.Status) && user.Id != 152322300954411008)
+                    .Where(user => user.Presence != null && UserStatuses.Contains(user.Presence.Status) && user.Id != Settings.Default.ChibiID)
                     .Select(user => user.DisplayName)
                     .ToList();
             }

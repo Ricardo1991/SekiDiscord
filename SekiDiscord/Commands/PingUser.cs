@@ -76,11 +76,11 @@ namespace SekiDiscord.Commands
                         {
                             stringBuilder.Append("[" + ping + "] ");
                         }
-                        await Program.DMUser(discordUser, stringBuilder.ToString().Trim()).ConfigureAwait(false);
+                        await DMUser(discordUser, stringBuilder.ToString().Trim()).ConfigureAwait(false);
                     }
                     else if (!Pings.ContainsKey(userNameID))
                     {
-                        await Program.DMUser(discordUser, "You have no pings saved").ConfigureAwait(false);
+                        await DMUser(discordUser, "You have no pings saved").ConfigureAwait(false);
                     }
                     break;
             }
@@ -94,7 +94,7 @@ namespace SekiDiscord.Commands
 
         public static async Task SendPings(MessageCreateEventArgs e)
         {
-            DiscordChannel channel = await Program.GetDiscordClient.GetChannelAsync(Settings.Default.ping_channel_id).ConfigureAwait(false); //get channel from channel id
+            DiscordChannel channel = await SekiMain.DiscordClient.GetChannelAsync(Settings.Default.ping_channel_id).ConfigureAwait(false); // get channel from channel id
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.ChannelId != Settings.Default.ping_channel_id)
             {
@@ -120,8 +120,14 @@ namespace SekiDiscord.Commands
                         author_nickname = e.Message.Author.Username;
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.Append(mentions + "at " + e.Message.Channel.Mention + "\n" + "<" + author_nickname + "> " + e.Message.Content);
-                    await Program.GetDiscordClient.SendMessageAsync(channel, stringBuilder.ToString()).ConfigureAwait(false);
+                    await SekiMain.DiscordClient.SendMessageAsync(channel, stringBuilder.ToString()).ConfigureAwait(false);
                 }
+            }
+        }
+
+        public static async Task DMUser(DiscordUser user, string msg) {
+            if (!string.IsNullOrWhiteSpace(msg)) {
+                await SekiMain.DiscordClient.SendMessageAsync(await SekiMain.DiscordClient.CreateDmAsync(user).ConfigureAwait(false), msg).ConfigureAwait(false);
             }
         }
 
