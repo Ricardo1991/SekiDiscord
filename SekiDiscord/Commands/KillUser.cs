@@ -20,6 +20,7 @@ namespace SekiDiscord.Commands
             KillsUsed = new List<int>();
             Killgen = new StringMarkov();
             Kills = FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Kills);
+            Killgen.Learn(Kills);
         }
 
         public static KillResult Kill(string author, List<string> usersOnline, string target)
