@@ -14,6 +14,9 @@ namespace SekiDiscord.Commands
 {
     internal class PingUser
     {
+        private static readonly Logger logger = new Logger(typeof(PingUser));
+        private const string PINGS_FILE_PATH = "TextFiles/pings.json";
+
         public static Dictionary<ulong, HashSet<string>> Pings { get; set; }
 
         static PingUser()
@@ -49,22 +52,6 @@ namespace SekiDiscord.Commands
                     }
                     break;
 
-                //case "copy":
-                //    if (!string.IsNullOrWhiteSpace(args))
-                //    {
-                //        bool user = Pings.ContainsKey(username);
-                //        bool userToCopyFrom = Pings.ContainsKey(args);
-                //        if (!user && userToCopyFrom)
-                //        {
-                //              Pings.Add(username, Pings[args]);
-                //        }
-                //        else if (user && userToCopyFrom)
-                //        {
-                //              Pings[username].UnionWith(Pings[args]);
-                //        }
-                //    }
-                //    break;
-
                 case "info":
                     if (Pings.ContainsKey(userNameID))
                     {
@@ -74,11 +61,11 @@ namespace SekiDiscord.Commands
                         {
                             stringBuilder.Append("[" + ping + "] ");
                         }
-                        await Program.DMUser(discordUser, stringBuilder.ToString().Trim()).ConfigureAwait(false);
+                        await DMUser(discordUser, stringBuilder.ToString().Trim()).ConfigureAwait(false);
                     }
                     else if (!Pings.ContainsKey(userNameID))
                     {
-                        await Program.DMUser(discordUser, "You have no pings saved").ConfigureAwait(false);
+                        await DMUser(discordUser, "You have no pings saved").ConfigureAwait(false);
                     }
                     break;
             }
@@ -92,7 +79,7 @@ namespace SekiDiscord.Commands
 
         public static async Task SendPings(MessageCreateEventArgs e)
         {
-            DiscordChannel channel = await Program.GetDiscordClient.GetChannelAsync(Settings.Default.ping_channel_id).ConfigureAwait(false); //get channel from channel id
+            DiscordChannel channel = await SekiMain.DiscordClient.GetChannelAsync(Settings.Default.ping_channel_id).ConfigureAwait(false); // get channel from channel id
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content) && e.Message.ChannelId != Settings.Default.ping_channel_id)
             {
@@ -118,8 +105,14 @@ namespace SekiDiscord.Commands
                         author_nickname = e.Message.Author.Username;
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.Append(mentions + "at " + e.Message.Channel.Mention + "\n" + "<" + author_nickname + "> " + e.Message.Content);
-                    await Program.GetDiscordClient.SendMessageAsync(channel, stringBuilder.ToString()).ConfigureAwait(false);
+                    await SekiMain.DiscordClient.SendMessageAsync(channel, stringBuilder.ToString()).ConfigureAwait(false);
                 }
+            }
+        }
+
+        public static async Task DMUser(DiscordUser user, string msg) {
+            if (!string.IsNullOrWhiteSpace(msg)) {
+                await SekiMain.DiscordClient.SendMessageAsync(await SekiMain.DiscordClient.CreateDmAsync(user).ConfigureAwait(false), msg).ConfigureAwait(false);
             }
         }
 
@@ -127,17 +120,17 @@ namespace SekiDiscord.Commands
         {
             Dictionary<ulong, HashSet<string>> ping = new Dictionary<ulong, HashSet<string>>();
 
-            if (File.Exists("TextFiles/pings.json"))
+            if (File.Exists(PINGS_FILE_PATH))
             {
                 try
                 {
-                    using StreamReader r = new StreamReader("TextFiles/pings.json");
+                    using StreamReader r = new StreamReader(PINGS_FILE_PATH);
                     string json = r.ReadToEnd();
                     ping = JsonConvert.DeserializeObject<Dictionary<ulong, HashSet<string>>>(json);
                 }
                 catch (JsonException e)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "PINGUSER::READPINGS::COULD NOT READ PINGS:: " + e.Message);
+                    logger.Error("COULD NOT READ PINGS: " + e.Message);
                 }
             }
             return ping;
@@ -147,13 +140,13 @@ namespace SekiDiscord.Commands
         {
             try
             {
-                using StreamWriter w = File.CreateText("TextFiles/pings.json");
+                using StreamWriter w = File.CreateText(PINGS_FILE_PATH);
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(w, ping);
             }
             catch (JsonException e)
             {
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "PINGUSER::SAVEPINGS::COULD NOT SAVE PINGS:: " + e.Message);
+                logger.Error("COULD NOT SAVE PINGS: " + e.Message);
             }
         }
     }

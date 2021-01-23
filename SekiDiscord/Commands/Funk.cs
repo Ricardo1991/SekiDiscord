@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 
 namespace SekiDiscord.Commands
@@ -11,7 +10,7 @@ namespace SekiDiscord.Commands
 
         static Funk()
         {
-            FunkList = ReadFunk();
+            FunkList = FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Funk);
         }
 
         public static string PrintFunk()
@@ -46,32 +45,9 @@ namespace SekiDiscord.Commands
             SaveFunk(FunkList);
         }
 
-        public static List<string> ReadFunk()
-        {
-            List<string> funk = new List<string>();
-
-            if (File.Exists("TextFiles/funk.txt"))
-            {
-                try
-                {
-                    StreamReader sr = new StreamReader("TextFiles/funk.txt");
-                    while (sr.Peek() >= 0)
-                    {
-                        funk.Add(sr.ReadLine());
-                    }
-                    sr.Close();
-                }
-                catch (IOException e)
-                {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read funk. " + e.Message);
-                }
-            }
-            return funk;
-        }
-
         public static void SaveFunk(List<string> funk)
         {
-            using StreamWriter newTask = new StreamWriter("TextFiles/Funk.txt", false);
+            using StreamWriter newTask = new StreamWriter(FileHandler.FileEnumToString(FileHandler.StringListFileType.Funk), false);
             foreach (string q in funk)
             {
                 newTask.WriteLine(q);

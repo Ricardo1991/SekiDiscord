@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 
 namespace SekiDiscord.Commands
 {
@@ -14,7 +12,7 @@ namespace SekiDiscord.Commands
         static Fact()
         {
             FactsUsed = new List<int>();
-            Facts = ReadFacts();
+            Facts = FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Facts);
         }
 
         public static int FactCount()
@@ -57,42 +55,6 @@ namespace SekiDiscord.Commands
             }
 
             return Useful.FillTags(Facts[factID], user.Trim(), target, listU);
-        }
-
-        public static List<string> ReadFacts()
-        {
-            List<string> facts = new List<string>();
-            FactsUsed.Clear();
-
-            if (File.Exists("TextFiles/facts.txt"))
-            {
-                try
-                {
-                    StreamReader sr = new StreamReader("TextFiles/facts.txt");
-                    while (sr.Peek() >= 0)
-                    {
-                        string factS = sr.ReadLine();
-
-                        if (factS.Length > 1 && !(factS[0] == '/' && factS[1] == '/'))
-                        {
-                            facts.Add(factS);
-                        }
-                    }
-
-                    sr.Close();
-                }
-                catch (IOException e)
-                {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read facts. " + e.Message);
-                }
-            }
-            else
-            {
-                //Settings.Default.factsEnabled = false;
-                //Settings.Default.Save();
-            }
-
-            return facts;
         }
     }
 }

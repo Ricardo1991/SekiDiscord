@@ -8,6 +8,8 @@ namespace SekiDiscord.Commands
 {
     internal class KillUser
     {
+        private static readonly Logger logger = new Logger(typeof(KillUser));
+
         public static StringMarkov Killgen { get; set; }
         public static List<string> Kills { get; set; }
         public static List<int> KillsUsed { get; set; }
@@ -17,7 +19,7 @@ namespace SekiDiscord.Commands
         {
             KillsUsed = new List<int>();
             Killgen = new StringMarkov();
-            Kills = ReadKills();
+            Kills = FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Kills);
         }
 
         public static KillResult Kill(string author, List<string> usersOnline, string target)
@@ -108,50 +110,11 @@ namespace SekiDiscord.Commands
             }
             catch (IOException ex)
             {
-                Console.WriteLine("Error BOT randomkill :" + ex.Message);
+                logger.Error("Error BOT randomkill: " + ex.Message);
                 message = new KillResult("Sorry, i can't think of a random kill right now.", false);
             }
 
             return message;
-        }
-
-        public static List<string> ReadKills()
-        {
-            List<string> kills = new List<string>();
-            KillsUsed.Clear();
-            Killgen = new StringMarkov();
-
-            if (File.Exists("TextFiles/kills.txt"))
-            {
-                try
-                {
-                    StreamReader sr = new StreamReader("TextFiles/kills.txt");
-                    while (sr.Peek() >= 0)
-                    {
-                        string killS = sr.ReadLine();
-
-                        if (killS.Length > 1 && !(killS[0] == '/' && killS[1] == '/'))
-                        {
-                            kills.Add(killS);
-                            Killgen.Learn(killS);
-                        }
-                    }
-
-                    sr.Close();
-                }
-                catch (IOException e)
-                {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Failed to read kills. " + e.Message);
-                }
-            }
-            else
-            {
-                //TODO: Save settings
-                //Settings.Default.killEnabled = false;
-                //Settings.Default.Save();
-            }
-
-            return kills;
         }
 
         private static string GetRandomKillString()

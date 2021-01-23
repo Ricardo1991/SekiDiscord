@@ -53,7 +53,7 @@ namespace SekiTest
         {
             string testString = "Hello my friend.";
 
-            Assert.Throws<Exception>(() => Useful.GetBetween(testString, "hello", null));
+            Assert.Throws<ArgumentException>(() => Useful.GetBetween(testString, "hello", null));
         }
     }
 }

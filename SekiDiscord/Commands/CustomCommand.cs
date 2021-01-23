@@ -1,55 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 
 namespace SekiDiscord.Commands
 {
     public class CustomCommand
     {
+        private static readonly Logger logger = new Logger(typeof(CustomCommand));
+        
+        private const string CUSTOM_COMMANDS_FILE_PATH = "TextFiles/customCommands.txt";
+
         public static List<CustomCommand> CustomCommands { get; set; }
-        private string name;
-        private string format;
-        private string author;
 
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
+        public string Name { get; set; }
 
-            set
-            {
-                name = value;
-            }
-        }
+        public string Format { get; set; }
 
-        public string Format
-        {
-            get
-            {
-                return format;
-            }
-
-            set
-            {
-                format = value;
-            }
-        }
-
-        public string Author
-        {
-            get
-            {
-                return author;
-            }
-
-            set
-            {
-                author = value;
-            }
-        }
+        public string Author { get; set; }
 
         static CustomCommand()
         {
@@ -67,11 +34,11 @@ namespace SekiDiscord.Commands
         {
             List<CustomCommand> command = new List<CustomCommand>();
 
-            if (File.Exists("TextFiles/customCommands.txt"))
+            if (File.Exists(CUSTOM_COMMANDS_FILE_PATH))
             {
                 try
                 {
-                    StreamReader sr = new StreamReader("TextFiles/customCommands.txt");
+                    StreamReader sr = new StreamReader(CUSTOM_COMMANDS_FILE_PATH);
                     while (sr.Peek() >= 0)
                     {
                         string line = sr.ReadLine();
@@ -83,14 +50,8 @@ namespace SekiDiscord.Commands
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ", CultureInfo.CreateSpecificCulture("en-GB")) + "Not enough arguments on a custom command, while loading file");
+                    logger.Error("Not enough arguments on a custom command, while loading file");
                 }
-            }
-            else
-            {
-                //TODO: Settings
-                //Settings.Default.help_Enabled = false;
-                //Settings.Default.Save();
             }
 
             return command;
@@ -124,7 +85,7 @@ namespace SekiDiscord.Commands
 
         public static void SaveCustomCommands(List<CustomCommand> commands)
         {
-            using StreamWriter newTask = new StreamWriter("TextFiles/customCommands.txt", false);
+            using StreamWriter newTask = new StreamWriter(CUSTOM_COMMANDS_FILE_PATH, false);
             foreach (CustomCommand q in commands)
             {
                 newTask.WriteLine(q.Author + " " + q.Name + " " + q.Format);
