@@ -5,7 +5,6 @@ namespace SekiDiscord.Commands
 {
     public static class Fact
     {
-
         private const int MAX_FACTS_REMEMBER = 300;
         private static List<string> Facts { get; set; }
         private static List<int> FactsUsed { get; set; }

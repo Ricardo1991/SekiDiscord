@@ -7,6 +7,8 @@ namespace SekiDiscord.Commands
 {
     internal class Fortune
     {
+        private static readonly Logger logger = new Logger(typeof(Fortune));
+
         private static List<string> Fortunes { get; set; }
 
         static Fortune()

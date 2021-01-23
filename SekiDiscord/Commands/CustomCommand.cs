@@ -7,6 +7,7 @@ namespace SekiDiscord.Commands
     public class CustomCommand
     {
         private static readonly Logger logger = new Logger(typeof(CustomCommand));
+        
         private const string customCommandFilePath = "TextFiles/customCommands.txt";
 
         public static List<CustomCommand> CustomCommands { get; set; }

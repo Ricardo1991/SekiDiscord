@@ -7,6 +7,8 @@ namespace SekiDiscord.Commands
 {
     public static class Quotes
     {
+        private static readonly Logger logger = new Logger(typeof(Quotes));
+
         public static List<string> QuotesList { get; set; }
 
         static Quotes()

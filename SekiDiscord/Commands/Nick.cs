@@ -7,6 +7,8 @@ namespace SekiDiscord.Commands
 {
     internal class Nick
     {
+        private static readonly Logger logger = new Logger(typeof(Nick));
+
         public static List<string> NickGenStrings { get; set; }
 
         static Nick()

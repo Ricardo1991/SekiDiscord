@@ -6,6 +6,8 @@ namespace SekiDiscord.Commands
 {
     internal class Funk
     {
+        private static readonly Logger logger = new Logger(typeof(Funk));
+
         public static List<string> FunkList { get; set; }
 
         static Funk()
