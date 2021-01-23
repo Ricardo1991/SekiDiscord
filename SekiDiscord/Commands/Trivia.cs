@@ -7,8 +7,6 @@ namespace SekiDiscord.Commands
 {
     public static class Trivia
     {
-        private static readonly Logger logger = new Logger(typeof(Trivia));
-
         private static List<string> TriviaList { get; set; }
 
         static Trivia()
