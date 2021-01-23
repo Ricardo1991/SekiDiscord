@@ -31,7 +31,7 @@ namespace SekiDiscord {
 
             try
             {
-                using StreamReader sr = new StreamReader("TextFiles/status.txt");
+                using StreamReader sr = new StreamReader(filePath);
                 while (sr.Peek() >= 0)
                 {
                     loadList.Add(sr.ReadLine());
