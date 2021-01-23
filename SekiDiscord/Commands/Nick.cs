@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 
 namespace SekiDiscord.Commands
 {
     internal class Nick
     {
-        private static readonly Logger logger = new Logger(typeof(Nick));
-
         public static List<string> NickGenStrings { get; set; }
 
         static Nick()
         {
-            NickGenStrings = ReadNickGen();
+            NickGenStrings = FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.NickGen);
         }
 
         public static string NickGen(string args, string nick)
@@ -67,33 +64,6 @@ namespace SekiDiscord.Commands
             return message;
         }
 
-        public static List<string> ReadNickGen()
-        {
-            List<string> nickGenStrings = new List<string>();
-            if (File.Exists("TextFiles/nickGen.txt"))
-            {
-                try
-                {
-                    StreamReader sr = new StreamReader("TextFiles/nickGen.txt");
-                    while (sr.Peek() >= 0)
-                    {
-                        nickGenStrings.Add(sr.ReadLine());
-                    }
-                    sr.Close();
-                }
-                catch (IOException e)
-                {
-                    logger.Error("Failed to read nickGen. " + e.Message);
-                }
-            }
-            else
-            {
-                //Settings.Default.nickEnabled = false;
-                //Settings.Default.Save();
-            }
-
-            return nickGenStrings;
-        }
     }
 
     internal static class NickGenerator
@@ -125,21 +95,21 @@ namespace SekiDiscord.Commands
         {
             Random rnd = new Random();
             int changed = 0;
-            int letras = 0;
+            int letters = 0;
 
-            while (changed == 0 || letras == 0)
+            while (changed == 0 || letters == 0)
             {
                 int i = 0;
                 while (i < nick_gen.Length)
                 {
-                    letras = 1;
+                    letters = 1;
                     if (nick_gen[i] == 'e' || nick_gen[i] == 'E')
                     {
                         if (rnd.Next(0, 10) <= 2)
                         {
                             nick_gen = ReplaceCharacter(i, nick_gen, '3');
                             changed = 1;
-                            letras = 0;
+                            letters = 0;
                         }
                     }
                     else if (nick_gen[i] == 'a' || nick_gen[i] == 'A')
@@ -148,7 +118,7 @@ namespace SekiDiscord.Commands
                         {
                             nick_gen = ReplaceCharacter(i, nick_gen, '4');
                             changed = 1;
-                            letras = 0;
+                            letters = 0;
                         }
                     }
                     else if (nick_gen[i] == 't' || nick_gen[i] == 'T')
@@ -157,7 +127,7 @@ namespace SekiDiscord.Commands
                         {
                             nick_gen = ReplaceCharacter(i, nick_gen, '7');
                             changed = 1;
-                            letras = 0;
+                            letters = 0;
                         }
                     }
                     else if (nick_gen[i] == 'o' || nick_gen[i] == 'O')
@@ -166,7 +136,7 @@ namespace SekiDiscord.Commands
                         {
                             nick_gen = ReplaceCharacter(i, nick_gen, '0');
                             changed = 1;
-                            letras = 0;
+                            letters = 0;
                         }
                     }
                     else if (nick_gen[i] == 'i' || nick_gen[i] == 'I')
@@ -175,7 +145,7 @@ namespace SekiDiscord.Commands
                         {
                             nick_gen = ReplaceCharacter(i, nick_gen, '1');
                             changed = 1;
-                            letras = 0;
+                            letters = 0;
                         }
                     }
                     else if (nick_gen[i] == 's' || nick_gen[i] == 'S')
@@ -184,7 +154,7 @@ namespace SekiDiscord.Commands
                         {
                             nick_gen = ReplaceCharacter(i, nick_gen, '5');
                             changed = 1;
-                            letras = 0;
+                            letters = 0;
                         }
                     }
                     else if (nick_gen[i] == 'z' || nick_gen[i] == 'Z')
@@ -193,7 +163,7 @@ namespace SekiDiscord.Commands
                         {
                             nick_gen = ReplaceCharacter(i, nick_gen, '2');
                             changed = 1;
-                            letras = 0;
+                            letters = 0;
                         }
                     }
 

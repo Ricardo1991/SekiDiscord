@@ -19,7 +19,7 @@ namespace SekiDiscord.Commands
         {
             KillsUsed = new List<int>();
             Killgen = new StringMarkov();
-            Kills = ReadKills();
+            Kills = FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Kills);
         }
 
         public static KillResult Kill(string author, List<string> usersOnline, string target)
@@ -115,45 +115,6 @@ namespace SekiDiscord.Commands
             }
 
             return message;
-        }
-
-        public static List<string> ReadKills()
-        {
-            List<string> kills = new List<string>();
-            KillsUsed.Clear();
-            Killgen = new StringMarkov();
-
-            if (File.Exists("TextFiles/kills.txt"))
-            {
-                try
-                {
-                    StreamReader sr = new StreamReader("TextFiles/kills.txt");
-                    while (sr.Peek() >= 0)
-                    {
-                        string killS = sr.ReadLine();
-
-                        if (killS.Length > 1 && !(killS[0] == '/' && killS[1] == '/'))
-                        {
-                            kills.Add(killS);
-                            Killgen.Learn(killS);
-                        }
-                    }
-
-                    sr.Close();
-                }
-                catch (IOException e)
-                {
-                    logger.Error("Failed to read kills. " + e.Message);
-                }
-            }
-            else
-            {
-                //TODO: Save settings
-                //Settings.Default.killEnabled = false;
-                //Settings.Default.Save();
-            }
-
-            return kills;
         }
 
         private static string GetRandomKillString()

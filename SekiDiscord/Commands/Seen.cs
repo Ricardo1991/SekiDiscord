@@ -10,6 +10,8 @@ namespace SekiDiscord.Commands
     {
         public static Dictionary<string, DateTime> SeenTime { get; set; }
 
+        private const string lastSeenFilePath = "TextFiles/userLastSeen.json";
+
         static Seen()
         {
             SeenTime = ReadSeen();
@@ -98,11 +100,11 @@ namespace SekiDiscord.Commands
         {
             Dictionary<string, DateTime> seen = new Dictionary<string, DateTime>();
 
-            if (File.Exists("TextFiles/seen.json"))
+            if (File.Exists(lastSeenFilePath))
             {
                 try
                 {
-                    using StreamReader r = new StreamReader("TextFiles/seen.json");
+                    using StreamReader r = new StreamReader(lastSeenFilePath);
                     string json = r.ReadToEnd();
                     seen = JsonConvert.DeserializeObject<Dictionary<string, DateTime>>(json);
                 }
@@ -118,7 +120,7 @@ namespace SekiDiscord.Commands
         {
             try
             {
-                using StreamWriter w = File.CreateText("TextFiles/seen.json");
+                using StreamWriter w = File.CreateText(lastSeenFilePath);
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(w, SeenTime);
             }

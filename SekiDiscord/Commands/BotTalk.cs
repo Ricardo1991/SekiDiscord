@@ -6,7 +6,7 @@ namespace SekiDiscord.Commands
 {
     internal class BotTalk
     {
-        static private CleverbotSession cleverbotSession = null;
+        static private CleverbotSession cleverbotSession;
 
         public static async Task<string> BotThinkAsync(string input, string botName)
         {

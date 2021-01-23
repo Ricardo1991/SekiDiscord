@@ -30,7 +30,7 @@ namespace SekiDiscord {
             Console.ResetColor();
         }
 
-        private string GetDateTimeString() {
+        private static string GetDateTimeString() {
             return DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture);
         }
     }

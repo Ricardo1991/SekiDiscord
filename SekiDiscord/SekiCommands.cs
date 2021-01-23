@@ -364,8 +364,15 @@ namespace SekiDiscord
         {
             logger.Info("Trivia Command", Useful.GetDiscordName(ctx));
 
-            string message = Commands.Trivia.GetTrivia();
-            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+            try
+            {
+                string message = Commands.Trivia.GetTrivia();
+                await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message, Useful.GetDiscordName(ctx));
+            }
         }
 
         [Command("version")]

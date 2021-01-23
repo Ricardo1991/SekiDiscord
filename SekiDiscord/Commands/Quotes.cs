@@ -7,13 +7,11 @@ namespace SekiDiscord.Commands
 {
     public static class Quotes
     {
-        private static readonly Logger logger = new Logger(typeof(Quotes));
-
         public static List<string> QuotesList { get; set; }
 
         static Quotes()
         {
-            QuotesList = ReadQuotes();
+            QuotesList = FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Quotes);
         }
 
         public static void AddQuote(string args)
@@ -132,32 +130,9 @@ namespace SekiDiscord.Commands
             return QuotesList.Count.ToString(CultureInfo.CreateSpecificCulture("en-GB"));
         }
 
-        public static List<string> ReadQuotes()
-        {
-            List<string> quotes = new List<string>();
-
-            if (File.Exists("TextFiles/quotes.txt"))
-            {
-                try
-                {
-                    StreamReader sr = new StreamReader("TextFiles/quotes.txt");
-                    while (sr.Peek() >= 0)
-                    {
-                        quotes.Add(sr.ReadLine());
-                    }
-                    sr.Close();
-                }
-                catch (IOException e)
-                {
-                    logger.Error("Failed to read quotes. " + e.Message);
-                }
-            }
-            return quotes;
-        }
-
         public static void SaveQuotes(List<string> quotes)
         {
-            using StreamWriter newTask = new StreamWriter("TextFiles/quotes.txt", false);
+            using StreamWriter newTask = new StreamWriter(FileHandler.FileEnumToString(FileHandler.StringListFileType.Quotes), false);
             foreach (string q in quotes)
             {
                 newTask.WriteLine(q);
