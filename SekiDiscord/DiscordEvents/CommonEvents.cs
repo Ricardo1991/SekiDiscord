@@ -8,15 +8,16 @@ using System.Timers;
 namespace SekiDiscord.DiscordEvents {
     static class CommonEvents {
         private static readonly Logger logger = new Logger(typeof(CommonEvents));
+
 #if DEBUG
-        private static readonly UserStatus botPresenceStatus = UserStatus.Idle;
+        private const UserStatus BOT_PRESENCE_STATUS = UserStatus.Idle;
 #else
-        private static readonly UserStatus botPresenceStatus = UserStatus.Online;
+        private const UserStatus BOT_PRESENCE_STATUS = UserStatus.Online;
 #endif
 
         public static async Task ReadyEvent(ReadyEventArgs a) {
             SekiMain.TryReconnect = false;
-            await SekiMain.DiscordClient.UpdateStatusAsync(new DiscordGame(GetRandomStatus(FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Status))), botPresenceStatus).ConfigureAwait(false);
+            await SekiMain.DiscordClient.UpdateStatusAsync(new DiscordGame(GetRandomStatus(FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Status))), BOT_PRESENCE_STATUS).ConfigureAwait(false);
             await logger.InfoAsync("Ready!").ConfigureAwait(false);
         }
 
@@ -38,7 +39,7 @@ namespace SekiDiscord.DiscordEvents {
         private static void OnUpdateStatusEvent(object sender, ElapsedEventArgs e) {
             try {
                 logger.Info("Attempting to update user status");
-                SekiMain.DiscordClient.UpdateStatusAsync(new DiscordGame(GetRandomStatus(FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Status))), botPresenceStatus);
+                SekiMain.DiscordClient.UpdateStatusAsync(new DiscordGame(GetRandomStatus(FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Status))), BOT_PRESENCE_STATUS);
             }
             catch (Exception ex) {
                 logger.Error(ex.Message);

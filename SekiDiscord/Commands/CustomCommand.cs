@@ -8,7 +8,7 @@ namespace SekiDiscord.Commands
     {
         private static readonly Logger logger = new Logger(typeof(CustomCommand));
         
-        private const string customCommandFilePath = "TextFiles/customCommands.txt";
+        private const string CUSTOM_COMMANDS_FILE_PATH = "TextFiles/customCommands.txt";
 
         public static List<CustomCommand> CustomCommands { get; set; }
 
@@ -34,11 +34,11 @@ namespace SekiDiscord.Commands
         {
             List<CustomCommand> command = new List<CustomCommand>();
 
-            if (File.Exists(customCommandFilePath))
+            if (File.Exists(CUSTOM_COMMANDS_FILE_PATH))
             {
                 try
                 {
-                    StreamReader sr = new StreamReader(customCommandFilePath);
+                    StreamReader sr = new StreamReader(CUSTOM_COMMANDS_FILE_PATH);
                     while (sr.Peek() >= 0)
                     {
                         string line = sr.ReadLine();
@@ -85,7 +85,7 @@ namespace SekiDiscord.Commands
 
         public static void SaveCustomCommands(List<CustomCommand> commands)
         {
-            using StreamWriter newTask = new StreamWriter(customCommandFilePath, false);
+            using StreamWriter newTask = new StreamWriter(CUSTOM_COMMANDS_FILE_PATH, false);
             foreach (CustomCommand q in commands)
             {
                 newTask.WriteLine(q.Author + " " + q.Name + " " + q.Format);

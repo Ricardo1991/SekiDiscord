@@ -61,7 +61,7 @@ namespace SekiDiscord {
                         await DiscordClient.ConnectAsync().ConfigureAwait(false);
                     }
                 }
-                //Wait a bit
+                // Wait a bit
                 await Task.Delay(10 * 1000).ConfigureAwait(false);
             }
         }
@@ -88,8 +88,8 @@ namespace SekiDiscord {
                     Settings.Default.CleverbotAPI = api;
                 }
             }
-            //TODO: This should be fixed once .net Core 3.0 is released
-            //Settings.Default.Save();
+            // TODO: This should be fixed once .net Core 3.0 is released
+            // Settings.Default.Save();
         }
 
         private static string GetApiKey(int index, string message) {

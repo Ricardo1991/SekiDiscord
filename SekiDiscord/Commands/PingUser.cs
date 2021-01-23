@@ -15,7 +15,7 @@ namespace SekiDiscord.Commands
     internal class PingUser
     {
         private static readonly Logger logger = new Logger(typeof(PingUser));
-        private const string pingsFilePath = "TextFiles/pings.json";
+        private const string PINGS_FILE_PATH = "TextFiles/pings.json";
 
         public static Dictionary<ulong, HashSet<string>> Pings { get; set; }
 
@@ -51,22 +51,6 @@ namespace SekiDiscord.Commands
                         }
                     }
                     break;
-
-                //case "copy":
-                //    if (!string.IsNullOrWhiteSpace(args))
-                //    {
-                //        bool user = Pings.ContainsKey(username);
-                //        bool userToCopyFrom = Pings.ContainsKey(args);
-                //        if (!user && userToCopyFrom)
-                //        {
-                //              Pings.Add(username, Pings[args]);
-                //        }
-                //        else if (user && userToCopyFrom)
-                //        {
-                //              Pings[username].UnionWith(Pings[args]);
-                //        }
-                //    }
-                //    break;
 
                 case "info":
                     if (Pings.ContainsKey(userNameID))
@@ -136,11 +120,11 @@ namespace SekiDiscord.Commands
         {
             Dictionary<ulong, HashSet<string>> ping = new Dictionary<ulong, HashSet<string>>();
 
-            if (File.Exists(pingsFilePath))
+            if (File.Exists(PINGS_FILE_PATH))
             {
                 try
                 {
-                    using StreamReader r = new StreamReader(pingsFilePath);
+                    using StreamReader r = new StreamReader(PINGS_FILE_PATH);
                     string json = r.ReadToEnd();
                     ping = JsonConvert.DeserializeObject<Dictionary<ulong, HashSet<string>>>(json);
                 }
@@ -156,7 +140,7 @@ namespace SekiDiscord.Commands
         {
             try
             {
-                using StreamWriter w = File.CreateText(pingsFilePath);
+                using StreamWriter w = File.CreateText(PINGS_FILE_PATH);
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(w, ping);
             }

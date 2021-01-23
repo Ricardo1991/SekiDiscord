@@ -75,7 +75,7 @@ namespace SekiDiscord {
 
                 default: break;
             }
-            throw new Exception("Undefined fileType");
+            throw new ArgumentException("Undefined fileType");
         }
     }
 }

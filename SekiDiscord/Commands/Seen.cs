@@ -8,9 +8,11 @@ namespace SekiDiscord.Commands
 {
     public class Seen
     {
+        private static readonly Logger logger = new Logger(typeof(Seen));
+
         public static Dictionary<string, DateTime> SeenTime { get; set; }
 
-        private const string lastSeenFilePath = "TextFiles/userLastSeen.json";
+        private const string LAST_SEEN_FILE_PATH = "TextFiles/userLastSeen.json";
 
         static Seen()
         {
@@ -100,16 +102,17 @@ namespace SekiDiscord.Commands
         {
             Dictionary<string, DateTime> seen = new Dictionary<string, DateTime>();
 
-            if (File.Exists(lastSeenFilePath))
+            if (File.Exists(LAST_SEEN_FILE_PATH))
             {
                 try
                 {
-                    using StreamReader r = new StreamReader(lastSeenFilePath);
+                    using StreamReader r = new StreamReader(LAST_SEEN_FILE_PATH);
                     string json = r.ReadToEnd();
                     seen = JsonConvert.DeserializeObject<Dictionary<string, DateTime>>(json);
                 }
-                catch (JsonException)
+                catch (JsonException e)
                 {
+                    logger.Error(e.Message);
                 }
             }
 
@@ -120,12 +123,13 @@ namespace SekiDiscord.Commands
         {
             try
             {
-                using StreamWriter w = File.CreateText(lastSeenFilePath);
+                using StreamWriter w = File.CreateText(LAST_SEEN_FILE_PATH);
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(w, SeenTime);
             }
-            catch (JsonException)
+            catch (JsonException e)
             {
+                logger.Error(e.Message);
             }
         }
     }

@@ -2,8 +2,6 @@
 using DSharpPlus.CommandsNext.Attributes;
 using SekiDiscord.Commands;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Threading.Tasks;
 
 namespace SekiDiscord
@@ -18,37 +16,27 @@ namespace SekiDiscord
         public async Task Quote(CommandContext ctx)
         {
             logger.Info("Quote Command", Useful.GetDiscordName(ctx));
-            string arg;
 
-            try
-            {
-                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch (IndexOutOfRangeException)
-            {
-                arg = string.Empty;
-            }
+            string arg = Useful.GetCommandArguments(ctx.Message.Content);
 
-            if (string.Compare(arg.Split(new char[] { ' ' }, 2)[0], "add", StringComparison.OrdinalIgnoreCase) == 0)  //add
+            if (string.Compare(arg.Split(new char[] { ' ' }, 2)[0], "add", StringComparison.OrdinalIgnoreCase) == 0)  // add
             {
                 Quotes.AddQuote(arg);
             }
-            else //lookup or random
+            else // lookup or random
             {
-                string result = Quotes.PrintQuote(arg);
-                await ctx.RespondAsync(result).ConfigureAwait(false);
+                await ctx.RespondAsync(Quotes.PrintQuote(arg)).ConfigureAwait(false);
             }
         }
 
         [Command("qcount")]
-        [Description("Show how many quotes are loaded")]     // this will be displayed to tell users what this command does when they invoke help
+        [Description("Show how many quotes are loaded")]
         [Aliases("qc")]
         public async Task QuoteCount(CommandContext ctx)
         {
             logger.Info("Quote Count Command", Useful.GetDiscordName(ctx));
 
-            string result = Quotes.QuoteCount();
-            await ctx.RespondAsync(result).ConfigureAwait(false);
+            await ctx.RespondAsync(Quotes.QuoteCount()).ConfigureAwait(false);
         }
 
         [Command("kill")]
@@ -57,21 +45,7 @@ namespace SekiDiscord
         {
             logger.Info("kill Command", Useful.GetDiscordName(ctx));
 
-            string author = Useful.GetUsername(ctx);
-            List<string> usersOnline = Useful.GetOnlineNames(ctx.Channel.Guild);
-
-            string args;
-
-            try
-            {
-                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch (IndexOutOfRangeException)
-            {
-                args = string.Empty;
-            }
-
-            KillUser.KillResult result = KillUser.Kill(author, usersOnline, args);
+            KillUser.KillResult result = KillUser.Kill(Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild), Useful.GetCommandArguments(ctx.Message.Content));
 
             switch (result.IsAction)
             {
@@ -91,20 +65,7 @@ namespace SekiDiscord
         {
             logger.Info("rkill Command", Useful.GetDiscordName(ctx));
 
-            string args;
-            string author = Useful.GetUsername(ctx);
-            List<string> listU = Useful.GetOnlineNames(ctx.Channel.Guild);
-
-            try
-            {
-                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch (IndexOutOfRangeException)
-            {
-                args = string.Empty;
-            }
-
-            KillUser.KillResult result = KillUser.KillRandom(args, author, listU);
+            KillUser.KillResult result = KillUser.KillRandom(Useful.GetCommandArguments(ctx.Message.Content), Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild));
 
             switch (result.IsAction)
             {
@@ -124,18 +85,15 @@ namespace SekiDiscord
         {
             logger.Info("addcmd Command", Useful.GetDiscordName(ctx));
 
-            string nick = ctx.User.Username;
-            string[] splits;
-            string message;
-            splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
+            string[] splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
 
             if (CustomCommand.CommandExists(splits[0], CustomCommand.CustomCommands) == true)
             {
-                message = "Command " + splits[0] + " already exists.";
+                string message = "Command " + splits[0] + " already exists.";
                 await ctx.RespondAsync(message).ConfigureAwait(false);
             }
 
-            CustomCommand.CustomCommands.Add(new CustomCommand(nick, splits[1], splits[2]));
+            CustomCommand.CustomCommands.Add(new CustomCommand(ctx.User.Username, splits[1], splits[2]));
             CustomCommand.SaveCustomCommands(CustomCommand.CustomCommands);
         }
 
@@ -145,12 +103,10 @@ namespace SekiDiscord
         {
             logger.Info("removecmd Command", Useful.GetDiscordName(ctx));
 
-            string[] splits;
-
-            splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
-
             if (Useful.MemberIsBotOperator(ctx.Member) || ctx.Member.IsOwner)
             {
+                string[] splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
+
                 CustomCommand.RemoveCommandByName(splits[1], CustomCommand.CustomCommands);
                 CustomCommand.SaveCustomCommands(CustomCommand.CustomCommands);
                 string message = "Command " + splits[1] + " removed.";
@@ -160,7 +116,7 @@ namespace SekiDiscord
 
         [Command("ping")]
         [Description("Add, Remove or Copy words or phrases that the user will be mentioned at")]
-        [Aliases("p")]                          // alternative names for the command
+        [Aliases("p")]
         public async Task Ping(CommandContext ctx)
         {
             logger.Info("ping Command", Useful.GetDiscordName(ctx));
@@ -169,7 +125,7 @@ namespace SekiDiscord
 
             try
             {
-                msg = ctx.Message.Content.ToLower(CultureInfo.CreateSpecificCulture("en-GB")).Split(new char[] { ' ' }, 2)[1]; // remove !p or !ping
+                msg = Useful.GetCommandArguments(ctx.Message.Content.ToLowerInvariant()); // remove !p or !ping
                 cmd = msg.Split(new char[] { ' ' }, 2)[0]; // get command word
                 args = Useful.GetBetween(msg, cmd, null).TrimStart(); // get words after command, add a space to cmd word so args doesnt start with one
             }
@@ -180,9 +136,7 @@ namespace SekiDiscord
 
             if (!string.IsNullOrWhiteSpace(msg))
             {
-                ulong userNameID = ctx.Member.Id; // get message creators username in lower case
-                var discordUser = ctx.Message.Author;
-                await PingUser.PingControl(userNameID, discordUser, cmd, args).ConfigureAwait(false);
+                await PingUser.PingControl(ctx.Member.Id, ctx.Message.Author, cmd, args).ConfigureAwait(false);
                 PingUser.SavePings(PingUser.Pings);
             }
         }
@@ -193,13 +147,10 @@ namespace SekiDiscord
         {
             logger.Info("Roll Command", Useful.GetDiscordName(ctx));
 
-            string nick = Useful.GetUsername(ctx);
-            string message;
-
             try
             {
                 int number = Basics.Roll(ctx.Message.Content);
-                message = nick + " rolled a " + number;
+                string message = Useful.GetUsername(ctx) + " rolled a " + number;
                 await ctx.RespondAsync(message).ConfigureAwait(false);
             }
             catch (FormatException)
@@ -230,12 +181,10 @@ namespace SekiDiscord
         {
             logger.Info("Choose Command", Useful.GetDiscordName(ctx));
 
-            string user = Useful.GetUsername(ctx);
-
             try
             {
-                string arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
-                string result = Basics.Choose(arg, user);
+                string arg = Useful.GetCommandArguments(ctx.Message.Content).Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
+                string result = Basics.Choose(arg, Useful.GetUsername(ctx));
                 await ctx.RespondAsync(result).ConfigureAwait(false);
             }
             catch (IndexOutOfRangeException)
@@ -251,8 +200,7 @@ namespace SekiDiscord
         {
             logger.Info("Square Command", Useful.GetDiscordName(ctx));
 
-            string text = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            string message = Square.SquareText(text, Useful.GetUsername(ctx));
+            string message = Square.SquareText(Useful.GetCommandArguments(ctx.Message.Content), Useful.GetUsername(ctx));
             await ctx.RespondAsync(message).ConfigureAwait(false);
         }
 
@@ -262,22 +210,12 @@ namespace SekiDiscord
         {
             logger.Info("Funk Command", Useful.GetDiscordName(ctx));
 
-            string arg;
-            try
-            {
-                arg = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch (IndexOutOfRangeException)
-            {
-                arg = string.Empty;
-            }
-
-            if (string.IsNullOrEmpty(arg)) //lookup or random
-            {
+            if (string.IsNullOrEmpty(Useful.GetCommandArguments(ctx.Message.Content))) { // lookup or random
                 await ctx.Message.RespondAsync(Commands.Funk.PrintFunk()).ConfigureAwait(false);
             }
-            else
+            else {
                 Commands.Funk.AddFunk(ctx.Message.Content);
+            }
         }
 
         [Command("poke")]
@@ -286,28 +224,25 @@ namespace SekiDiscord
         {
             logger.Info("Poke Command", Useful.GetDiscordName(ctx));
 
-            List<string> listU = Useful.GetOnlineNames(ctx.Channel.Guild);
-            string user = Useful.GetUsername(ctx);
-
-            string result = Basics.PokeRandom(listU, user);
+            string result = Basics.PokeRandom(Useful.GetOnlineNames(ctx.Channel.Guild), Useful.GetUsername(ctx));
             await ctx.RespondAsync(result).ConfigureAwait(false);
         }
 
         [Command("youtube")]
         [Description("Search youtube for the arguments provided, and return the top result")]
-        [Aliases("yt")]                          // alternative names for the command
+        [Aliases("yt")]
         public async Task YoutubeSearch(CommandContext ctx)
         {
             logger.Info("Youtube Command", Useful.GetDiscordName(ctx));
 
             try
             {
-                string query = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-                string result = Youtube.YoutubeSearch(query);
+                string result = Youtube.YoutubeSearch(Useful.GetCommandArguments(ctx.Message.Content));
                 await ctx.Message.RespondAsync(result).ConfigureAwait(false);
             }
             catch (IndexOutOfRangeException)
             {
+                return;
             }
         }
 
@@ -317,9 +252,7 @@ namespace SekiDiscord
         {
             logger.Info("Nick Command", Useful.GetDiscordName(ctx));
 
-            string args = ctx.Message.Content;
-            string nick = Useful.GetUsername(ctx);
-            string result = Commands.Nick.NickGen(args, nick);
+            string result = Commands.Nick.NickGen(ctx.Message.Content, Useful.GetUsername(ctx));
 
             await ctx.RespondAsync(result).ConfigureAwait(false);
         }
@@ -330,19 +263,7 @@ namespace SekiDiscord
         {
             logger.Info("Fact Command", Useful.GetDiscordName(ctx));
 
-            List<string> listU = Useful.GetOnlineNames(ctx.Channel.Guild);
-            string user = Useful.GetUsername(ctx);
-            string args;
-            try
-            {
-                args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch (IndexOutOfRangeException)
-            {
-                args = string.Empty;
-            }
-
-            string result = Commands.Fact.ShowFact(args, listU, user);
+            string result = Commands.Fact.ShowFact(Useful.GetCommandArguments(ctx.Message.Content), Useful.GetOnlineNames(ctx.Channel.Guild), Useful.GetUsername(ctx));
 
             await ctx.Message.RespondAsync(result).ConfigureAwait(false);
         }
@@ -353,8 +274,7 @@ namespace SekiDiscord
         {
             logger.Info("Seen Command", Useful.GetDiscordName(ctx));
 
-            string args = ctx.Message.Content.Split(new char[] { ' ' }, 2)[1];
-            string message = Commands.Seen.CheckSeen(args);
+            string message = Commands.Seen.CheckSeen(Useful.GetCommandArguments(ctx.Message.Content));
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
 
@@ -366,8 +286,7 @@ namespace SekiDiscord
 
             try
             {
-                string message = Commands.Trivia.GetTrivia();
-                await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+                await ctx.Message.RespondAsync(Commands.Trivia.GetTrivia()).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

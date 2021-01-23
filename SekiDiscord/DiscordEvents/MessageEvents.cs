@@ -74,7 +74,7 @@ namespace SekiDiscord.DiscordEvents {
         }
 
         private static async Task Waifunator(DiscordMessage message) {
-            if (!string.IsNullOrWhiteSpace(message.Content) && message.Author.Id == Settings.Default.limid && message.Content.Contains("wife", StringComparison.OrdinalIgnoreCase)) {
+            if (!string.IsNullOrWhiteSpace(message.Content) && message.Author.Id.Equals(Settings.Default.limid) && message.Content.Contains("wife", StringComparison.OrdinalIgnoreCase)) {
                 await message.CreateReactionAsync(DiscordEmoji.FromName(SekiMain.DiscordClient, ":regional_indicator_w:")).ConfigureAwait(false);
                 await message.CreateReactionAsync(DiscordEmoji.FromName(SekiMain.DiscordClient, ":regional_indicator_a:")).ConfigureAwait(false);
                 await message.CreateReactionAsync(DiscordEmoji.FromName(SekiMain.DiscordClient, ":regional_indicator_i:")).ConfigureAwait(false);
