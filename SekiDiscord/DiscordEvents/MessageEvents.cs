@@ -48,9 +48,14 @@ namespace SekiDiscord.DiscordEvents {
             string arguments = split.Length > 1 ? split[1] : string.Empty;
             string senderUsername = Useful.GetUsername(a);
 
-            string result = CustomCommand.UseCustomCommand(split[0].TrimStart(Settings.Default.commandChar), arguments, senderUsername, GetUserList(a.Channel.Guild, senderUsername));
-            if (!string.IsNullOrEmpty(result)) {
-                await a.Message.RespondAsync(result).ConfigureAwait(false);
+            string command = split[0].TrimStart(Settings.Default.commandChar);
+
+            if (CustomCommand.CommandExists(command)) {
+                string result = CustomCommand.UseCustomCommand(command, arguments, senderUsername, GetUserList(a.Channel.Guild, senderUsername));
+                if (!string.IsNullOrEmpty(result))
+                {
+                    await a.Message.RespondAsync(result).ConfigureAwait(false);
+                }
             }
         }
 

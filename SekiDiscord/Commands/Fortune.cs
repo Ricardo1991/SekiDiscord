@@ -1,11 +1,10 @@
-﻿using DSharpPlus.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 
 namespace SekiDiscord.Commands
 {
-    internal class Fortune
+    public static class Fortune
     {
         private static List<string> Fortunes { get; set; }
 
@@ -14,12 +13,17 @@ namespace SekiDiscord.Commands
             Fortunes = FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Fortune);
         }
 
-        public static string GetFortune(DateTime date, DiscordUser discordUser)
+        public static string GetFortune(ulong discordUserID)
+        {
+            return GetFortune(DateTime.Today, discordUserID);
+        }
+
+        public static string GetFortune(DateTime date, ulong discordUserID)
         {
             if (Fortunes == null || Fortunes.Count == 0)
                 return null;
 
-            ulong dayFortuneId = discordUser.Id ^ (ulong)date.Ticks;
+            ulong dayFortuneId = discordUserID ^ (ulong)date.Ticks;
             int fortuneID = (int)(dayFortuneId % (ulong)Fortunes.Count);
 
             return Fortunes[fortuneID];

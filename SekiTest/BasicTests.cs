@@ -1,11 +1,23 @@
 ﻿using SekiDiscord.Commands;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace SekiTest
 {
     public class BasicTests
     {
+        private static string randomUser = "userboo";
+        private static List<string> userList = new List<string> { randomUser };
+        private static string author = "Rakope";
+
+        [Fact]
+        public void PokeRandomTest()
+        {
+            string poke = Basics.PokeRandom(userList,author);
+            Assert.Equal(poke, "*pokes " + randomUser + "*");
+        }
+
         [Fact]
         public void Roll20Test()
         {

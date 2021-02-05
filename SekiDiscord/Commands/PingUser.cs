@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SekiDiscord.Commands
 {
-    internal class PingUser
+    public class PingUser
     {
         private static readonly Logger logger = new Logger(typeof(PingUser));
         private const string PINGS_FILE_PATH = "TextFiles/pings.json";

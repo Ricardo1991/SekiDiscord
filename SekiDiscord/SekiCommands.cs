@@ -87,14 +87,14 @@ namespace SekiDiscord
 
             string[] splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
 
-            if (CustomCommand.CommandExists(splits[0], CustomCommand.CustomCommands) == true)
+            if (CustomCommand.CommandExists(splits[0]) == true)
             {
                 string message = "Command " + splits[0] + " already exists.";
                 await ctx.RespondAsync(message).ConfigureAwait(false);
             }
 
             CustomCommand.CustomCommands.Add(new CustomCommand(ctx.User.Username, splits[1], splits[2]));
-            CustomCommand.SaveCustomCommands(CustomCommand.CustomCommands);
+            CustomCommand.SaveCustomCommands();
         }
 
         [Command("removecmd")]
@@ -107,8 +107,8 @@ namespace SekiDiscord
             {
                 string[] splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
 
-                CustomCommand.RemoveCommandByName(splits[1], CustomCommand.CustomCommands);
-                CustomCommand.SaveCustomCommands(CustomCommand.CustomCommands);
+                CustomCommand.RemoveCommandByName(splits[1]);
+                CustomCommand.SaveCustomCommands();
                 string message = "Command " + splits[1] + " removed.";
                 await ctx.RespondAsync(message).ConfigureAwait(false);
             }
@@ -310,7 +310,7 @@ namespace SekiDiscord
         {
             logger.Info("Fortune Command", Useful.GetDiscordName(ctx));
 
-            string message = Commands.Fortune.GetFortune(DateTime.Today, ctx.User);
+            string message = Commands.Fortune.GetFortune(ctx.User.Id);
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
     }

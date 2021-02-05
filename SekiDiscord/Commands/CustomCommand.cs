@@ -57,12 +57,12 @@ namespace SekiDiscord.Commands
             return command;
         }
 
-        internal static string UseCustomCommand(string command, string arguments, string nick, List<string> listU)
+        public static string UseCustomCommand(string command, string arguments, string nick, List<string> listU)
         {
             string response;
             CustomCommand customCommand;
 
-            if (CommandExists(command, CustomCommands) == false)
+            if (CommandExists(command) == false)
             {
                 //message = new Privmsg(CHANNEL, "Command " + cmd + " doesn't exist.");
                 //sendMessage(message);
@@ -70,7 +70,7 @@ namespace SekiDiscord.Commands
                 return string.Empty;
             }
 
-            customCommand = GetCustomCommandByName(command, CustomCommands);
+            customCommand = GetCustomCommandByName(command);
 
             if (customCommand == null)
             {
@@ -83,29 +83,29 @@ namespace SekiDiscord.Commands
             return response;
         }
 
-        public static void SaveCustomCommands(List<CustomCommand> commands)
+        public static void SaveCustomCommands()
         {
             using StreamWriter newTask = new StreamWriter(CUSTOM_COMMANDS_FILE_PATH, false);
-            foreach (CustomCommand q in commands)
+            foreach (CustomCommand q in CustomCommands)
             {
                 newTask.WriteLine(q.Author + " " + q.Name + " " + q.Format);
             }
         }
 
-        public static bool CommandExists(string name, List<CustomCommand> commands)
+        public static bool CommandExists(string commandName)
         {
-            foreach (CustomCommand q in commands)
+            foreach (CustomCommand q in CustomCommands)
             {
-                if (string.Compare(q.Name, name, StringComparison.OrdinalIgnoreCase) == 0)
+                if (string.Compare(q.Name, commandName, StringComparison.OrdinalIgnoreCase) == 0)
                     return true;
             }
 
             return false;
         }
 
-        public static CustomCommand GetCustomCommandByName(string name, List<CustomCommand> commands)
+        private static CustomCommand GetCustomCommandByName(string name)
         {
-            foreach (CustomCommand q in commands)
+            foreach (CustomCommand q in CustomCommands)
             {
                 if (string.Compare(q.Name, name, StringComparison.OrdinalIgnoreCase) == 0)
                     return q;
@@ -114,13 +114,13 @@ namespace SekiDiscord.Commands
             return null;
         }
 
-        public static void RemoveCommandByName(string name, List<CustomCommand> commands)
+        public static void RemoveCommandByName(string name)
         {
-            foreach (CustomCommand q in commands)
+            foreach (CustomCommand q in CustomCommands)
             {
                 if (string.Compare(q.Name, name, StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    commands.Remove(GetCustomCommandByName(name, commands));
+                    CustomCommands.Remove(GetCustomCommandByName(name));
                     return;
                 }
             }
