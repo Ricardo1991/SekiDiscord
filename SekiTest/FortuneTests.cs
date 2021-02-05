@@ -12,14 +12,14 @@ namespace SekiTest
         {
             string fortune1 = SekiDiscord.Commands.Fortune.GetFortune(userID);
             string fortune2 = SekiDiscord.Commands.Fortune.GetFortune(userID);
-            Assert.Equal(fortune1,fortune2);
+            Assert.Equal(fortune1, fortune2);
         }
 
         [Fact]
         public void DifferentFortuneDifferentDay()
         {
             string fortune1 = SekiDiscord.Commands.Fortune.GetFortune(DateTime.Today, userID);
-            string fortune2 = SekiDiscord.Commands.Fortune.GetFortune(DateTime.Today.Add(new TimeSpan(1,0,0,0)), userID);
+            string fortune2 = SekiDiscord.Commands.Fortune.GetFortune(DateTime.Today.Add(new TimeSpan(1, 0, 0, 0)), userID);
             Assert.NotEqual(fortune1, fortune2);
         }
 

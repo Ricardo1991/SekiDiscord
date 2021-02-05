@@ -14,7 +14,7 @@ namespace SekiTest
         [Fact]
         public void PokeRandomTest()
         {
-            string poke = Basics.PokeRandom(userList,author);
+            string poke = Basics.PokeRandom(userList, author);
             Assert.Equal(poke, "*pokes " + randomUser + "*");
         }
 
