@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{D3003B4E-0007-43EB-B350-2410286C6DB5}</ProjectGuid>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyTitle>MarkovSharp</AssemblyTitle>
     <Product>MarkovSharp</Product>
     <Description>An easy to use C# implementation of an N-state Markov model.</Description>
