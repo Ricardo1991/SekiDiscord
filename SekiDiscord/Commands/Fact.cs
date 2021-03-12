@@ -51,7 +51,7 @@ namespace SekiDiscord.Commands
             //Clear the oldest entry if the list reaches the limit
             if (FactsUsed.Count >= MAX_FACTS_REMEMBER)
             {
-                FactsUsed.Remove(FactsUsed[FactsUsed.Count - 1]);
+                FactsUsed.Remove(FactsUsed[^1]);
             }
 
             return Useful.FillTags(Facts[factID], user.Trim(), target, listU);

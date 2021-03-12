@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SekiDiscord
 {
+#pragma warning disable CA1822 // Mark members as static
     public class SekiCommands
     {
         private static readonly Logger logger = new Logger(typeof(SekiCommands));
@@ -314,4 +315,5 @@ namespace SekiDiscord
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
     }
+#pragma warning restore CA1822 // Mark members as static
 }

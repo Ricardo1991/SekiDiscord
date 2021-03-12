@@ -64,7 +64,7 @@ namespace SekiDiscord.Commands
 
             if (KillsUsed.Count >= MAX_KILLS)
             {
-                KillsUsed.Remove(KillsUsed[KillsUsed.Count - 1]);
+                KillsUsed.Remove(KillsUsed[^1]);
             }
 
             KillsUsed.Insert(0, killID);

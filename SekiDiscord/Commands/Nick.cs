@@ -88,7 +88,7 @@ namespace SekiDiscord.Commands
 
         private static string ReplaceCharacter(int position, string word, char newChar)
         {
-            return word.Substring(0, position) + newChar + word.Substring(position + 1);
+            return word.Substring(0, position) + newChar + word[(position + 1)..];
         }
 
         private static string LetterToNumber(string nick_gen)
