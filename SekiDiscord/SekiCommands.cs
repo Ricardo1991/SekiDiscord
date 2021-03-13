@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SekiDiscord.Commands;
+using SekiDiscord.Commands.NotifyEvent;
 using System;
 using System.Threading.Tasks;
 
@@ -322,8 +323,7 @@ namespace SekiDiscord
             logger.Info("Event Subscribe Command", Useful.GetDiscordName(ctx));
             string arguments = Useful.GetCommandArguments(ctx.Message.Content);
 
-
-            bool result = Commands.NotifyEvent.NotifyEventManager.SubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
+            bool result = NotifyEventManager.SubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
 
             string message = result ? "Added sucessfully to " + arguments : "Error";
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
@@ -350,9 +350,9 @@ namespace SekiDiscord
             logger.Info("Event Enable Command", Useful.GetDiscordName(ctx));
             string arguments = Useful.GetCommandArguments(ctx.Message.Content);
 
-            bool result = Commands.NotifyEvent.NotifyEventManager.EnableEvent(arguments);
+            bool result = NotifyEventManager.EnableEvent(arguments);
 
-            string message = result ? "Enabled  " + arguments + " sucessfully" : "Error";
+            string message = result ? "Enabled " + arguments + " sucessfully" : "Error";
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
 
@@ -363,22 +363,31 @@ namespace SekiDiscord
             logger.Info("Event Disable Command", Useful.GetDiscordName(ctx));
             string arguments = Useful.GetCommandArguments(ctx.Message.Content);
 
-            bool result = Commands.NotifyEvent.NotifyEventManager.EnableEvent(arguments);
+            bool result = NotifyEventManager.EnableEvent(arguments);
 
             string message = result ? "Disabled " + arguments + " sucessfully" : "Error";
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
 
         [Command("event-create")]
-        [Description("Create a named event")]
+        [Description("Create a named event. Example: !event-create genshin; 1 January 2021, 06:00; 1:0:0:0")]
         public async Task EventCreate(CommandContext ctx)
         {
             logger.Info("Create Event Command", Useful.GetDiscordName(ctx));
             string arguments = Useful.GetCommandArguments(ctx.Message.Content);
 
-            //TODO: add stuff
+            string message;
 
-            string message = "";
+            try
+            {
+                NotifyEventManager.AddEvent(arguments);
+                message = "Event added. Now activate it manually";
+            }
+            catch(Exception ex)
+            {
+                message = "Event not created, error: " + ex.Message;
+            }
+            
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
     }

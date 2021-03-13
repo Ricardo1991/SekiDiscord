@@ -50,5 +50,19 @@ namespace SekiTest
 
             Assert.Equal(50, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
         }
+
+        [Fact]
+        public void ParseUserInput()
+        {
+            //Example for  event starting at 6am utc, repeating every day
+            string userInput = "Genshin Impact Daily login; 13 March 2021, 06:00AM; 1:0:0:0";
+            DateTime date = new DateTime(2021, 03, 13, 6, 0, 0, DateTimeKind.Utc);
+            TimeSpan span = new TimeSpan(1, 0, 0, 0);
+
+            (string, DateTime, TimeSpan) result = NotifyEventManager.InputArgumentToEventData(userInput);
+            Assert.Equal("Genshin Impact Daily login", result.Item1);
+            Assert.Equal(date, result.Item2);
+            Assert.Equal(span, result.Item3);
+        }
     }
 }

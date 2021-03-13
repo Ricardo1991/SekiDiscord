@@ -21,16 +21,16 @@ namespace SekiDiscord.Commands.NotifyEvent
 
         public NotifyEvent(string name, DateTime eventStart, TimeSpan repeatPeriod)
         {
-            this.eventStart = eventStart;
-            this.repeatPeriod = repeatPeriod;
+            this.EventStart = eventStart;
+            this.RepeatPeriod = repeatPeriod;
             this.Name = name;
-
-            SetupFirstTimer();
         }
 
-        private bool Enabled { get => enabled; set => enabled = value; }
+        public bool Enabled { get => enabled; set => enabled = value; }
         public string Name { get => name; set => name = value; }
-
+        public DateTime EventStart { get => eventStart; set => eventStart = value; }
+        public TimeSpan RepeatPeriod { get => repeatPeriod; set => repeatPeriod = value; }
+        public HashSet<(ulong, ulong)> EventSubscribers { get => eventSubscribers; set => eventSubscribers = value; }
 
         public void DisableEvent()
         {
@@ -41,28 +41,27 @@ namespace SekiDiscord.Commands.NotifyEvent
         public void EnableEvent()
         {
             Enabled = true;
+            logger.Info("Enabled event " + Name);
             SetupFirstTimer();
         }
 
         public static int TimeForNextNotification(DateTime eventStart, TimeSpan repeatPeriod)
         {
             DateTime now = DateTime.Now;
-            double a;
 
             if(now>eventStart)
             {
-                a = (now - eventStart).TotalMinutes;
+                double a = (now - eventStart).TotalMinutes;
                 return Convert.ToInt32(Math.Floor(a % repeatPeriod.TotalMinutes));
             }
             else
             {
-                a = (eventStart - now).TotalMinutes;
+                double a = (eventStart - now).TotalMinutes;
                 return Convert.ToInt32(Math.Ceiling(a + repeatPeriod.TotalMinutes));
             }
-
         }
 
-        public async void OnNotifyEventTriggerAsync(object sender, ElapsedEventArgs e)
+        private async void OnNotifyEventTriggerAsync(object sender, ElapsedEventArgs e)
         {
             SetupTimer();
 
@@ -73,7 +72,7 @@ namespace SekiDiscord.Commands.NotifyEvent
                 StringBuilder message = new("Event \"");
                 message.Append(Name).Append("\" was raised for");
 
-                foreach ((ulong, ulong) userobj in eventSubscribers)
+                foreach ((ulong, ulong) userobj in EventSubscribers)
                 {
                     string memberMention = await GetUserMentionAsync(userobj);
 
@@ -101,7 +100,7 @@ namespace SekiDiscord.Commands.NotifyEvent
         /// <returns></returns>
         public bool SubscribeUser(ulong userID, ulong userGuild)
         {
-            return eventSubscribers.Add((userID, userGuild));
+            return EventSubscribers.Add((userID, userGuild));
         }
 
         /// <summary>
@@ -113,9 +112,9 @@ namespace SekiDiscord.Commands.NotifyEvent
         /// <returns></returns>
         public bool UnsubscribeUser(ulong userID, ulong userGuild)
         {
-            bool removeSuccessful = eventSubscribers.Remove((userID, userGuild));
+            bool removeSuccessful = EventSubscribers.Remove((userID, userGuild));
 
-            if (eventSubscribers.Count == 0)
+            if (EventSubscribers.Count == 0)
                 Enabled = false;
 
             return removeSuccessful;
@@ -131,15 +130,15 @@ namespace SekiDiscord.Commands.NotifyEvent
 
         private void SetupFirstTimer()
         {
-            triggerEventTimer = new Timer(TimeForNextNotification(eventStart, repeatPeriod) * 60 * 1000); // span minutes converted to milliseconds)
+            triggerEventTimer = new Timer(TimeForNextNotification(EventStart, RepeatPeriod) * 60 * 1000); // span minutes converted to milliseconds)
             triggerEventTimer.Elapsed += new ElapsedEventHandler(OnNotifyEventTriggerAsync);
             triggerEventTimer.Start();
         }
 
         private void SetupTimer()
         {
-            triggerEventTimer.Interval = repeatPeriod.TotalMinutes * 60 * 1000;
             triggerEventTimer.Stop();
+            triggerEventTimer.Interval = RepeatPeriod.TotalMinutes * 60 * 1000;
             triggerEventTimer.Start();
         }
     }
