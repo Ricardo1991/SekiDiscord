@@ -130,7 +130,12 @@ namespace SekiDiscord.Commands.NotifyEvent
 
         private void SetupFirstTimer()
         {
-            triggerEventTimer = new Timer(TimeForNextNotification(EventStart, RepeatPeriod) * 60 * 1000); // span minutes converted to milliseconds)
+            double interval = TimeForNextNotification(EventStart, RepeatPeriod) * 60 * 1000; // span minutes converted to milliseconds)
+
+            if (interval == 0)
+                interval = RepeatPeriod.TotalMinutes * 60 * 1000;
+
+            triggerEventTimer = new Timer(interval);
             triggerEventTimer.Elapsed += new ElapsedEventHandler(OnNotifyEventTriggerAsync);
             triggerEventTimer.Start();
         }
@@ -139,6 +144,7 @@ namespace SekiDiscord.Commands.NotifyEvent
         {
             triggerEventTimer.Stop();
             triggerEventTimer.Interval = RepeatPeriod.TotalMinutes * 60 * 1000;
+            triggerEventTimer.Elapsed += new ElapsedEventHandler(OnNotifyEventTriggerAsync);
             triggerEventTimer.Start();
         }
     }

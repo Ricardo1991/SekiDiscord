@@ -3,6 +3,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using SekiDiscord.Commands;
 using SekiDiscord.Commands.NotifyEvent;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SekiDiscord
@@ -389,6 +390,30 @@ namespace SekiDiscord
             }
             
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
+
+        [Command("event-list")]
+        [Description("List saved events")]
+        public async Task EventList(CommandContext ctx)
+        {
+            logger.Info("List Event Command", Useful.GetDiscordName(ctx));
+
+
+            if (NotifyEventManager.NotifyEvents.Count == 0)
+            {
+                await ctx.Message.RespondAsync("No Events saved").ConfigureAwait(false);
+                return;
+            }
+
+            StringBuilder builder = new StringBuilder().Append("```");
+
+            foreach(NotifyEvent eventN in NotifyEventManager.NotifyEvents)
+            {
+                builder.AppendLine("Enabled: " + eventN.Enabled + "; Name: " + eventN.Name);
+            }
+
+            builder.Append("```");
+            await ctx.Message.RespondAsync(builder.ToString()).ConfigureAwait(false);
         }
     }
 #pragma warning restore CA1822 // Mark members as static
