@@ -314,6 +314,73 @@ namespace SekiDiscord
             string message = Commands.Fortune.GetFortune(ctx.User.Id);
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
+
+        [Command("event-subscribe")]
+        [Description("Subscribe to a named event")]
+        public async Task EventSubscribe(CommandContext ctx)
+        {
+            logger.Info("Event Subscribe Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
+
+
+            bool result = Commands.NotifyEvent.NotifyEventManager.SubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
+
+            string message = result ? "Added sucessfully to " + arguments : "Error";
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
+
+        [Command("event-unsubscribe")]
+        [Description("Unsubscribe to a named event")]
+        public async Task EventUnsubscribe(CommandContext ctx)
+        {
+            logger.Info("Event Unsubscribe Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
+
+
+            bool result = Commands.NotifyEvent.NotifyEventManager.UnsubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
+
+            string message = result ? "Removed sucessfully from " + arguments : "Error";
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
+
+        [Command("event-enable")]
+        [Description("Enable a named event")]
+        public async Task EventEnable(CommandContext ctx)
+        {
+            logger.Info("Event Enable Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
+
+            bool result = Commands.NotifyEvent.NotifyEventManager.EnableEvent(arguments);
+
+            string message = result ? "Enabled  " + arguments + " sucessfully" : "Error";
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
+
+        [Command("event-disable")]
+        [Description("Disable a named event")]
+        public async Task EventDisable(CommandContext ctx)
+        {
+            logger.Info("Event Disable Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
+
+            bool result = Commands.NotifyEvent.NotifyEventManager.EnableEvent(arguments);
+
+            string message = result ? "Disabled " + arguments + " sucessfully" : "Error";
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
+
+        [Command("event-create")]
+        [Description("Create a named event")]
+        public async Task EventCreate(CommandContext ctx)
+        {
+            logger.Info("Create Event Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
+
+            //TODO: add stuff
+
+            string message = "";
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
     }
 #pragma warning restore CA1822 // Mark members as static
 }
