@@ -409,7 +409,7 @@ namespace SekiDiscord
 
             foreach(NotifyEvent eventN in NotifyEventManager.NotifyEvents)
             {
-                builder.AppendLine("Enabled: " + eventN.Enabled + "; Name: " + eventN.Name);
+                builder.AppendLine("Enabled: " + eventN.Enabled + "; Subscribers: " + eventN.EventSubscribers.Count + "; Name: " + eventN.Name);
             }
 
             builder.Append("```");
