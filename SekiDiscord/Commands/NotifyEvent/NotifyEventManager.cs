@@ -47,7 +47,7 @@ namespace SekiDiscord.Commands.NotifyEvent
                 throw new ArgumentException("input format invalid");
             }
 
-            string name = argumentSplit[0];
+            string name = argumentSplit[0].Trim();
 
             DateTime eventStart = StringToDateTime(argumentSplit[1]);
             TimeSpan repeatPeriod = StringToTimeSpan(argumentSplit[2]);

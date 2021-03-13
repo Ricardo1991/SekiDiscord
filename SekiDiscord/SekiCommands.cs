@@ -321,7 +321,7 @@ namespace SekiDiscord
         public async Task EventSubscribe(CommandContext ctx)
         {
             logger.Info("Event Subscribe Command", Useful.GetDiscordName(ctx));
-            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
             bool result = NotifyEventManager.SubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
 
@@ -334,7 +334,7 @@ namespace SekiDiscord
         public async Task EventUnsubscribe(CommandContext ctx)
         {
             logger.Info("Event Unsubscribe Command", Useful.GetDiscordName(ctx));
-            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
 
             bool result = Commands.NotifyEvent.NotifyEventManager.UnsubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
@@ -348,7 +348,7 @@ namespace SekiDiscord
         public async Task EventEnable(CommandContext ctx)
         {
             logger.Info("Event Enable Command", Useful.GetDiscordName(ctx));
-            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
             bool result = NotifyEventManager.EnableEvent(arguments);
 
@@ -361,7 +361,7 @@ namespace SekiDiscord
         public async Task EventDisable(CommandContext ctx)
         {
             logger.Info("Event Disable Command", Useful.GetDiscordName(ctx));
-            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
             bool result = NotifyEventManager.EnableEvent(arguments);
 
