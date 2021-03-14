@@ -2,14 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace SekiDiscord.Commands.NotifyEvent
 {
     public class NotifyEventManager
     {
         private const string NOTIFY_FILE_PATH = "TextFiles/notify.json";
-        public static Dictionary<string,NotifyEvent> NotifyEvents = new();
+        public static Dictionary<string, NotifyEvent> NotifyEvents = new();
         private static readonly Logger logger = new Logger(typeof(NotifyEventManager));
 
         public static void LoadAndEnableEvents()
@@ -22,29 +21,47 @@ namespace SekiDiscord.Commands.NotifyEvent
             }
         }
 
-        public static bool AddEvent(NotifyEvent notifyEvent)
+        /// <summary>
+        /// Add event by NotifyEvent object
+        /// </summary>
+        /// <param name="notifyEvent">NotifyEvent object already instatiated with the parsed data</param>
+        public static void AddEvent(NotifyEvent notifyEvent)
         {
             try
             {
                 NotifyEvents.Add(notifyEvent.Name, notifyEvent);
-
             }
-            catch(ArgumentException)
+            catch
             {
-                return false;
+                throw;
             }
-            
+
             SaveNotifyEvents(NotifyEvents);
-            return true;
         }
 
-        public static bool AddEvent(string inputFormat)
+        /// <summary>
+        /// Add event by argument string
+        /// </summary>
+        /// <param name="inputFormat">string that should be composed of (string, DateTime, TimeSpan), each separated by ";"</param>
+        public static void AddEvent(string inputFormat)
         {
-            (string, DateTime, TimeSpan) formatedInput = InputArgumentToEventData(inputFormat);
-            NotifyEvent newEvent = new NotifyEvent(formatedInput.Item1, formatedInput.Item2, formatedInput.Item3);
-            return AddEvent(newEvent);
+            try
+            {
+                (string, DateTime, TimeSpan) formatedInput = InputArgumentToEventData(inputFormat);
+                NotifyEvent newEvent = new NotifyEvent(formatedInput.Item1, formatedInput.Item2, formatedInput.Item3);
+                AddEvent(newEvent);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
+        /// <summary>
+        /// Converts the request string into a triplet of (string, DateTime, TimeSpan)
+        /// </summary>
+        /// <param name="inputFormat">string that should be composed of (string, DateTime, TimeSpan), each separated by ";"</param>
+        /// <returns>(string, DateTime, TimeSpan) triplet containing event name, event start DateTime, and repeat period TimeSpan</returns>
         public static (string, DateTime, TimeSpan) InputArgumentToEventData(string inputFormat)
         {
             string[] argumentSplit = inputFormat.Split(';', 3);
@@ -60,7 +77,6 @@ namespace SekiDiscord.Commands.NotifyEvent
             DateTime eventStart = StringToDateTime(argumentSplit[1]);
             TimeSpan repeatPeriod = StringToTimeSpan(argumentSplit[2]);
 
-
             return (name, eventStart, repeatPeriod);
         }
 
@@ -74,6 +90,14 @@ namespace SekiDiscord.Commands.NotifyEvent
             return DateTime.Parse(dateInput);
         }
 
+
+        /// <summary>
+        /// Subscribe user from event, by name.
+        /// </summary>
+        /// <param name="userID">ulong with user ID</param>
+        /// <param name="guildID">ulong with guild ID where the request originated</param>
+        /// <param name="eventName">event name to subscribe to</param>
+        /// <returns>boolean with the success of the operation</returns>
         public static bool SubscribeUserToEvent(ulong userID, ulong guildID, string eventName)
         {
             NotifyEvent selectedEvent = NotifyEvents.GetValueOrDefault(eventName);
@@ -82,45 +106,61 @@ namespace SekiDiscord.Commands.NotifyEvent
             return result;
         }
 
+        /// <summary>
+        /// Unsubscribe user from event, by name.
+        /// </summary>
+        /// <param name="userID">ulong with user ID</param>
+        /// <param name="guildID">ulong with guild ID where the request originated</param>
+        /// <param name="eventName">event name to unsubscribe from</param>
+        /// <returns>boolean with the success of the operation</returns>
         public static bool UnsubscribeUserToEvent(ulong userID, ulong guildID, string eventName)
         {
-
             NotifyEvent selectedEvent = NotifyEvents.GetValueOrDefault(eventName);
             bool result = selectedEvent.UnsubscribeUser(userID, guildID);
             SaveNotifyEvents(NotifyEvents);
             return result;
         }
 
-        public static bool EnableEvent(string eventName)
+        /// <summary>
+        /// Enables an event by name
+        /// </summary>
+        /// <param name="eventName">Name of the event to enable</param>
+        public static void EnableEvent(string eventName)
         {
             try
             {
-                NotifyEvent selectedEvent = NotifyEvents.GetValueOrDefault(eventName);
+                NotifyEvents.TryGetValue(eventName, out NotifyEvent selectedEvent);
+
+                if (selectedEvent == null)
+                    throw new NullReferenceException(eventName + " event not found");
                 selectedEvent.EnableEvent();
                 SaveNotifyEvents(NotifyEvents);
             }
             catch
             {
-                return false;
+                throw;
             }
-           
-            return true;
         }
 
-        public static bool DisableEvent(string eventName)
+        /// <summary>
+        /// Disables an event by name
+        /// </summary>
+        /// <param name="eventName">Name of the event to disable</param>
+        public static void DisableEvent(string eventName)
         {
             try
             {
-                NotifyEvent selectedEvent = NotifyEvents.GetValueOrDefault(eventName);
+                NotifyEvents.TryGetValue(eventName, out NotifyEvent selectedEvent);
+
+                if (selectedEvent == null)
+                    throw new NullReferenceException(eventName + " event not found");
                 selectedEvent.DisableEvent();
                 SaveNotifyEvents(NotifyEvents);
             }
             catch
             {
-                return false;
+                throw;
             }
-           
-            return true;
         }
 
         private static Dictionary<string, NotifyEvent> ReadNotifyEvents()

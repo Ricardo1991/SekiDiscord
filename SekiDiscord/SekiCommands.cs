@@ -339,7 +339,7 @@ namespace SekiDiscord
             string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
 
-            bool result = Commands.NotifyEvent.NotifyEventManager.UnsubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
+            bool result = NotifyEventManager.UnsubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
 
             string message = result ? "Removed sucessfully from " + arguments : "Error";
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
@@ -352,10 +352,16 @@ namespace SekiDiscord
             logger.Info("Event Enable Command", Useful.GetDiscordName(ctx));
             string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
-            bool result = NotifyEventManager.EnableEvent(arguments);
-
-            string message = result ? "Enabled " + arguments + " sucessfully" : "Error";
-            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+            try
+            {
+                NotifyEventManager.EnableEvent(arguments);
+                await ctx.Message.RespondAsync("Enabled " + arguments + " sucessfully").ConfigureAwait(false);
+            }
+            catch(ArgumentException ex)
+            {
+                await ctx.Message.RespondAsync("Error, event probably not found").ConfigureAwait(false);
+                logger.Error("Error enabling event: " + ex.Message, Useful.GetDiscordName(ctx));
+            }
         }
 
         [Command("event-disable")]
@@ -365,10 +371,16 @@ namespace SekiDiscord
             logger.Info("Event Disable Command", Useful.GetDiscordName(ctx));
             string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
-            bool result = NotifyEventManager.EnableEvent(arguments);
-
-            string message = result ? "Disabled " + arguments + " sucessfully" : "Error";
-            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+            try
+            {
+                NotifyEventManager.DisableEvent(arguments);
+                await ctx.Message.RespondAsync("Disabled " + arguments + " sucessfully").ConfigureAwait(false);
+            }
+            catch (ArgumentException ex)
+            {
+                await ctx.Message.RespondAsync("Error, event probably not found").ConfigureAwait(false);
+                logger.Error("Error disabling event: " + ex.Message, Useful.GetDiscordName(ctx));
+            }
         }
 
         [Command("event-create")]

@@ -32,12 +32,18 @@ namespace SekiDiscord.Commands.NotifyEvent
         public TimeSpan RepeatPeriod { get => repeatPeriod; set => repeatPeriod = value; }
         public HashSet<(ulong, ulong)> EventSubscribers { get => eventSubscribers; set => eventSubscribers = value; }
 
+        /// <summary>
+        /// Disables the event, and stops the timer
+        /// </summary>
         public void DisableEvent()
         {
             Enabled = false;
             triggerEventTimer.Stop();
         }
 
+        /// <summary>
+        /// Enables the Event, and sets up the timer
+        /// </summary>
         public void EnableEvent()
         {
             Enabled = true;
@@ -45,11 +51,17 @@ namespace SekiDiscord.Commands.NotifyEvent
             SetupFirstTimer();
         }
 
+        /// <summary>
+        /// Calculates the minutes left until the next notification should be fired.
+        /// </summary>
+        /// <param name="eventStart">DateTime with the start of the event</param>
+        /// <param name="repeatPeriod">TimeSpan with the repeat period of the notification</param>
+        /// <returns>int with the number of minutes remaining</returns>
         public static int TimeForNextNotification(DateTime eventStart, TimeSpan repeatPeriod)
         {
             DateTime now = DateTime.Now.ToUniversalTime();
 
-            if(now>eventStart)
+            if (now > eventStart)
             {
                 double a = (now - eventStart).TotalMinutes;
                 return Convert.ToInt32(Math.Floor(a % repeatPeriod.TotalMinutes));

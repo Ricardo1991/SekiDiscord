@@ -69,10 +69,10 @@ namespace SekiTest
         public void NoRepatedEventNames()
         {
             //Example for  event starting at 6am utc, repeating every day
-            string userInput = "Genshin; 13 March 2021, 06:00AM; 1:0:0:0";
+            string userInput = "Genshin3; 13 March 2021, 06:00AM; 1:0:0:0";
 
             NotifyEventManager.AddEvent(userInput);
-            NotifyEventManager.AddEvent(userInput);
+            Assert.Throws<ArgumentException>(() => NotifyEventManager.AddEvent(userInput));
 
             Assert.Single(NotifyEventManager.NotifyEvents);
 
@@ -82,15 +82,21 @@ namespace SekiTest
         public void NoRepeatedUserSubscriber()
         {
             //Example for  event starting at 6am utc, repeating every day
-            string userInput = "Genshin; 13 March 2021, 06:00AM; 1:0:0:0";
+            string userInput = "Genshin2; 13 March 2021, 06:00AM; 1:0:0:0";
 
             NotifyEventManager.AddEvent(userInput);
 
             ulong userID = 132;
             ulong userGuild = 321;
 
-            NotifyEventManager.SubscribeUserToEvent(userID, userGuild, "Genshin");
-            Assert.False(NotifyEventManager.SubscribeUserToEvent(userID, userGuild, "Genshin"));
+            NotifyEventManager.SubscribeUserToEvent(userID, userGuild, "Genshin2");
+            Assert.False(NotifyEventManager.SubscribeUserToEvent(userID, userGuild, "Genshin2"));
+        }
+
+        [Fact]
+        public void EventNotFoundError()
+        {
+            Assert.Throws<NullReferenceException>(() => NotifyEventManager.EnableEvent("Booba"));
         }
     }
 }
