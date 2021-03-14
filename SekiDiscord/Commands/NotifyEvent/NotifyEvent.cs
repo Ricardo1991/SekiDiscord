@@ -47,7 +47,7 @@ namespace SekiDiscord.Commands.NotifyEvent
 
         public static int TimeForNextNotification(DateTime eventStart, TimeSpan repeatPeriod)
         {
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.Now.ToUniversalTime();
 
             if(now>eventStart)
             {
