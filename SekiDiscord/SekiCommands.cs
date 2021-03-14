@@ -1,7 +1,10 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using SekiDiscord.Commands;
+using SekiDiscord.Commands.NotifyEvent;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SekiDiscord
@@ -313,6 +316,117 @@ namespace SekiDiscord
 
             string message = Commands.Fortune.GetFortune(ctx.User.Id);
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
+
+        [Command("event-subscribe")]
+        [Description("Subscribe to a named event")]
+        public async Task EventSubscribe(CommandContext ctx)
+        {
+            logger.Info("Event Subscribe Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
+
+            bool result = NotifyEventManager.SubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
+
+            string message = result ? "Added sucessfully to " + arguments : "Error";
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
+
+        [Command("event-unsubscribe")]
+        [Description("Unsubscribe to a named event")]
+        public async Task EventUnsubscribe(CommandContext ctx)
+        {
+            logger.Info("Event Unsubscribe Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
+
+
+            bool result = NotifyEventManager.UnsubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
+
+            string message = result ? "Removed sucessfully from " + arguments : "Error";
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
+
+        [Command("event-enable")]
+        [Description("Enable a named event")]
+        public async Task EventEnable(CommandContext ctx)
+        {
+            logger.Info("Event Enable Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
+
+            try
+            {
+                NotifyEventManager.EnableEvent(arguments);
+                await ctx.Message.RespondAsync("Enabled " + arguments + " sucessfully").ConfigureAwait(false);
+            }
+            catch(ArgumentException ex)
+            {
+                await ctx.Message.RespondAsync("Error, event probably not found").ConfigureAwait(false);
+                logger.Error("Error enabling event: " + ex.Message, Useful.GetDiscordName(ctx));
+            }
+        }
+
+        [Command("event-disable")]
+        [Description("Disable a named event")]
+        public async Task EventDisable(CommandContext ctx)
+        {
+            logger.Info("Event Disable Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
+
+            try
+            {
+                NotifyEventManager.DisableEvent(arguments);
+                await ctx.Message.RespondAsync("Disabled " + arguments + " sucessfully").ConfigureAwait(false);
+            }
+            catch (ArgumentException ex)
+            {
+                await ctx.Message.RespondAsync("Error, event probably not found").ConfigureAwait(false);
+                logger.Error("Error disabling event: " + ex.Message, Useful.GetDiscordName(ctx));
+            }
+        }
+
+        [Command("event-create")]
+        [Description("Create a named event. Example: !event-create genshin; 1 January 2021, 06:00; 1:0:0:0")]
+        public async Task EventCreate(CommandContext ctx)
+        {
+            logger.Info("Create Event Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
+
+            string message;
+
+            try
+            {
+                NotifyEventManager.AddEvent(arguments);
+                message = "Event added. Now activate it manually";
+            }
+            catch(Exception ex)
+            {
+                message = "Event not created, error: " + ex.Message;
+            }
+            
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
+
+        [Command("event-list")]
+        [Description("List saved events")]
+        public async Task EventList(CommandContext ctx)
+        {
+            logger.Info("List Event Command", Useful.GetDiscordName(ctx));
+
+
+            if (NotifyEventManager.NotifyEvents.Count == 0)
+            {
+                await ctx.Message.RespondAsync("No Events saved").ConfigureAwait(false);
+                return;
+            }
+
+            StringBuilder builder = new StringBuilder().Append("```");
+
+            foreach (KeyValuePair<string, NotifyEvent> eventN in NotifyEventManager.NotifyEvents)
+            {
+                builder.AppendLine("Enabled: " + eventN.Value.Enabled + "; Subscribers: " + eventN.Value.EventSubscribers.Count + "; Name: " + eventN.Value.Name);
+            }
+
+            builder.Append("```");
+            await ctx.Message.RespondAsync(builder.ToString()).ConfigureAwait(false);
         }
     }
 #pragma warning restore CA1822 // Mark members as static

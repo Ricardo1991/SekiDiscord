@@ -19,6 +19,7 @@ namespace SekiDiscord {
         public SekiMain(string[] args) {
             Arguments = args;
             SetupApiKeys();
+            SekiDiscord.Commands.NotifyEvent.NotifyEventManager.LoadAndEnableEvents();
         }
 
         public async Task StartupAsync() {
@@ -88,8 +89,8 @@ namespace SekiDiscord {
                     Settings.Default.CleverbotAPI = api;
                 }
             }
-            // TODO: This should be fixed once .net Core 3.0 is released
-            // Settings.Default.Save();
+
+            Settings.Default.Save();
         }
 
         private static string GetApiKey(int index, string message) {
