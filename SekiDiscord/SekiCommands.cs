@@ -3,6 +3,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using SekiDiscord.Commands;
 using SekiDiscord.Commands.NotifyEvent;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -407,9 +408,9 @@ namespace SekiDiscord
 
             StringBuilder builder = new StringBuilder().Append("```");
 
-            foreach(NotifyEvent eventN in NotifyEventManager.NotifyEvents)
+            foreach (KeyValuePair<string, NotifyEvent> eventN in NotifyEventManager.NotifyEvents)
             {
-                builder.AppendLine("Enabled: " + eventN.Enabled + "; Subscribers: " + eventN.EventSubscribers.Count + "; Name: " + eventN.Name);
+                builder.AppendLine("Enabled: " + eventN.Value.Enabled + "; Subscribers: " + eventN.Value.EventSubscribers.Count + "; Name: " + eventN.Value.Name);
             }
 
             builder.Append("```");

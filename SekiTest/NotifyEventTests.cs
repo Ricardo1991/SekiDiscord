@@ -64,5 +64,33 @@ namespace SekiTest
             Assert.Equal(date, result.Item2);
             Assert.Equal(span, result.Item3);
         }
+
+        [Fact]
+        public void NoRepatedEventNames()
+        {
+            //Example for  event starting at 6am utc, repeating every day
+            string userInput = "Genshin; 13 March 2021, 06:00AM; 1:0:0:0";
+
+            NotifyEventManager.AddEvent(userInput);
+            NotifyEventManager.AddEvent(userInput);
+
+            Assert.Single(NotifyEventManager.NotifyEvents);
+
+        }
+
+        [Fact]
+        public void NoRepeatedUserSubscriber()
+        {
+            //Example for  event starting at 6am utc, repeating every day
+            string userInput = "Genshin; 13 March 2021, 06:00AM; 1:0:0:0";
+
+            NotifyEventManager.AddEvent(userInput);
+
+            ulong userID = 132;
+            ulong userGuild = 321;
+
+            NotifyEventManager.SubscribeUserToEvent(userID, userGuild, "Genshin");
+            Assert.False(NotifyEventManager.SubscribeUserToEvent(userID, userGuild, "Genshin"));
+        }
     }
 }

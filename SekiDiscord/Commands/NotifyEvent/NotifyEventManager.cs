@@ -3,38 +3,46 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Timers;
 
 namespace SekiDiscord.Commands.NotifyEvent
 {
     public class NotifyEventManager
     {
         private const string NOTIFY_FILE_PATH = "TextFiles/notify.json";
-        public static List<NotifyEvent> NotifyEvents = new();
+        public static Dictionary<string,NotifyEvent> NotifyEvents = new();
         private static readonly Logger logger = new Logger(typeof(NotifyEventManager));
-        private static List<Timer> TimerList = new();
 
         public static void LoadAndEnableEvents()
         {
             NotifyEvents = ReadNotifyEvents();
-            foreach (NotifyEvent a in NotifyEvents)
+            foreach (KeyValuePair<string, NotifyEvent> a in NotifyEvents)
             {
-                if (a.Enabled)
-                    a.EnableEvent();
+                if (a.Value.Enabled)
+                    a.Value.EnableEvent();
             }
         }
 
-        public static void AddEvent(NotifyEvent notifyEvent)
+        public static bool AddEvent(NotifyEvent notifyEvent)
         {
-            NotifyEvents.Add(notifyEvent);
+            try
+            {
+                NotifyEvents.Add(notifyEvent.Name, notifyEvent);
+
+            }
+            catch(ArgumentException)
+            {
+                return false;
+            }
+            
             SaveNotifyEvents(NotifyEvents);
+            return true;
         }
 
-        public static void AddEvent(string inputFormat)
+        public static bool AddEvent(string inputFormat)
         {
             (string, DateTime, TimeSpan) formatedInput = InputArgumentToEventData(inputFormat);
             NotifyEvent newEvent = new NotifyEvent(formatedInput.Item1, formatedInput.Item2, formatedInput.Item3);
-            AddEvent(newEvent);
+            return AddEvent(newEvent);
         }
 
         public static (string, DateTime, TimeSpan) InputArgumentToEventData(string inputFormat)
@@ -68,7 +76,7 @@ namespace SekiDiscord.Commands.NotifyEvent
 
         public static bool SubscribeUserToEvent(ulong userID, ulong guildID, string eventName)
         {
-            NotifyEvent selectedEvent = NotifyEvents.Where(e => e.Name.Equals(eventName)).First();
+            NotifyEvent selectedEvent = NotifyEvents.GetValueOrDefault(eventName);
             bool result = selectedEvent.SubscribeUser(userID, guildID);
             SaveNotifyEvents(NotifyEvents);
             return result;
@@ -77,7 +85,7 @@ namespace SekiDiscord.Commands.NotifyEvent
         public static bool UnsubscribeUserToEvent(ulong userID, ulong guildID, string eventName)
         {
 
-            NotifyEvent selectedEvent = NotifyEvents.Where(e => e.Name.Equals(eventName)).First();
+            NotifyEvent selectedEvent = NotifyEvents.GetValueOrDefault(eventName);
             bool result = selectedEvent.UnsubscribeUser(userID, guildID);
             SaveNotifyEvents(NotifyEvents);
             return result;
@@ -87,7 +95,7 @@ namespace SekiDiscord.Commands.NotifyEvent
         {
             try
             {
-                NotifyEvent selectedEvent = NotifyEvents.Where(e => e.Name.Equals(eventName)).First();
+                NotifyEvent selectedEvent = NotifyEvents.GetValueOrDefault(eventName);
                 selectedEvent.EnableEvent();
                 SaveNotifyEvents(NotifyEvents);
             }
@@ -103,7 +111,7 @@ namespace SekiDiscord.Commands.NotifyEvent
         {
             try
             {
-                NotifyEvent selectedEvent = NotifyEvents.Where(e => e.Name.Equals(eventName)).First();
+                NotifyEvent selectedEvent = NotifyEvents.GetValueOrDefault(eventName);
                 selectedEvent.DisableEvent();
                 SaveNotifyEvents(NotifyEvents);
             }
@@ -115,9 +123,9 @@ namespace SekiDiscord.Commands.NotifyEvent
             return true;
         }
 
-        private static List<NotifyEvent> ReadNotifyEvents()
+        private static Dictionary<string, NotifyEvent> ReadNotifyEvents()
         {
-            List<NotifyEvent> notifyEvents = new();
+            Dictionary<string, NotifyEvent> notifyEvents = new();
 
             if (File.Exists(NOTIFY_FILE_PATH))
             {
@@ -125,7 +133,7 @@ namespace SekiDiscord.Commands.NotifyEvent
                 {
                     using StreamReader r = new StreamReader(NOTIFY_FILE_PATH);
                     string json = r.ReadToEnd();
-                    notifyEvents = JsonConvert.DeserializeObject<List<NotifyEvent>>(json);
+                    notifyEvents = JsonConvert.DeserializeObject<Dictionary<string, NotifyEvent>>(json);
                     logger.Info("Loaded notification events");
                 }
                 catch (JsonException e)
@@ -138,7 +146,7 @@ namespace SekiDiscord.Commands.NotifyEvent
             return notifyEvents;
         }
 
-        private static void SaveNotifyEvents(List<NotifyEvent> notifyEvents)
+        private static void SaveNotifyEvents(Dictionary<string, NotifyEvent> notifyEvents)
         {
             try
             {
