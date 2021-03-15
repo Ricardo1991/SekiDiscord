@@ -1,17 +1,23 @@
-﻿using System;
-using SekiDiscord.Commands.NotifyEvent;
+﻿using SekiDiscord.Commands.NotifyEvent;
+using System;
+using System.IO;
 using Xunit;
 
 namespace SekiTest
 {
     public class NotifyEventTests
     {
+        public NotifyEventTests()
+        {
+            if (File.Exists(NotifyEventManager.NOTIFY_FILE_PATH))
+                File.Delete(NotifyEventManager.NOTIFY_FILE_PATH);
+        }
 
         [Fact]
         public void CalculateAlarm15Minutes()
         {
-            DateTime eventStart = DateTime.Now.Subtract(new TimeSpan(6,15,0));
-            TimeSpan repeatPeriod = new TimeSpan(0,45,0);
+            DateTime eventStart = DateTime.Now.Subtract(new TimeSpan(6, 15, 0));
+            TimeSpan repeatPeriod = new TimeSpan(0, 45, 0);
 
             Assert.Equal(15, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
         }
@@ -42,6 +48,7 @@ namespace SekiTest
 
             Assert.Equal(105, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
         }
+
         [Fact]
         public void CalculateAlarmFutureSoon()
         {
@@ -75,7 +82,6 @@ namespace SekiTest
             Assert.Throws<ArgumentException>(() => NotifyEventManager.AddEvent(userInput));
 
             Assert.Single(NotifyEventManager.NotifyEvents);
-
         }
 
         [Fact]

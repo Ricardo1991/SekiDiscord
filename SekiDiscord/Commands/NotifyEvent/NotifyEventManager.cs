@@ -7,9 +7,14 @@ namespace SekiDiscord.Commands.NotifyEvent
 {
     public class NotifyEventManager
     {
-        private const string NOTIFY_FILE_PATH = "TextFiles/notify.json";
-        public static Dictionary<string, NotifyEvent> NotifyEvents = new();
-        private static readonly Logger logger = new Logger(typeof(NotifyEventManager));
+        public const string NOTIFY_FILE_PATH = "TextFiles/notify.json";
+        public static Dictionary<string, NotifyEvent> NotifyEvents;
+        private static readonly Logger logger = new(typeof(NotifyEventManager));
+
+        static NotifyEventManager()
+        {
+            LoadAndEnableEvents();
+        }
 
         public static void LoadAndEnableEvents()
         {
@@ -89,7 +94,6 @@ namespace SekiDiscord.Commands.NotifyEvent
         {
             return DateTime.Parse(dateInput);
         }
-
 
         /// <summary>
         /// Subscribe user from event, by name.
@@ -171,7 +175,7 @@ namespace SekiDiscord.Commands.NotifyEvent
             {
                 try
                 {
-                    using StreamReader r = new StreamReader(NOTIFY_FILE_PATH);
+                    using StreamReader r = new(NOTIFY_FILE_PATH);
                     string json = r.ReadToEnd();
                     notifyEvents = JsonConvert.DeserializeObject<Dictionary<string, NotifyEvent>>(json);
                     logger.Info("Loaded notification events");
@@ -191,7 +195,7 @@ namespace SekiDiscord.Commands.NotifyEvent
             try
             {
                 using StreamWriter w = File.CreateText(NOTIFY_FILE_PATH);
-                JsonSerializer serializer = new JsonSerializer();
+                JsonSerializer serializer = new();
                 serializer.Serialize(w, notifyEvents);
                 logger.Info("Loaded notification events");
             }

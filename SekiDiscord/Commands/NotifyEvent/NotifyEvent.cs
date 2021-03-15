@@ -10,7 +10,7 @@ namespace SekiDiscord.Commands.NotifyEvent
 {
     public class NotifyEvent
     {
-        private static readonly Logger logger = new Logger(typeof(NotifyEvent));
+        private static readonly Logger logger = new(typeof(NotifyEvent));
 
         private bool enabled = false;
         private DateTime eventStart;
@@ -75,7 +75,7 @@ namespace SekiDiscord.Commands.NotifyEvent
 
         private async void OnNotifyEventTriggerAsync(object sender, ElapsedEventArgs e)
         {
-            SetupTimer();
+            SetupTimer(RepeatPeriod.TotalMinutes * 60 * 1000);
 
             try
             {
@@ -132,7 +132,7 @@ namespace SekiDiscord.Commands.NotifyEvent
             return removeSuccessful;
         }
 
-        private async Task<string> GetUserMentionAsync((ulong, ulong) userGuildPair)
+        private static async Task<string> GetUserMentionAsync((ulong, ulong) userGuildPair)
         {
             DiscordGuild guild = await SekiMain.DiscordClient.GetGuildAsync(userGuildPair.Item2);
 
@@ -147,15 +147,19 @@ namespace SekiDiscord.Commands.NotifyEvent
             if (interval == 0)
                 interval = RepeatPeriod.TotalMinutes * 60 * 1000;
 
-            triggerEventTimer = new Timer(interval);
-            triggerEventTimer.Elapsed += new ElapsedEventHandler(OnNotifyEventTriggerAsync);
-            triggerEventTimer.Start();
+            SetupTimer(interval);
         }
 
-        private void SetupTimer()
+        private void SetupTimer(double interval)
         {
-            triggerEventTimer.Stop();
-            triggerEventTimer.Interval = RepeatPeriod.TotalMinutes * 60 * 1000;
+            if (triggerEventTimer != null)
+                triggerEventTimer.Stop();
+
+            triggerEventTimer = new Timer(interval)
+            {
+                AutoReset = false,
+                Interval = interval
+            };
             triggerEventTimer.Elapsed += new ElapsedEventHandler(OnNotifyEventTriggerAsync);
             triggerEventTimer.Start();
         }
