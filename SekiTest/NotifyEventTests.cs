@@ -9,6 +9,7 @@ namespace SekiTest
     {
         public NotifyEventTests()
         {
+            NotifyEventManager.LoadAndEnableEvents();
             if (File.Exists(NotifyEventManager.NOTIFY_FILE_PATH))
                 File.Delete(NotifyEventManager.NOTIFY_FILE_PATH);
         }
@@ -59,6 +60,15 @@ namespace SekiTest
         }
 
         [Fact]
+        public void CalculateAlarmTomorrow()
+        {
+            DateTime eventStart = DateTime.Now.AddMinutes(5);
+            TimeSpan repeatPeriod = new TimeSpan(1, 0, 0, 0);
+
+            Assert.Equal(1445, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
+        }
+
+        [Fact]
         public void ParseUserInput()
         {
             //Example for  event starting at 6am utc, repeating every day
@@ -81,7 +91,7 @@ namespace SekiTest
             NotifyEventManager.AddEvent(userInput);
             Assert.Throws<ArgumentException>(() => NotifyEventManager.AddEvent(userInput));
 
-            Assert.Single(NotifyEventManager.NotifyEvents);
+            Assert.Equal(1, NotifyEventManager.NotifyEventCount());
         }
 
         [Fact]

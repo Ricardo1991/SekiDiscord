@@ -412,17 +412,19 @@ namespace SekiDiscord
             logger.Info("List Event Command", Useful.GetDiscordName(ctx));
 
 
-            if (NotifyEventManager.NotifyEvents.Count == 0)
+            if (NotifyEventManager.NotifyEventCount() == 0)
             {
                 await ctx.Message.RespondAsync("No Events saved").ConfigureAwait(false);
                 return;
             }
 
-            StringBuilder builder = new StringBuilder().Append("```");
+            string[] events = NotifyEventManager.getNotifyEventDetails();
 
-            foreach (KeyValuePair<string, NotifyEvent> eventN in NotifyEventManager.NotifyEvents)
+            StringBuilder builder = new StringBuilder().Append("```");
+            
+            foreach (string eventDetail in events)
             {
-                builder.AppendLine("Enabled: " + eventN.Value.Enabled + "; Subscribers: " + eventN.Value.EventSubscribers.Count + "; Name: " + eventN.Value.Name);
+                builder.AppendLine(eventDetail);
             }
 
             builder.Append("```");

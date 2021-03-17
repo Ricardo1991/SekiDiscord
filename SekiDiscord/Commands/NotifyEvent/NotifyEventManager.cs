@@ -8,13 +8,8 @@ namespace SekiDiscord.Commands.NotifyEvent
     public class NotifyEventManager
     {
         public const string NOTIFY_FILE_PATH = "TextFiles/notify.json";
-        public static Dictionary<string, NotifyEvent> NotifyEvents;
+        private static Dictionary<string, NotifyEvent> NotifyEvents;
         private static readonly Logger logger = new(typeof(NotifyEventManager));
-
-        static NotifyEventManager()
-        {
-            LoadAndEnableEvents();
-        }
 
         public static void LoadAndEnableEvents()
         {
@@ -24,6 +19,25 @@ namespace SekiDiscord.Commands.NotifyEvent
                 if (a.Value.Enabled)
                     a.Value.EnableEvent();
             }
+        }
+
+        public static int NotifyEventCount()
+        {
+            if (NotifyEvents != null)
+                return NotifyEvents.Count;
+            else return 0;
+        }
+
+        public static string[] getNotifyEventDetails()
+        {
+            List<string> list = new();
+
+            foreach (KeyValuePair<string, NotifyEvent> eventN in NotifyEvents)
+            {
+                list.Add("Enabled: " + eventN.Value.Enabled + "; Subscribers: " + eventN.Value.EventSubscribers.Count + "; Name: " + eventN.Value.Name);
+            }
+
+            return list.ToArray();
         }
 
         /// <summary>

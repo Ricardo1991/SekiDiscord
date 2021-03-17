@@ -19,7 +19,6 @@ namespace SekiDiscord {
         public SekiMain(string[] args) {
             Arguments = args;
             SetupApiKeys();
-            SekiDiscord.Commands.NotifyEvent.NotifyEventManager.LoadAndEnableEvents();
         }
 
         public async Task StartupAsync() {
@@ -39,6 +38,8 @@ namespace SekiDiscord {
             DiscordClient.UnknownEvent += CommonEvents.UnknownEvent;
 
             DiscordClient.MessageCreated += MessageEvents.MessageCreatedEvent;
+
+            SekiDiscord.Commands.NotifyEvent.NotifyEventManager.LoadAndEnableEvents();
 
             // Connect to Discord:
             await DiscordClient.ConnectAsync().ConfigureAwait(false);

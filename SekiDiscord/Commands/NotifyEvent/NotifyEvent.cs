@@ -79,7 +79,7 @@ namespace SekiDiscord.Commands.NotifyEvent
 
             try
             {
-                logger.Info("Attempting to sent notification");
+                logger.Info("Attempting to send notification");
 
                 StringBuilder message = new("Event \"");
                 message.Append(Name).Append("\" was raised for");
@@ -160,7 +160,7 @@ namespace SekiDiscord.Commands.NotifyEvent
                 AutoReset = false,
                 Interval = interval
             };
-            triggerEventTimer.Elapsed += new ElapsedEventHandler(OnNotifyEventTriggerAsync);
+            triggerEventTimer.Elapsed += OnNotifyEventTriggerAsync;
             triggerEventTimer.Start();
         }
     }
