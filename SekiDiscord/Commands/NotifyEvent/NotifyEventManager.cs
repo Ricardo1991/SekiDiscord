@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace SekiDiscord.Commands.NotifyEvent
 {
@@ -28,13 +29,21 @@ namespace SekiDiscord.Commands.NotifyEvent
             else return 0;
         }
 
-        public static string[] getNotifyEventDetails()
+        public static string[] getNotifyEventDetails(bool sendExtraDetail)
         {
             List<string> list = new();
 
             foreach (KeyValuePair<string, NotifyEvent> eventN in NotifyEvents)
             {
-                list.Add("Enabled: " + eventN.Value.Enabled + "; Subscribers: " + eventN.Value.EventSubscribers.Count + "; Name: " + eventN.Value.Name);
+                StringBuilder sb = new();
+                {
+                    sb.Append("Enabled: ").Append(eventN.Value.Enabled)
+                        .Append("; Subscribers: ").Append(eventN.Value.EventSubscribers.Count)
+                        .Append("; Name: ").Append(eventN.Value.Name);
+                    if (sendExtraDetail)
+                        sb.Append("; Minutes until next trigger: ").Append(NotifyEvent.TimeForNextNotification(eventN.Value.EventStart, eventN.Value.RepeatPeriod));
+                }
+                list.Add(sb.ToString());
             }
 
             return list.ToArray();

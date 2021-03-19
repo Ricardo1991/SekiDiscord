@@ -60,11 +60,29 @@ namespace SekiDiscord.Commands.NotifyEvent
         public static int TimeForNextNotification(DateTime eventStart, TimeSpan repeatPeriod)
         {
             DateTime now = DateTime.Now.ToUniversalTime();
+            return TimeForNextNotification(now, eventStart, repeatPeriod);
+        }
 
+        /// <summary>
+        /// Calculates the minutes left until the next notification should be fired.
+        /// </summary>
+        /// <param name="now">DateTime of the present time</param>
+        /// <param name="eventStart">DateTime with the start of the event</param>
+        /// <param name="repeatPeriod">TimeSpan with the repeat period of the notification</param>
+        /// <returns>int with the number of minutes remaining</returns>
+        public static int TimeForNextNotification(DateTime now, DateTime eventStart, TimeSpan repeatPeriod)
+        {
             if (now > eventStart)
             {
                 double a = (now - eventStart).TotalMinutes;
-                return Convert.ToInt32(Math.Floor(a % repeatPeriod.TotalMinutes));
+                int result = Convert.ToInt32(Math.Floor(a % repeatPeriod.TotalMinutes));
+
+                if (now.AddMinutes(result).Day != now.Day)
+                {
+                    result = Convert.ToInt32(Math.Floor(repeatPeriod.TotalMinutes)) - result;
+                }
+
+                return result;
             }
             else
             {

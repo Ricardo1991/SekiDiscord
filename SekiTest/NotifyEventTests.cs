@@ -62,10 +62,20 @@ namespace SekiTest
         [Fact]
         public void CalculateAlarmTomorrow()
         {
-            DateTime eventStart = DateTime.Now.AddMinutes(5);
+            DateTime eventStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 2, 00, 00);
+            DateTime now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 00, 00);
             TimeSpan repeatPeriod = new TimeSpan(1, 0, 0, 0);
 
-            Assert.Equal(1445, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
+            Assert.Equal(180, NotifyEvent.TimeForNextNotification(now, eventStart, repeatPeriod));
+        }
+
+        [Fact]
+        public void CalculateOldAlarm()
+        {
+            DateTime eventStart = DateTime.Now.Subtract(new TimeSpan(15, 3, 30, 0, 0)); //Event Start set to 15 days, 3 hours and 30 minutes ago
+            TimeSpan repeatPeriod = new TimeSpan(1, 0, 0, 0);
+
+            Assert.Equal(210, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
         }
 
         [Fact]

@@ -406,10 +406,11 @@ namespace SekiDiscord
         }
 
         [Command("event-list")]
-        [Description("List saved events")]
+        [Description("List saved events. Argument \"extra\" for more information")]
         public async Task EventList(CommandContext ctx)
         {
             logger.Info("List Event Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
 
 
             if (NotifyEventManager.NotifyEventCount() == 0)
@@ -418,7 +419,7 @@ namespace SekiDiscord
                 return;
             }
 
-            string[] events = NotifyEventManager.getNotifyEventDetails();
+            string[] events = NotifyEventManager.getNotifyEventDetails(arguments.Trim().ToLower() == "extra");
 
             StringBuilder builder = new StringBuilder().Append("```");
             
