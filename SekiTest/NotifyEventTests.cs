@@ -17,7 +17,7 @@ namespace SekiTest
         [Fact]
         public void CalculateAlarm15Minutes()
         {
-            DateTime eventStart = DateTime.Now.Subtract(new TimeSpan(6, 15, 0));
+            DateTime eventStart = DateTime.UtcNow.Subtract(new TimeSpan(3, 30, 0));
             TimeSpan repeatPeriod = new TimeSpan(0, 45, 0);
 
             Assert.Equal(15, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
@@ -26,7 +26,7 @@ namespace SekiTest
         [Fact]
         public void CalculateAlarm0Minutes()
         {
-            DateTime eventStart = DateTime.Now.Subtract(new TimeSpan(6, 0, 0));
+            DateTime eventStart = DateTime.UtcNow.Subtract(new TimeSpan(3, 0, 0));
             TimeSpan repeatPeriod = new TimeSpan(0, 45, 0);
 
             Assert.Equal(0, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
@@ -35,47 +35,48 @@ namespace SekiTest
         [Fact]
         public void CalculateAlarmNow()
         {
-            DateTime eventStart = DateTime.Now;
+            DateTime eventStart = DateTime.UtcNow;
             TimeSpan repeatPeriod = new TimeSpan(0, 45, 0);
 
             Assert.Equal(0, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
         }
 
         [Fact]
-        public void CalculateAlarmFutureFar()
+        public void CalculateAlarmFuture()
         {
-            DateTime eventStart = DateTime.Now.AddHours(1);
+            DateTime eventStart = DateTime.UtcNow.AddHours(1);
             TimeSpan repeatPeriod = new TimeSpan(0, 45, 0);
 
-            Assert.Equal(105, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
-        }
-
-        [Fact]
-        public void CalculateAlarmFutureSoon()
-        {
-            DateTime eventStart = DateTime.Now.AddMinutes(5);
-            TimeSpan repeatPeriod = new TimeSpan(0, 45, 0);
-
-            Assert.Equal(50, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
+            Assert.Equal(60, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
         }
 
         [Fact]
         public void CalculateAlarmTomorrow()
         {
-            DateTime eventStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 2, 00, 00);
-            DateTime now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 23, 00, 00);
+            DateTime eventStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 2, 00, 00, DateTimeKind.Utc);
+            DateTime now = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 23, 00, 00, DateTimeKind.Utc);
             TimeSpan repeatPeriod = new TimeSpan(1, 0, 0, 0);
 
-            Assert.Equal(180, NotifyEvent.TimeForNextNotification(now, eventStart, repeatPeriod));
+            Assert.Equal(3 * 60, NotifyEvent.TimeForNextNotification(now, eventStart, repeatPeriod));
+        }
+
+        [Fact]
+        public void CalculateAlarmLaterToday()
+        {
+            DateTime eventStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 14, 00, 00, DateTimeKind.Utc);
+            DateTime now = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 0, 20, 00, DateTimeKind.Utc).AddDays(10);
+            TimeSpan repeatPeriod = new TimeSpan(1, 0, 0, 0);
+
+            Assert.Equal(14 * 60 - 20, NotifyEvent.TimeForNextNotification(now, eventStart, repeatPeriod));
         }
 
         [Fact]
         public void CalculateOldAlarm()
         {
-            DateTime eventStart = DateTime.Now.Subtract(new TimeSpan(15, 3, 30, 0, 0)); //Event Start set to 15 days, 3 hours and 30 minutes ago
+            DateTime eventStart = DateTime.UtcNow.ToUniversalTime().Subtract(new TimeSpan(15, 3, 30, 0, 0)); //Event Start set to 15 days, 3 hours and 30 minutes ago
             TimeSpan repeatPeriod = new TimeSpan(1, 0, 0, 0);
 
-            Assert.Equal(210, NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
+            Assert.Equal(24 * 60 - (3 * 60 + 30), NotifyEvent.TimeForNextNotification(eventStart, repeatPeriod));
         }
 
         [Fact]

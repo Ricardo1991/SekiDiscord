@@ -59,7 +59,7 @@ namespace SekiDiscord.Commands.NotifyEvent
         /// <returns>int with the number of minutes remaining</returns>
         public static int TimeForNextNotification(DateTime eventStart, TimeSpan repeatPeriod)
         {
-            DateTime now = DateTime.Now.ToUniversalTime();
+            DateTime now = DateTime.UtcNow;
             return TimeForNextNotification(now, eventStart, repeatPeriod);
         }
 
@@ -74,20 +74,24 @@ namespace SekiDiscord.Commands.NotifyEvent
         {
             if (now > eventStart)
             {
-                double a = (now - eventStart).TotalMinutes;
-                int result = Convert.ToInt32(Math.Floor(a % repeatPeriod.TotalMinutes));
+                while (now > eventStart)
+                    eventStart = eventStart.Add(repeatPeriod);
 
-                if (now.AddMinutes(result).Day != now.Day)
-                {
-                    result = Convert.ToInt32(Math.Floor(repeatPeriod.TotalMinutes)) - result;
-                }
+                TimeSpan minutesLeft = eventStart - now;
+
+                int result = Convert.ToInt32(Math.Ceiling(minutesLeft.TotalMinutes));
+
+                int periodMinutes = Convert.ToInt32(Math.Floor(repeatPeriod.TotalMinutes));
+
+                if (result >= repeatPeriod.TotalMinutes)
+                    result -= periodMinutes;
 
                 return result;
             }
             else
             {
-                double a = (eventStart - now).TotalMinutes;
-                return Convert.ToInt32(Math.Ceiling(a + repeatPeriod.TotalMinutes));
+                TimeSpan minutesLeft = eventStart - now;
+                return Convert.ToInt32(Math.Ceiling(minutesLeft.TotalMinutes));
             }
         }
 
