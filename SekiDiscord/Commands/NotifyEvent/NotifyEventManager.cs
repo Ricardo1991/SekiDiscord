@@ -227,5 +227,18 @@ namespace SekiDiscord.Commands.NotifyEvent
                 logger.Error("Could not save notification events: " + e.Message);
             }
         }
+
+        internal static void RemoveEvent(string arguments)
+        {
+            try
+            {
+                NotifyEvents.Remove(arguments);
+                SaveNotifyEvents(NotifyEvents);
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

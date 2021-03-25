@@ -149,7 +149,7 @@ namespace SekiDiscord.Commands.NotifyEvent
             bool removeSuccessful = EventSubscribers.Remove((userID, userGuild));
 
             if (EventSubscribers.Count == 0)
-                Enabled = false;
+                DisableEvent();
 
             return removeSuccessful;
         }
