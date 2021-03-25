@@ -2,14 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace SekiDiscord.Commands.NotifyEvent
 {
     public class NotifyEventManager
     {
-        private const string NOTIFY_FILE_PATH = "TextFiles/notify.json";
-        public static Dictionary<string, NotifyEvent> NotifyEvents = new();
-        private static readonly Logger logger = new Logger(typeof(NotifyEventManager));
+        public const string NOTIFY_FILE_PATH = "TextFiles/notify.json";
+        private static Dictionary<string, NotifyEvent> NotifyEvents;
+        private static readonly Logger logger = new(typeof(NotifyEventManager));
 
         public static void LoadAndEnableEvents()
         {
@@ -19,6 +20,33 @@ namespace SekiDiscord.Commands.NotifyEvent
                 if (a.Value.Enabled)
                     a.Value.EnableEvent();
             }
+        }
+
+        public static int NotifyEventCount()
+        {
+            if (NotifyEvents != null)
+                return NotifyEvents.Count;
+            else return 0;
+        }
+
+        public static string[] getNotifyEventDetails(bool sendExtraDetail)
+        {
+            List<string> list = new();
+
+            foreach (KeyValuePair<string, NotifyEvent> eventN in NotifyEvents)
+            {
+                StringBuilder sb = new();
+                {
+                    sb.Append("Enabled: ").Append(eventN.Value.Enabled)
+                        .Append("; Subscribers: ").Append(eventN.Value.EventSubscribers.Count)
+                        .Append("; Name: ").Append(eventN.Value.Name);
+                    if (sendExtraDetail)
+                        sb.Append("; Minutes until next trigger: ").Append(NotifyEvent.TimeForNextNotification(eventN.Value.EventStart, eventN.Value.RepeatPeriod));
+                }
+                list.Add(sb.ToString());
+            }
+
+            return list.ToArray();
         }
 
         /// <summary>
@@ -89,7 +117,6 @@ namespace SekiDiscord.Commands.NotifyEvent
         {
             return DateTime.Parse(dateInput);
         }
-
 
         /// <summary>
         /// Subscribe user from event, by name.
@@ -171,7 +198,7 @@ namespace SekiDiscord.Commands.NotifyEvent
             {
                 try
                 {
-                    using StreamReader r = new StreamReader(NOTIFY_FILE_PATH);
+                    using StreamReader r = new(NOTIFY_FILE_PATH);
                     string json = r.ReadToEnd();
                     notifyEvents = JsonConvert.DeserializeObject<Dictionary<string, NotifyEvent>>(json);
                     logger.Info("Loaded notification events");
@@ -191,13 +218,26 @@ namespace SekiDiscord.Commands.NotifyEvent
             try
             {
                 using StreamWriter w = File.CreateText(NOTIFY_FILE_PATH);
-                JsonSerializer serializer = new JsonSerializer();
+                JsonSerializer serializer = new();
                 serializer.Serialize(w, notifyEvents);
                 logger.Info("Loaded notification events");
             }
             catch (JsonException e)
             {
                 logger.Error("Could not save notification events: " + e.Message);
+            }
+        }
+
+        internal static void RemoveEvent(string arguments)
+        {
+            try
+            {
+                NotifyEvents.Remove(arguments);
+                SaveNotifyEvents(NotifyEvents);
+            }
+            catch
+            {
+                throw;
             }
         }
     }

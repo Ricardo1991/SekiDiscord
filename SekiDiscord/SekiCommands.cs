@@ -3,13 +3,13 @@ using DSharpPlus.CommandsNext.Attributes;
 using SekiDiscord.Commands;
 using SekiDiscord.Commands.NotifyEvent;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SekiDiscord
 {
 #pragma warning disable CA1822 // Mark members as static
+
     public class SekiCommands
     {
         private static readonly Logger logger = new Logger(typeof(SekiCommands));
@@ -338,7 +338,6 @@ namespace SekiDiscord
             logger.Info("Event Unsubscribe Command", Useful.GetDiscordName(ctx));
             string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
-
             bool result = NotifyEventManager.UnsubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
 
             string message = result ? "Removed sucessfully from " + arguments : "Error";
@@ -357,7 +356,7 @@ namespace SekiDiscord
                 NotifyEventManager.EnableEvent(arguments);
                 await ctx.Message.RespondAsync("Enabled " + arguments + " sucessfully").ConfigureAwait(false);
             }
-            catch(ArgumentException ex)
+            catch (ArgumentException ex)
             {
                 await ctx.Message.RespondAsync("Error, event probably not found").ConfigureAwait(false);
                 logger.Error("Error enabling event: " + ex.Message, Useful.GetDiscordName(ctx));
@@ -397,37 +396,63 @@ namespace SekiDiscord
                 NotifyEventManager.AddEvent(arguments);
                 message = "Event added. Now activate it manually";
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 message = "Event not created, error: " + ex.Message;
             }
-            
+
+            await ctx.Message.RespondAsync(message).ConfigureAwait(false);
+        }
+
+        [Command("event-delete")]
+        [Description("Delete a named event. Example: !event-delete genshin")]
+        [RequireRolesAttribute("bot-admin", "Administrator")]
+        public async Task EvenDelete(CommandContext ctx)
+        {
+            logger.Info("Remove Event Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
+
+            string message;
+
+            try
+            {
+                NotifyEventManager.RemoveEvent(arguments);
+                message = "Event Removed.";
+            }
+            catch (Exception ex)
+            {
+                message = "Event not removed. Error: " + ex.Message;
+            }
+
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
 
         [Command("event-list")]
-        [Description("List saved events")]
+        [Description("List saved events. Argument \"extra\" for more information")]
         public async Task EventList(CommandContext ctx)
         {
             logger.Info("List Event Command", Useful.GetDiscordName(ctx));
+            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
 
-
-            if (NotifyEventManager.NotifyEvents.Count == 0)
+            if (NotifyEventManager.NotifyEventCount() == 0)
             {
                 await ctx.Message.RespondAsync("No Events saved").ConfigureAwait(false);
                 return;
             }
 
+            string[] events = NotifyEventManager.getNotifyEventDetails(arguments.Trim().ToLower() == "extra");
+
             StringBuilder builder = new StringBuilder().Append("```");
 
-            foreach (KeyValuePair<string, NotifyEvent> eventN in NotifyEventManager.NotifyEvents)
+            foreach (string eventDetail in events)
             {
-                builder.AppendLine("Enabled: " + eventN.Value.Enabled + "; Subscribers: " + eventN.Value.EventSubscribers.Count + "; Name: " + eventN.Value.Name);
+                builder.AppendLine(eventDetail);
             }
 
             builder.Append("```");
             await ctx.Message.RespondAsync(builder.ToString()).ConfigureAwait(false);
         }
     }
+
 #pragma warning restore CA1822 // Mark members as static
 }
