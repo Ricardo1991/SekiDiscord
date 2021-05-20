@@ -33,6 +33,7 @@ namespace SekiDiscord
             if (arg != null && string.Compare(arg.Split(new char[] { ' ' }, 2)[0], "add", StringComparison.OrdinalIgnoreCase) == 0)  // add
             {
                 Quotes.AddQuote(arg);
+                await ctx.RespondAsync("Quote added").ConfigureAwait(false);
             }
             else // lookup or random
             {
@@ -43,10 +44,15 @@ namespace SekiDiscord
         [Command("quote-add")]
         [Description("Add quotes. Example: !quote-add <rya> r u a boo?")]
         [Aliases("q-add")]
-        public void QuoteAdd(CommandContext ctx, [RemainingText] string arg)
+        public async Task QuoteAdd(CommandContext ctx, [RemainingText] string arg)
         {
             logger.Info("Quote Add Command", Useful.GetDiscordName(ctx));
-            Quotes.AddQuote(arg);
+
+            if (!string.IsNullOrWhiteSpace(arg))
+            {
+                Quotes.AddQuote(arg);
+                await ctx.RespondAsync("Quote added").ConfigureAwait(false);
+            }   
         }
 
         [Command("quote-count")]
@@ -122,7 +128,7 @@ namespace SekiDiscord
 
         [Command("rkill")]
         [Description("Perform a randomly generated kill action on a user. Indicate user with arguments, or leave black for a random target.")]
-        public async Task RKill(CommandContext ctx, [RemainingText] string arg)
+        public async Task RandomKill(CommandContext ctx, [RemainingText] string arg)
         {
             logger.Info("rkill Command", Useful.GetDiscordName(ctx));
 
