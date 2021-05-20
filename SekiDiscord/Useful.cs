@@ -107,14 +107,5 @@ namespace SekiDiscord
 
             return template;
         }
-
-        public static string GetCommandArguments(string message) {
-            try {
-                return message.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch (IndexOutOfRangeException) {
-                return string.Empty;
-            }
-        }
     }
 }

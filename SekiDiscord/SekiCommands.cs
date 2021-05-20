@@ -116,7 +116,7 @@ namespace SekiDiscord
         {
             logger.Info("rkill Command", Useful.GetDiscordName(ctx));
 
-            KillUser.KillResult result = KillUser.KillRandom(Useful.GetCommandArguments(arg), Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild));
+            KillUser.KillResult result = KillUser.KillRandom(arg, Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild));
 
             switch (result.IsAction)
             {
@@ -256,7 +256,7 @@ namespace SekiDiscord
 
             try
             {
-                string arg = Useful.GetCommandArguments(args).Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
+                string arg = args.Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
                 string result = Basics.Choose(arg, Useful.GetUsername(ctx));
                 await ctx.RespondAsync(result).ConfigureAwait(false);
             }
@@ -273,7 +273,7 @@ namespace SekiDiscord
         {
             logger.Info("Square Command", Useful.GetDiscordName(ctx));
 
-            string message = Square.SquareText(Useful.GetCommandArguments(args), Useful.GetUsername(ctx));
+            string message = Square.SquareText(args, Useful.GetUsername(ctx));
             await ctx.RespondAsync(message).ConfigureAwait(false);
         }
 
@@ -293,7 +293,7 @@ namespace SekiDiscord
         {
             logger.Info("Funk Command", Useful.GetDiscordName(ctx));
 
-            if (!string.IsNullOrEmpty(Useful.GetCommandArguments(args)))
+            if (!string.IsNullOrEmpty(args))
             {
                 Commands.Funk.AddFunk(args);
             }
@@ -318,7 +318,7 @@ namespace SekiDiscord
 
             try
             {
-                string result = Youtube.YoutubeSearch(Useful.GetCommandArguments(args));
+                string result = Youtube.YoutubeSearch(args);
                 await ctx.Message.RespondAsync(result).ConfigureAwait(false);
             }
             catch (IndexOutOfRangeException)
@@ -355,7 +355,7 @@ namespace SekiDiscord
         {
             logger.Info("Seen Command", Useful.GetDiscordName(ctx));
 
-            string message = Commands.Seen.CheckSeen(Useful.GetCommandArguments(userName));
+            string message = Commands.Seen.CheckSeen(userName);
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
 
