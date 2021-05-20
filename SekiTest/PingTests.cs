@@ -8,11 +8,11 @@ namespace SekiTest
         private static string pingTriggerWord = "testPingWord";
 
         [Fact]
-        public async System.Threading.Tasks.Task PingAddAndDetectAndRemove()
+        public void PingAddAndDetectAndRemove()
         {
-            await SekiDiscord.Commands.PingUser.PingControl(userID, null, "add", pingTriggerWord);
+            SekiDiscord.Commands.PingUser.PingControlAdd(userID, pingTriggerWord);
             Assert.Contains(userID, SekiDiscord.Commands.PingUser.GetPingedUsers("Hello " + pingTriggerWord));
-            await SekiDiscord.Commands.PingUser.PingControl(userID, null, "remove", pingTriggerWord);
+            SekiDiscord.Commands.PingUser.PingControlRemove(userID, pingTriggerWord);
             Assert.DoesNotContain(userID, SekiDiscord.Commands.PingUser.GetPingedUsers("Hello " + pingTriggerWord));
 
         }

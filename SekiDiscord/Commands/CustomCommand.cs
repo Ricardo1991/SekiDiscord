@@ -114,16 +114,17 @@ namespace SekiDiscord.Commands
             return null;
         }
 
-        public static void RemoveCommandByName(string name)
+        public static bool RemoveCommandByName(string name)
         {
             foreach (CustomCommand q in CustomCommands)
             {
                 if (string.Compare(q.Name, name, StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    CustomCommands.Remove(GetCustomCommandByName(name));
-                    return;
+                    return CustomCommands.Remove(GetCustomCommandByName(name));
+                    
                 }
             }
+            return false;
         }
     }
 }

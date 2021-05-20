@@ -40,7 +40,7 @@ namespace SekiDiscord
         public static List<DiscordMember> GetOnlineMembers(DiscordGuild discordGuild)
         {
             if (discordGuild != null) {
-                return discordGuild.Members
+                return discordGuild.Members.Values
                     .Where(user => user.Presence != null && UserStatuses.Contains(user.Presence.Status) && user.Id != Settings.Default.ChibiID)
                     .ToList();
             }
@@ -51,8 +51,8 @@ namespace SekiDiscord
         {
             if (discordGuild != null) {
                 return discordGuild.Members
-                    .Where(user => user.Presence != null && UserStatuses.Contains(user.Presence.Status) && user.Id != Settings.Default.ChibiID)
-                    .Select(user => user.DisplayName)
+                    .Where(user => user.Value.Presence != null && UserStatuses.Contains(user.Value.Presence.Status) && user.Value.Id != Settings.Default.ChibiID)
+                    .Select(user => user.Value.DisplayName)
                     .ToList();
             }
             return null;
@@ -106,15 +106,6 @@ namespace SekiDiscord
             }
 
             return template;
-        }
-
-        public static string GetCommandArguments(string message) {
-            try {
-                return message.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch (IndexOutOfRangeException) {
-                return string.Empty;
-            }
         }
     }
 }

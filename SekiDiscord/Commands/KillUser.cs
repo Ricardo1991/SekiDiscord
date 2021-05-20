@@ -28,6 +28,13 @@ namespace SekiDiscord.Commands
             return KillUsername(target, author, usersOnline);
         }
 
+        public static KillResult Kill(string author, List<string> usersOnline)
+        {
+            Random r = new Random();
+            string target = usersOnline[r.Next(usersOnline.Count)];
+            return KillUsername(target, author, usersOnline);
+        }
+
         private static KillResult KillUsername(string args, string author, List<string> usersOnline)
         {
             string target;
@@ -82,6 +89,13 @@ namespace SekiDiscord.Commands
             {
                 return new KillResult(killString, true);
             }
+        }
+
+        internal static KillResult KillRandom(string author, List<string> usersOnline)
+        {
+            Random r = new Random();
+            string target = usersOnline[r.Next(usersOnline.Count)];
+            return KillRandom(target, author, usersOnline);
         }
 
         internal static KillResult KillRandom(string args, string author, List<string> usersOnline)

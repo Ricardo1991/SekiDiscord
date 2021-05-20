@@ -23,52 +23,50 @@ namespace SekiDiscord.Commands
             Pings = ReadPings();
         }
 
-        public static async Task PingControl(ulong userNameID, DiscordUser discordUser, string cmd, string args)
+        public static void PingControlAdd(ulong userNameID, string args)
         {
-            switch (cmd)
+            if (!string.IsNullOrWhiteSpace(args))
             {
-                case "add":
-                    if (!string.IsNullOrWhiteSpace(args))
-                    {
-                        if (!Pings.ContainsKey(userNameID))
-                        {
-                            Pings.Add(userNameID, new HashSet<string>() { args });
-                        }
-                        else if (Pings.ContainsKey(userNameID))
-                        {
-                            Pings[userNameID].Add(args);
-                        }
-                    }
-                    break;
-
-                case "remove":
-                    if (!string.IsNullOrWhiteSpace(args))
-                    {
-                        if (Pings.ContainsKey(userNameID))
-                        {
-                            Pings[userNameID].Remove(args);
-                        }
-                    }
-                    break;
-
-                case "info":
-                    if (Pings.ContainsKey(userNameID))
-                    {
-                        StringBuilder stringBuilder = new StringBuilder();
-                        stringBuilder.Append("Your pings: ");
-                        foreach (string ping in Pings[userNameID])
-                        {
-                            stringBuilder.Append("[" + ping + "] ");
-                        }
-                        await DMUser(discordUser, stringBuilder.ToString().Trim()).ConfigureAwait(false);
-                    }
-                    else if (!Pings.ContainsKey(userNameID))
-                    {
-                        await DMUser(discordUser, "You have no pings saved").ConfigureAwait(false);
-                    }
-                    break;
+                if (!Pings.ContainsKey(userNameID))
+                {
+                    Pings.Add(userNameID, new HashSet<string>() { args });
+                }
+                else if (Pings.ContainsKey(userNameID))
+                {
+                    Pings[userNameID].Add(args);
+                }
             }
         }
+
+        public static void PingControlRemove(ulong userNameID, string args)
+        {
+            if (!string.IsNullOrWhiteSpace(args))
+            {
+                if (Pings.ContainsKey(userNameID))
+                {
+                    Pings[userNameID].Remove(args);
+                }
+            }
+        }
+
+        public static async Task PingControlInfo(DiscordMember member)
+        {
+            if (Pings.ContainsKey(member.Id))
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append("Your pings: ");
+                foreach (string ping in Pings[member.Id])
+                {
+                    stringBuilder.Append("[" + ping + "] ");
+                }
+                await DMUser(member, stringBuilder.ToString().Trim()).ConfigureAwait(false);
+            }
+            else if (!Pings.ContainsKey(member.Id))
+            {
+                await DMUser(member, "You have no pings saved").ConfigureAwait(false);
+            }
+        }
+
 
         public static HashSet<ulong> GetPingedUsers(string message)
         {
@@ -91,27 +89,32 @@ namespace SekiDiscord.Commands
                 {
                     if (user != e.Message.Author.Id)
                     {
-                        member = e.Guild.Members.Where(mem => mem.Id.Equals(user)).FirstOrDefault();
+                        member = e.Guild.Members.Values.Where(mem => mem.Id.Equals(user)).FirstOrDefault();
                         if (member != null)
                             mentions += member.Mention + " ";
                     }
                 }
-
                 if (!string.IsNullOrWhiteSpace(mentions))
                 {
-                    string author_nickname = ((DiscordMember)e.Message.Author).DisplayName;
-                    if (author_nickname == null)
-                        author_nickname = e.Message.Author.Username;
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.Append(mentions + "at " + e.Message.Channel.Mention + "\n" + "<" + author_nickname + "> " + e.Message.Content);
-                    await SekiMain.DiscordClient.SendMessageAsync(channel, stringBuilder.ToString()).ConfigureAwait(false);
+                    // Update "last seen" for user that sent the message
+                    if (e.Guild.Members.TryGetValue(e.Message.Author.Id, out DiscordMember discordMember))
+                    {
+                        string author_nickname = discordMember.DisplayName;
+                        if (author_nickname == null)
+                            author_nickname = e.Message.Author.Username;
+                        StringBuilder stringBuilder = new StringBuilder();
+                        stringBuilder.Append(mentions + "at " + e.Message.Channel.Mention + "\n" + "<" + author_nickname + "> " + e.Message.Content);
+                        await SekiMain.DiscordClient.SendMessageAsync(channel, stringBuilder.ToString()).ConfigureAwait(false);
+                    }
                 }
             }
         }
 
-        public static async Task DMUser(DiscordUser user, string msg) {
-            if (!string.IsNullOrWhiteSpace(msg)) {
-                await SekiMain.DiscordClient.SendMessageAsync(await SekiMain.DiscordClient.CreateDmAsync(user).ConfigureAwait(false), msg).ConfigureAwait(false);
+        public static async Task DMUser(DiscordMember discordMember, string msg)
+        {
+            if (!string.IsNullOrWhiteSpace(msg))
+            {
+                await discordMember.SendMessageAsync(msg).ConfigureAwait(false);
             }
         }
 

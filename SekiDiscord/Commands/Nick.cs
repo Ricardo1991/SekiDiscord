@@ -33,25 +33,28 @@ namespace SekiDiscord.Commands
                 return message;
             }
 
-            foreach (string s in args.Split(' '))
+            if (!string.IsNullOrWhiteSpace(args))
             {
-                if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "random")
+                foreach (string s in args.Split(' '))
                 {
-                    switchLetterNumb = rnd.Next(0, 100) <= 30;
-                    randomnumber = rnd.Next(0, 100) <= 30;
-                    randomUpper = rnd.Next(0, 100) <= 30;
-                    Ique = rnd.Next(0, 100) <= 10;
-                }
-                else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "for")
-                {
-                    targeted = true;
-                    target = Useful.GetBetween(args, "for ", null);
-                }
+                    if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "random")
+                    {
+                        switchLetterNumb = rnd.Next(0, 100) <= 30;
+                        randomnumber = rnd.Next(0, 100) <= 30;
+                        randomUpper = rnd.Next(0, 100) <= 30;
+                        Ique = rnd.Next(0, 100) <= 10;
+                    }
+                    else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "for")
+                    {
+                        targeted = true;
+                        target = Useful.GetBetween(args, "for ", null);
+                    }
 
-                if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "sl") switchLetterNumb = true;
-                else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "rn") randomnumber = true;
-                else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "ru") randomUpper = true;
-                else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "iq") Ique = true;
+                    if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "sl") switchLetterNumb = true;
+                    else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "rn") randomnumber = true;
+                    else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "ru") randomUpper = true;
+                    else if (s.ToLower(CultureInfo.CreateSpecificCulture("en-GB")) == "iq") Ique = true;
+                }
             }
 
             string nick_ = NickGenerator.GenerateNick(NickGenStrings, NickGenStrings.Count, randomnumber, randomUpper, switchLetterNumb, Ique);

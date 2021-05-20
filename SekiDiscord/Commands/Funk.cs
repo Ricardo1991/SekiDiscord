@@ -26,22 +26,7 @@ namespace SekiDiscord.Commands
 
         public static void AddFunk(string content)
         {
-            string args;
-            try
-            {
-                args = content.Split(new char[] { ' ' }, 2)[1];
-            }
-            catch (IndexOutOfRangeException)
-            {
-                return;
-            }
-
-            string[] splits = content.Split();
-            if (string.Compare(splits[0], "add", StringComparison.OrdinalIgnoreCase) == 0)
-                args = args.Replace("add ", string.Empty, StringComparison.OrdinalIgnoreCase);
-
-            FunkList.Add(args);
-
+            FunkList.Add(content);
             SaveFunk(FunkList);
         }
 

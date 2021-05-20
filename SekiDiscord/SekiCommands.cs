@@ -1,5 +1,6 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using SekiDiscord.Commands;
 using SekiDiscord.Commands.NotifyEvent;
 using System;
@@ -10,7 +11,7 @@ namespace SekiDiscord
 {
 #pragma warning disable CA1822 // Mark members as static
 
-    public class SekiCommands
+    public class SekiCommands : BaseCommandModule
     {
         private static readonly Logger logger = new Logger(typeof(SekiCommands));
 
@@ -19,13 +20,20 @@ namespace SekiDiscord
         [Aliases("q")]
         public async Task Quote(CommandContext ctx)
         {
+            logger.Info("Quote Command: Random overload", Useful.GetDiscordName(ctx));
+            await ctx.RespondAsync(Quotes.PrintQuote(null)).ConfigureAwait(false);
+        }
+
+        [Command("quote")]
+        [Description("Show or add quotes. Add argument \"add\" after the command to add quote. If a different argument is used it will perform a search. If no arguments are shown, a random quote is shown")]     // this will be displayed to tell users what this command does when they invoke help
+        public async Task Quote(CommandContext ctx, [RemainingText] string arg)
+        {
             logger.Info("Quote Command", Useful.GetDiscordName(ctx));
 
-            string arg = Useful.GetCommandArguments(ctx.Message.Content);
-
-            if (string.Compare(arg.Split(new char[] { ' ' }, 2)[0], "add", StringComparison.OrdinalIgnoreCase) == 0)  // add
+            if (arg != null && string.Compare(arg.Split(new char[] { ' ' }, 2)[0], "add", StringComparison.OrdinalIgnoreCase) == 0)  // add
             {
                 Quotes.AddQuote(arg);
+                await ctx.RespondAsync("Quote added").ConfigureAwait(false);
             }
             else // lookup or random
             {
@@ -36,12 +44,15 @@ namespace SekiDiscord
         [Command("quote-add")]
         [Description("Add quotes. Example: !quote-add <rya> r u a boo?")]
         [Aliases("q-add")]
-        public async Task QuoteAdd(CommandContext ctx)
+        public async Task QuoteAdd(CommandContext ctx, [RemainingText] string arg)
         {
             logger.Info("Quote Add Command", Useful.GetDiscordName(ctx));
 
-            string arg = Useful.GetCommandArguments(ctx.Message.Content);
-            Quotes.AddQuote(arg);
+            if (!string.IsNullOrWhiteSpace(arg))
+            {
+                Quotes.AddQuote(arg);
+                await ctx.RespondAsync("Quote added").ConfigureAwait(false);
+            }   
         }
 
         [Command("quote-count")]
@@ -58,9 +69,29 @@ namespace SekiDiscord
         [Description("Perform a kill action on a user. Indicate user with arguments, or leave black for a random target.")]
         public async Task Kill(CommandContext ctx)
         {
-            logger.Info("kill Command", Useful.GetDiscordName(ctx));
+            logger.Info("Kill Command: Random overload", Useful.GetDiscordName(ctx));
 
-            KillUser.KillResult result = KillUser.Kill(Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild), Useful.GetCommandArguments(ctx.Message.Content));
+            KillUser.KillResult result = KillUser.Kill(Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild));
+
+            switch (result.IsAction)
+            {
+                case true:
+                    await ctx.RespondAsync("*" + result.Result + "*").ConfigureAwait(false);
+                    break;
+
+                case false:
+                    await ctx.RespondAsync(result.Result).ConfigureAwait(false);
+                    break;
+            }
+        }
+
+        [Command("kill")]
+        [Description("Perform a kill action on a user. Indicate user with arguments, or leave black for a random target.")]
+        public async Task Kill(CommandContext ctx, [RemainingText] string arg)
+        {
+            logger.Info("Kill Command", Useful.GetDiscordName(ctx));
+
+            KillUser.KillResult result = KillUser.Kill(Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild), arg);
 
             switch (result.IsAction)
             {
@@ -81,7 +112,27 @@ namespace SekiDiscord
         {
             logger.Info("rkill Command", Useful.GetDiscordName(ctx));
 
-            KillUser.KillResult result = KillUser.KillRandom(Useful.GetCommandArguments(ctx.Message.Content), Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild));
+            KillUser.KillResult result = KillUser.KillRandom(Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild));
+
+            switch (result.IsAction)
+            {
+                case true:
+                    await ctx.RespondAsync("*" + result.Result.Trim() + "*").ConfigureAwait(false);
+                    break;
+
+                case false:
+                    await ctx.RespondAsync(result.Result).ConfigureAwait(false);
+                    break;
+            }
+        }
+
+        [Command("rkill")]
+        [Description("Perform a randomly generated kill action on a user. Indicate user with arguments, or leave black for a random target.")]
+        public async Task RandomKill(CommandContext ctx, [RemainingText] string arg)
+        {
+            logger.Info("rkill Command", Useful.GetDiscordName(ctx));
+
+            KillUser.KillResult result = KillUser.KillRandom(arg, Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild));
 
             switch (result.IsAction)
             {
@@ -98,76 +149,103 @@ namespace SekiDiscord
         [Command("addcmd")]
         [Description("Add a command to the custom commands list")]
         [Aliases("cmd-add")]
-        public async Task AddCustomCommand(CommandContext ctx)
+        public async Task AddCustomCommand(CommandContext ctx, string commandName, [RemainingText] string format)
         {
             logger.Info("addcmd Command", Useful.GetDiscordName(ctx));
 
-            string[] splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
-
-            if (CustomCommand.CommandExists(splits[0]) == true)
+            if (CustomCommand.CommandExists(commandName) == true)
             {
-                string message = "Command " + splits[0] + " already exists.";
+                string message = "Command " + commandName + " already exists.";
                 await ctx.RespondAsync(message).ConfigureAwait(false);
             }
 
-            CustomCommand.CustomCommands.Add(new CustomCommand(ctx.User.Username, splits[1], splits[2]));
+            if (string.IsNullOrWhiteSpace(format)) return;
+
+            CustomCommand.CustomCommands.Add(new CustomCommand(ctx.User.Username, commandName, format));
             CustomCommand.SaveCustomCommands();
         }
 
         [Command("removecmd")]
         [Description("Remove a command to the custom commands list")]
         [Aliases("cmd-remove")]
-        public async Task RemoveCustomCommand(CommandContext ctx)
+        public async Task RemoveCustomCommand(CommandContext ctx, string commandName)
         {
             logger.Info("removecmd Command", Useful.GetDiscordName(ctx));
 
             if (Useful.MemberIsBotOperator(ctx.Member) || ctx.Member.IsOwner)
             {
-                string[] splits = ctx.Message.Content.Split(new char[] { ' ' }, 3);
-
-                CustomCommand.RemoveCommandByName(splits[1]);
-                CustomCommand.SaveCustomCommands();
-                string message = "Command " + splits[1] + " removed.";
-                await ctx.RespondAsync(message).ConfigureAwait(false);
+                if (CustomCommand.RemoveCommandByName(commandName))
+                {
+                    CustomCommand.SaveCustomCommands();
+                    await ctx.RespondAsync("Command " + commandName + " removed.").ConfigureAwait(false);
+                }
+                else 
+                {
+                    await ctx.RespondAsync("Command " + commandName + " not found.").ConfigureAwait(false);
+                }
+               
             }
         }
 
         [Command("ping")]
         [Description("Add, Remove or Copy words or phrases that the user will be mentioned at")]
         [Aliases("p")]
-        public async Task Ping(CommandContext ctx)
+        public async Task Ping(CommandContext ctx, string cmd, [RemainingText] string args)
         {
             logger.Info("ping Command", Useful.GetDiscordName(ctx));
 
-            string msg, cmd, args;
+            switch (cmd)
+            {
+                case "add":
+                    PingUser.PingControlAdd(ctx.Member.Id, args);
+                    break;
 
-            try
-            {
-                msg = Useful.GetCommandArguments(ctx.Message.Content.ToLowerInvariant()); // remove !p or !ping
-                cmd = msg.Split(new char[] { ' ' }, 2)[0]; // get command word
-                args = Useful.GetBetween(msg, cmd, null).TrimStart(); // get words after command, add a space to cmd word so args doesnt start with one
-            }
-            catch (IndexOutOfRangeException)
-            {
-                return;
-            }
+                case "remove":
+                    PingUser.PingControlRemove(ctx.Member.Id, args);
+                    break;
 
-            if (!string.IsNullOrWhiteSpace(msg))
-            {
-                await PingUser.PingControl(ctx.Member.Id, ctx.Message.Author, cmd, args).ConfigureAwait(false);
-                PingUser.SavePings(PingUser.Pings);
+                case "info":
+                    if (ctx.Guild.Members.TryGetValue(ctx.Message.Author.Id, out DiscordMember member))
+                    {
+                        await PingUser.PingControlInfo(member).ConfigureAwait(false);
+                    }
+                    break;
             }
+            PingUser.SavePings(PingUser.Pings); 
         }
 
+
         [Command("roll")]
-        [Description("Roll a number between 0 and the indicated number. 100 will be used as default if no valid number is presented")]
+        [Description("Roll a number between 0 and 100")]
         public async Task Roll(CommandContext ctx)
         {
             logger.Info("Roll Command", Useful.GetDiscordName(ctx));
 
             try
             {
-                int number = Basics.Roll(ctx.Message.Content);
+                int number = Basics.Roll(100);
+                string message = Useful.GetUsername(ctx) + " rolled a " + number;
+                await ctx.RespondAsync(message).ConfigureAwait(false);
+            }
+            catch (FormatException)
+            {
+                await ctx.RespondAsync("Wrong Format").ConfigureAwait(false);
+            }
+            catch (OverflowException)
+            {
+                await ctx.RespondAsync("Number too large").ConfigureAwait(false);
+            }
+        }
+
+        [Command("roll")]
+        [Description("Roll a number between 0 and the indicated number.")]
+        public async Task Roll(CommandContext ctx, int max)
+        {
+            logger.Info("Roll Command", Useful.GetDiscordName(ctx));
+
+            try
+            {
+                int number = Basics.Roll(max);
                 string message = Useful.GetUsername(ctx) + " rolled a " + number;
                 await ctx.RespondAsync(message).ConfigureAwait(false);
             }
@@ -183,11 +261,11 @@ namespace SekiDiscord
 
         [Command("shuffle")]
         [Description("Shuffle provided words randomly. Can be phrases if separated by commas")]
-        public async Task Shuffle(CommandContext ctx)
+        public async Task Shuffle(CommandContext ctx, [RemainingText] string args)
         {
             logger.Info("Shuffle Command", Useful.GetDiscordName(ctx));
 
-            string result = Basics.Shuffle(ctx.Message.Content);
+            string result = Basics.Shuffle(args);
 
             if (!string.IsNullOrWhiteSpace(result))
                 await ctx.RespondAsync(result).ConfigureAwait(false);
@@ -195,13 +273,13 @@ namespace SekiDiscord
 
         [Command("choose")]
         [Description("Choose a word from the argument list, randomly")]
-        public async Task Choose(CommandContext ctx)
+        public async Task Choose(CommandContext ctx, [RemainingText] string args)
         {
             logger.Info("Choose Command", Useful.GetDiscordName(ctx));
 
             try
             {
-                string arg = Useful.GetCommandArguments(ctx.Message.Content).Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
+                string arg = args.Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
                 string result = Basics.Choose(arg, Useful.GetUsername(ctx));
                 await ctx.RespondAsync(result).ConfigureAwait(false);
             }
@@ -214,11 +292,11 @@ namespace SekiDiscord
         [Command("square")]
         [Description("squarify a word. Limited to lenght of 10 characters")]
         [Aliases("s")]
-        public async Task SquareText(CommandContext ctx)
+        public async Task SquareText(CommandContext ctx, [RemainingText] string args)
         {
             logger.Info("Square Command", Useful.GetDiscordName(ctx));
 
-            string message = Square.SquareText(Useful.GetCommandArguments(ctx.Message.Content), Useful.GetUsername(ctx));
+            string message = Square.SquareText(args, Useful.GetUsername(ctx));
             await ctx.RespondAsync(message).ConfigureAwait(false);
         }
 
@@ -228,17 +306,26 @@ namespace SekiDiscord
         {
             logger.Info("Funk Command", Useful.GetDiscordName(ctx));
 
-            if (string.IsNullOrEmpty(Useful.GetCommandArguments(ctx.Message.Content))) { // lookup or random
-                await ctx.Message.RespondAsync(Commands.Funk.PrintFunk()).ConfigureAwait(false);
-            }
-            else {
-                Commands.Funk.AddFunk(ctx.Message.Content);
+
+            await ctx.Message.RespondAsync(Commands.Funk.PrintFunk()).ConfigureAwait(false);
+
+        }
+        [Command("funk")]
+        [Description("Provide link to a song from the stored list")]
+        public async Task FunkAsync(CommandContext ctx, [RemainingText] string args)
+        {
+            logger.Info("Funk Command Add", Useful.GetDiscordName(ctx));
+
+            if (!string.IsNullOrEmpty(args))
+            {
+                Commands.Funk.AddFunk(args);
+                await ctx.Message.RespondAsync("Funk Added").ConfigureAwait(false);
             }
         }
 
         [Command("poke")]
         [Description("poke a user randomly")]
-        public async Task Poke(CommandContext ctx)
+        public async Task Poke(CommandContext ctx, params string[] names)
         {
             logger.Info("Poke Command", Useful.GetDiscordName(ctx));
 
@@ -249,13 +336,13 @@ namespace SekiDiscord
         [Command("youtube")]
         [Description("Search youtube for the arguments provided, and return the top result")]
         [Aliases("yt")]
-        public async Task YoutubeSearch(CommandContext ctx)
+        public async Task YoutubeSearch(CommandContext ctx, [RemainingText] string args)
         {
             logger.Info("Youtube Command", Useful.GetDiscordName(ctx));
 
             try
             {
-                string result = Youtube.YoutubeSearch(Useful.GetCommandArguments(ctx.Message.Content));
+                string result = Youtube.YoutubeSearch(args);
                 await ctx.Message.RespondAsync(result).ConfigureAwait(false);
             }
             catch (IndexOutOfRangeException)
@@ -266,33 +353,33 @@ namespace SekiDiscord
 
         [Command("nick")]
         [Description("Generate a nickname")]
-        public async Task Nick(CommandContext ctx)
+        public async Task Nick(CommandContext ctx, [RemainingText] string args)
         {
             logger.Info("Nick Command", Useful.GetDiscordName(ctx));
 
-            string result = Commands.Nick.NickGen(ctx.Message.Content, Useful.GetUsername(ctx));
+            string result = Commands.Nick.NickGen(args, Useful.GetUsername(ctx));
 
             await ctx.RespondAsync(result).ConfigureAwait(false);
         }
 
         [Command("fact")]
         [Description("Show a random fun made up fact")]
-        public async Task Fact(CommandContext ctx)
+        public async Task Fact(CommandContext ctx, [RemainingText] string args)
         {
             logger.Info("Fact Command", Useful.GetDiscordName(ctx));
 
-            string result = Commands.Fact.ShowFact(Useful.GetCommandArguments(ctx.Message.Content), Useful.GetOnlineNames(ctx.Channel.Guild), Useful.GetUsername(ctx));
+            string result = Commands.Fact.ShowFact(args, Useful.GetOnlineNames(ctx.Channel.Guild), Useful.GetUsername(ctx));
 
             await ctx.Message.RespondAsync(result).ConfigureAwait(false);
         }
 
         [Command("seen")]
         [Description("Check how long ago a user was last seen")]
-        public async Task Seen(CommandContext ctx)
+        public async Task Seen(CommandContext ctx, string userName)
         {
             logger.Info("Seen Command", Useful.GetDiscordName(ctx));
 
-            string message = Commands.Seen.CheckSeen(Useful.GetCommandArguments(ctx.Message.Content));
+            string message = Commands.Seen.CheckSeen(userName);
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
 
@@ -334,41 +421,39 @@ namespace SekiDiscord
 
         [Command("event-subscribe")]
         [Description("Subscribe to a named event")]
-        public async Task EventSubscribe(CommandContext ctx)
+        public async Task EventSubscribe(CommandContext ctx, string eventName)
         {
             logger.Info("Event Subscribe Command", Useful.GetDiscordName(ctx));
-            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
-            bool result = NotifyEventManager.SubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
+            bool result = NotifyEventManager.SubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, eventName);
 
-            string message = result ? "Added sucessfully to " + arguments : "Error";
+            string message = result ? "Added sucessfully to " + eventName : "Error";
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
 
         [Command("event-unsubscribe")]
         [Description("Unsubscribe to a named event")]
-        public async Task EventUnsubscribe(CommandContext ctx)
+        public async Task EventUnsubscribe(CommandContext ctx, string eventName)
         {
             logger.Info("Event Unsubscribe Command", Useful.GetDiscordName(ctx));
-            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
-            bool result = NotifyEventManager.UnsubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, arguments);
+            bool result = NotifyEventManager.UnsubscribeUserToEvent(ctx.User.Id, ctx.Guild.Id, eventName);
 
-            string message = result ? "Removed sucessfully from " + arguments : "Error";
+            string message = result ? "Removed sucessfully from " + eventName : "Error";
             await ctx.Message.RespondAsync(message).ConfigureAwait(false);
         }
 
         [Command("event-enable")]
         [Description("Enable a named event")]
-        public async Task EventEnable(CommandContext ctx)
+        [Aliases("event-activate")]
+        public async Task EventEnable(CommandContext ctx, string eventName)
         {
             logger.Info("Event Enable Command", Useful.GetDiscordName(ctx));
-            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
             try
             {
-                NotifyEventManager.EnableEvent(arguments);
-                await ctx.Message.RespondAsync("Enabled " + arguments + " sucessfully").ConfigureAwait(false);
+                NotifyEventManager.EnableEvent(eventName);
+                await ctx.Message.RespondAsync("Enabled " + eventName + " sucessfully").ConfigureAwait(false);
             }
             catch (ArgumentException ex)
             {
@@ -379,15 +464,15 @@ namespace SekiDiscord
 
         [Command("event-disable")]
         [Description("Disable a named event")]
-        public async Task EventDisable(CommandContext ctx)
+        [Aliases("event-deactivate")]
+        public async Task EventDisable(CommandContext ctx, string eventName)
         {
             logger.Info("Event Disable Command", Useful.GetDiscordName(ctx));
-            string arguments = Useful.GetCommandArguments(ctx.Message.Content).Trim();
 
             try
             {
-                NotifyEventManager.DisableEvent(arguments);
-                await ctx.Message.RespondAsync("Disabled " + arguments + " sucessfully").ConfigureAwait(false);
+                NotifyEventManager.DisableEvent(eventName);
+                await ctx.Message.RespondAsync("Disabled " + eventName + " sucessfully").ConfigureAwait(false);
             }
             catch (ArgumentException ex)
             {
@@ -398,16 +483,16 @@ namespace SekiDiscord
 
         [Command("event-create")]
         [Description("Create a named event. Example: !event-create genshin; 1 January 2021, 06:00; 1:0:0:0")]
-        public async Task EventCreate(CommandContext ctx)
+        [Aliases("event-add")]
+        public async Task EventCreate(CommandContext ctx, [RemainingText] string args)
         {
             logger.Info("Create Event Command", Useful.GetDiscordName(ctx));
-            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
 
             string message;
 
             try
             {
-                NotifyEventManager.AddEvent(arguments);
+                NotifyEventManager.AddEvent(args);
                 message = "Event added. Now activate it manually";
             }
             catch (Exception ex)
@@ -420,17 +505,17 @@ namespace SekiDiscord
 
         [Command("event-delete")]
         [Description("Delete a named event. Example: !event-delete genshin")]
-        [RequireRolesAttribute("bot-admin", "Administrator")]
-        public async Task EvenDelete(CommandContext ctx)
+        [RequireRoles(RoleCheckMode.Any, "bot-admin", "Administrator")]
+        [Aliases("event-remove")]
+        public async Task EventDelete(CommandContext ctx, string eventName)
         {
             logger.Info("Remove Event Command", Useful.GetDiscordName(ctx));
-            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
 
             string message;
 
             try
             {
-                NotifyEventManager.RemoveEvent(arguments);
+                NotifyEventManager.RemoveEvent(eventName);
                 message = "Event Removed.";
             }
             catch (Exception ex)
@@ -443,10 +528,10 @@ namespace SekiDiscord
 
         [Command("event-list")]
         [Description("List saved events. Argument \"extra\" for more information")]
-        public async Task EventList(CommandContext ctx)
+        [Aliases("event-info")]
+        public async Task EventList(CommandContext ctx, [RemainingText] string args)
         {
             logger.Info("List Event Command", Useful.GetDiscordName(ctx));
-            string arguments = Useful.GetCommandArguments(ctx.Message.Content);
 
             if (NotifyEventManager.NotifyEventCount() == 0)
             {
@@ -454,7 +539,7 @@ namespace SekiDiscord
                 return;
             }
 
-            string[] events = NotifyEventManager.getNotifyEventDetails(arguments.Trim().ToLower() == "extra");
+            string[] events = NotifyEventManager.getNotifyEventDetails(!string.IsNullOrWhiteSpace(args) && args.Trim().ToLower() == "extra");
 
             StringBuilder builder = new StringBuilder().Append("```");
 

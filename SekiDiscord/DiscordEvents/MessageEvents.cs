@@ -1,4 +1,5 @@
-﻿using DSharpPlus.Entities;
+﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using SekiDiscord.Commands;
 using System;
@@ -9,7 +10,7 @@ namespace SekiDiscord.DiscordEvents {
     static class MessageEvents {
         private static readonly Logger logger = new Logger(typeof(MessageEvents));
 
-        public static async Task MessageCreatedEvent(MessageCreateEventArgs a) {
+        public static async Task MessageCreatedEvent(DiscordClient c, MessageCreateEventArgs a) {
             if (a.Message.Content.StartsWith(Settings.Default.commandChar + "quit", StringComparison.OrdinalIgnoreCase)) {
                 await CheckForQuitEvent(a).ConfigureAwait(false);
             } else if (a.Message.Content.StartsWith(Settings.Default.commandChar)) {
@@ -21,11 +22,14 @@ namespace SekiDiscord.DiscordEvents {
             await Waifunator(a.Message).ConfigureAwait(false);
 
             // Update "last seen" for user that sent the message
-            string username = ((DiscordMember)a.Message.Author).DisplayName;
-            Seen.MarkUserSeen(username);
+            if (a.Guild.Members.TryGetValue(a.Message.Author.Id, out DiscordMember member))
+            {
+                string username = member.DisplayName;
+                Seen.MarkUserSeen(username);
 
-            // Ping users, leave this last cause it's sloooooooow
-            await PingUser.SendPings(a).ConfigureAwait(false);
+                // Ping users, leave this last cause it's sloooooooow
+                await PingUser.SendPings(a).ConfigureAwait(false);
+            }
         }
 
         private static async Task CheckForQuitEvent(MessageCreateEventArgs a) {
