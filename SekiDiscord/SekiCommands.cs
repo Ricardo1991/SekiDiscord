@@ -43,11 +43,9 @@ namespace SekiDiscord
         [Command("quote-add")]
         [Description("Add quotes. Example: !quote-add <rya> r u a boo?")]
         [Aliases("q-add")]
-        public async Task QuoteAdd(CommandContext ctx)
+        public void QuoteAdd(CommandContext ctx, [RemainingText] string arg)
         {
             logger.Info("Quote Add Command", Useful.GetDiscordName(ctx));
-
-            string arg = Useful.GetCommandArguments(ctx.Message.Content);
             Quotes.AddQuote(arg);
         }
 
