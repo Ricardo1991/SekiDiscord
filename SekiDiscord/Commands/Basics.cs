@@ -20,7 +20,7 @@ namespace SekiDiscord.Commands
             string[] choices;
             List<string> sList = new List<string>();
 
-            arg = content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
+            arg = content.Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
 
             if (arg.Contains(',', StringComparison.OrdinalIgnoreCase))
                 choices = arg.Split(new char[] { ',' });

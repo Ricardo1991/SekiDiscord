@@ -21,6 +21,9 @@ namespace SekiDiscord.Commands
 
         public static void MarkUserSeen(string userName)
         {
+            if (SeenTime == null)
+                SeenTime = ReadSeen();
+
             userName = userName.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
             if (SeenTime.ContainsKey(userName))
             {
@@ -36,6 +39,9 @@ namespace SekiDiscord.Commands
 
         private static DateTime GetUserSeenUTC(string nick)
         {
+            if(SeenTime == null)
+                SeenTime = ReadSeen();
+
             string user = nick.ToLower(CultureInfo.CreateSpecificCulture("en-GB"));
             if (SeenTime.ContainsKey(user))
             {
@@ -50,6 +56,9 @@ namespace SekiDiscord.Commands
             DateTime seenTime;
             DateTime now = DateTime.UtcNow;
             TimeSpan diff;
+
+            if(SeenTime == null)
+                SeenTime = ReadSeen();
 
             try
             {
@@ -115,6 +124,8 @@ namespace SekiDiscord.Commands
                     logger.Error(e.Message);
                 }
             }
+            if (seen==null)
+                seen = new Dictionary<string, DateTime>();
 
             return seen;
         }

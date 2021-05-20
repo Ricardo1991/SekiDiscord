@@ -54,7 +54,7 @@ namespace SekiDiscord
         [Description("Perform a kill action on a user. Indicate user with arguments, or leave black for a random target.")]
         public async Task Kill(CommandContext ctx)
         {
-            logger.Info("kill Command: Random overload", Useful.GetDiscordName(ctx));
+            logger.Info("Kill Command: Random overload", Useful.GetDiscordName(ctx));
 
             KillUser.KillResult result = KillUser.Kill(Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild));
 
@@ -74,7 +74,7 @@ namespace SekiDiscord
         [Description("Perform a kill action on a user. Indicate user with arguments, or leave black for a random target.")]
         public async Task Kill(CommandContext ctx, [RemainingText] string arg)
         {
-            logger.Info("kill Command", Useful.GetDiscordName(ctx));
+            logger.Info("Kill Command", Useful.GetDiscordName(ctx));
 
             KillUser.KillResult result = KillUser.Kill(Useful.GetUsername(ctx), Useful.GetOnlineNames(ctx.Channel.Guild), arg);
 
@@ -156,11 +156,16 @@ namespace SekiDiscord
 
             if (Useful.MemberIsBotOperator(ctx.Member) || ctx.Member.IsOwner)
             {
-                if (CustomCommand.RemoveCommandByName(commandName)){
+                if (CustomCommand.RemoveCommandByName(commandName))
+                {
                     CustomCommand.SaveCustomCommands();
                     await ctx.RespondAsync("Command " + commandName + " removed.").ConfigureAwait(false);
                 }
-                await ctx.RespondAsync("Command " + commandName + " not found.").ConfigureAwait(false);
+                else 
+                {
+                    await ctx.RespondAsync("Command " + commandName + " not found.").ConfigureAwait(false);
+                }
+               
             }
         }
 
@@ -289,13 +294,14 @@ namespace SekiDiscord
         }
         [Command("funk")]
         [Description("Provide link to a song from the stored list")]
-        public void Funk(CommandContext ctx, [RemainingText] string args)
+        public async Task FunkAsync(CommandContext ctx, [RemainingText] string args)
         {
-            logger.Info("Funk Command", Useful.GetDiscordName(ctx));
+            logger.Info("Funk Command Add", Useful.GetDiscordName(ctx));
 
             if (!string.IsNullOrEmpty(args))
             {
                 Commands.Funk.AddFunk(args);
+                await ctx.Message.RespondAsync("Funk Added").ConfigureAwait(false);
             }
         }
 
@@ -421,6 +427,7 @@ namespace SekiDiscord
 
         [Command("event-enable")]
         [Description("Enable a named event")]
+        [Aliases("event-activate")]
         public async Task EventEnable(CommandContext ctx, string eventName)
         {
             logger.Info("Event Enable Command", Useful.GetDiscordName(ctx));
@@ -439,6 +446,7 @@ namespace SekiDiscord
 
         [Command("event-disable")]
         [Description("Disable a named event")]
+        [Aliases("event-deactivate")]
         public async Task EventDisable(CommandContext ctx, string eventName)
         {
             logger.Info("Event Disable Command", Useful.GetDiscordName(ctx));
@@ -457,6 +465,7 @@ namespace SekiDiscord
 
         [Command("event-create")]
         [Description("Create a named event. Example: !event-create genshin; 1 January 2021, 06:00; 1:0:0:0")]
+        [Aliases("event-add")]
         public async Task EventCreate(CommandContext ctx, [RemainingText] string args)
         {
             logger.Info("Create Event Command", Useful.GetDiscordName(ctx));
@@ -479,6 +488,7 @@ namespace SekiDiscord
         [Command("event-delete")]
         [Description("Delete a named event. Example: !event-delete genshin")]
         [RequireRoles(RoleCheckMode.Any, "bot-admin", "Administrator")]
+        [Aliases("event-remove")]
         public async Task EventDelete(CommandContext ctx, string eventName)
         {
             logger.Info("Remove Event Command", Useful.GetDiscordName(ctx));
@@ -500,6 +510,7 @@ namespace SekiDiscord
 
         [Command("event-list")]
         [Description("List saved events. Argument \"extra\" for more information")]
+        [Aliases("event-info")]
         public async Task EventList(CommandContext ctx, [RemainingText] string args)
         {
             logger.Info("List Event Command", Useful.GetDiscordName(ctx));
