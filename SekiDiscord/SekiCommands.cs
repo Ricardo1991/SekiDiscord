@@ -479,7 +479,7 @@ namespace SekiDiscord
         [Command("event-delete")]
         [Description("Delete a named event. Example: !event-delete genshin")]
         [RequireRoles(RoleCheckMode.Any, "bot-admin", "Administrator")]
-        public async Task EvenDelete(CommandContext ctx, string eventName)
+        public async Task EventDelete(CommandContext ctx, string eventName)
         {
             logger.Info("Remove Event Command", Useful.GetDiscordName(ctx));
 
