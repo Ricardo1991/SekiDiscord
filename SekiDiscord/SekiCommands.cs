@@ -16,7 +16,8 @@ namespace SekiDiscord
         private static readonly Logger logger = new Logger(typeof(SekiCommands));
 
         [Command("quote")]
-        [Description("Show or add quotes. Add argument \"add\" after the command to add quote. If a different argument is used it will perform a search. If no arguments are shown, a random quote is shown")]     // this will be displayed to tell users what this command does when they invoke help
+        [Description("Show or add quotes. Add argument \"add\" after the command to add quote. If a different argument is used it will perform a search. If no arguments are added, a random quote is shown")]     // this will be displayed to tell users what this command does when they invoke help
+        [Aliases("q")]
         public async Task Quote(CommandContext ctx)
         {
             logger.Info("Quote Command: Random overload", Useful.GetDiscordName(ctx));
@@ -25,7 +26,6 @@ namespace SekiDiscord
 
         [Command("quote")]
         [Description("Show or add quotes. Add argument \"add\" after the command to add quote. If a different argument is used it will perform a search. If no arguments are shown, a random quote is shown")]     // this will be displayed to tell users what this command does when they invoke help
-        [Aliases("q")]
         public async Task Quote(CommandContext ctx, [RemainingText] string arg)
         {
             logger.Info("Quote Command", Useful.GetDiscordName(ctx));
@@ -40,9 +40,20 @@ namespace SekiDiscord
             }
         }
 
-        [Command("qcount")]
+        [Command("quote-add")]
+        [Description("Add quotes. Example: !quote-add <rya> r u a boo?")]
+        [Aliases("q-add")]
+        public async Task QuoteAdd(CommandContext ctx)
+        {
+            logger.Info("Quote Add Command", Useful.GetDiscordName(ctx));
+
+            string arg = Useful.GetCommandArguments(ctx.Message.Content);
+            Quotes.AddQuote(arg);
+        }
+
+        [Command("quote-count")]
         [Description("Show how many quotes are loaded")]
-        [Aliases("qc")]
+        [Aliases("qc", "qcount")]
         public async Task QuoteCount(CommandContext ctx)
         {
             logger.Info("Quote Count Command", Useful.GetDiscordName(ctx));
@@ -92,7 +103,8 @@ namespace SekiDiscord
 
         [Command("rkill")]
         [Description("Perform a randomly generated kill action on a user. Indicate user with arguments, or leave black for a random target.")]
-        public async Task RKill(CommandContext ctx)
+        [Aliases("kill-random","random-kill")]
+        public async Task RandomKill(CommandContext ctx)
         {
             logger.Info("rkill Command", Useful.GetDiscordName(ctx));
 
@@ -132,6 +144,7 @@ namespace SekiDiscord
 
         [Command("addcmd")]
         [Description("Add a command to the custom commands list")]
+        [Aliases("cmd-add")]
         public async Task AddCustomCommand(CommandContext ctx, string commandName, [RemainingText] string format)
         {
             logger.Info("addcmd Command", Useful.GetDiscordName(ctx));
@@ -150,6 +163,7 @@ namespace SekiDiscord
 
         [Command("removecmd")]
         [Description("Remove a command to the custom commands list")]
+        [Aliases("cmd-remove")]
         public async Task RemoveCustomCommand(CommandContext ctx, string commandName)
         {
             logger.Info("removecmd Command", Useful.GetDiscordName(ctx));
