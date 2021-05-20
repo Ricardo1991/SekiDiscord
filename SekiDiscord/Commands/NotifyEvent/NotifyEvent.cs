@@ -158,9 +158,8 @@ namespace SekiDiscord.Commands.NotifyEvent
         {
             DiscordGuild guild = await SekiMain.DiscordClient.GetGuildAsync(userGuildPair.Item2);
 
-            //DiscordMember member = guild.Members.Where(mem => mem.Value.Id.Equals(userGuildPair.Item1)).FirstOrDefault();
-            //return member.Mention;
-            return null;
+            DiscordMember member = guild.Members.Values.Where(mem => mem.Id.Equals(userGuildPair.Item1)).FirstOrDefault();
+            return member.Mention;
         }
 
         private void SetupFirstTimer()
