@@ -1,30 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace SekiDiscord.Commands
 {
     public static class Basics
     {
-        public static int Roll(string content)
+        public static int Roll(int inputMax = 100)
         {
             Random random = new Random();
-            int max = 100;
-
-            try
-            {
-                string arg = content.Split(new char[] { ' ' }, 2)[1].Trim().Replace("  ", " ", StringComparison.OrdinalIgnoreCase);
-                int parseMax = int.Parse(arg, CultureInfo.CreateSpecificCulture("en-GB"));
-
-                if (parseMax > 0)
-                    max = parseMax;
-            }
-            catch (IndexOutOfRangeException)
-            {
-                return random.Next(0, 100);
-            }
-
-            return random.Next(0, max) + 1;
+            return random.Next(0, inputMax) + 1;
         }
 
         public static string Shuffle(string content)

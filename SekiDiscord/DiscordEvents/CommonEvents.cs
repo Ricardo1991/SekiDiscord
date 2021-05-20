@@ -1,4 +1,5 @@
-﻿using DSharpPlus.Entities;
+﻿using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using System;
 using System.Collections.Generic;
@@ -15,18 +16,18 @@ namespace SekiDiscord.DiscordEvents {
         private const UserStatus BOT_PRESENCE_STATUS = UserStatus.Online;
 #endif
 
-        public static async Task ReadyEvent(ReadyEventArgs a) {
+        public static async Task ReadyEvent(DiscordClient c, ReadyEventArgs a) {
             SekiMain.TryReconnect = false;
-            await SekiMain.DiscordClient.UpdateStatusAsync(new DiscordGame(GetRandomStatus(FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Status))), BOT_PRESENCE_STATUS).ConfigureAwait(false);
+            await SekiMain.DiscordClient.UpdateStatusAsync(new DiscordActivity(GetRandomStatus(FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Status))), BOT_PRESENCE_STATUS).ConfigureAwait(false);
             await logger.InfoAsync("Ready!").ConfigureAwait(false);
         }
 
-        public static async Task SocketErrorEvent(SocketErrorEventArgs a) {
+        public static async Task SocketErrorEvent(DiscordClient c, SocketErrorEventArgs a) {
             SekiMain.TryReconnect = true;
             await logger.ErrorAsync(a.Exception.Message).ConfigureAwait(false);
         }
 
-        public static async Task UnknownEvent(UnknownEventArgs a) {
+        public static async Task UnknownEvent(DiscordClient c, UnknownEventArgs a) {
             await logger.InfoAsync("Unknown Event: " + a.EventName).ConfigureAwait(false);
         }
 
@@ -39,7 +40,7 @@ namespace SekiDiscord.DiscordEvents {
         private static void OnUpdateStatusEvent(object sender, ElapsedEventArgs e) {
             try {
                 logger.Info("Attempting to update user status");
-                SekiMain.DiscordClient.UpdateStatusAsync(new DiscordGame(GetRandomStatus(FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Status))), BOT_PRESENCE_STATUS);
+                SekiMain.DiscordClient.UpdateStatusAsync(new DiscordActivity(GetRandomStatus(FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Status))), BOT_PRESENCE_STATUS);
             }
             catch (Exception ex) {
                 logger.Error(ex.Message);

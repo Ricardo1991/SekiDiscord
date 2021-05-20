@@ -14,7 +14,7 @@ namespace SekiDiscord {
         public static string BotName { get; set; }
 
         private static string[] Arguments { get; set; }
-        private static CommandsNextModule Commands { get; set; }
+        private static CommandsNextExtension Commands { get; set; }
 
         public SekiMain(string[] args) {
             Arguments = args;
@@ -70,9 +70,10 @@ namespace SekiDiscord {
 
         private static void SetupCommands() {
             Commands = DiscordClient.UseCommandsNext(new CommandsNextConfiguration {
-                StringPrefix = Settings.Default.commandChar.ToString(),
+                StringPrefixes = new[] { Settings.Default.commandChar.ToString() },
                 CaseSensitive = false,
-                EnableMentionPrefix = false
+                EnableMentionPrefix = false,
+                
             });
             Commands.RegisterCommands<SekiCommands>();
         }
