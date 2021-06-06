@@ -29,7 +29,6 @@ namespace SekiDiscord {
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
                 Intents = DiscordIntents.All
-
             });
 
             SetupCommands();
