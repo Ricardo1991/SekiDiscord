@@ -12,9 +12,10 @@ namespace SekiDiscord {
         public static bool Quit { get; set; }
         public static bool TryReconnect { get; set; }
         public static string BotName { get; set; }
-
         private static string[] Arguments { get; set; }
         private static CommandsNextExtension Commands { get; set; }
+
+        private static int reconnectRetryCounter = 0;
 
         public SekiMain(string[] args) {
             Arguments = args;
@@ -34,13 +35,11 @@ namespace SekiDiscord {
             SetupCommands();
 
             DiscordClient.SocketErrored += CommonEvents.SocketErrorEvent;
-
             DiscordClient.Ready += CommonEvents.ReadyEvent;
-
             DiscordClient.UnknownEvent += CommonEvents.UnknownEvent;
-
             DiscordClient.MessageCreated += MessageEvents.MessageCreatedEvent;
-
+            DiscordClient.Resumed += CommonEvents.ResumedEvent;
+            DiscordClient.SocketClosed += CommonEvents.SocketClosedEvent;
             SekiDiscord.Commands.NotifyEvent.NotifyEventManager.LoadAndEnableEvents();
 
             // Connect to Discord:
@@ -52,20 +51,29 @@ namespace SekiDiscord {
 
             await Update().ConfigureAwait(false);
 
+            //Disconnect
             await DiscordClient.DisconnectAsync().ConfigureAwait(false);
         }
 
         private static async Task Update() {
             while (!Quit) {
                 if (TryReconnect) {
-                    try {
+                    if (reconnectRetryCounter > 10) {
+                        logger.Info("Attempting to Disconnect, and then Connect");
+                        //Disconnect
                         await DiscordClient.DisconnectAsync().ConfigureAwait(false);
-                    } finally {
-                        logger.Info("Attempting to Reconnect...");
+                        // Connect to Discord:
                         await DiscordClient.ConnectAsync().ConfigureAwait(false);
+
+                        reconnectRetryCounter = 0;
+                    }
+                    else {
+                        logger.Info("Attempting to Reconnect");
+                        reconnectRetryCounter++;
+                        await DiscordClient.ReconnectAsync().ConfigureAwait(false);
                     }
                 }
-                // Wait a bit
+                // Wait a bit (10 seconds)
                 await Task.Delay(10 * 1000).ConfigureAwait(false);
             }
         }
@@ -75,8 +83,8 @@ namespace SekiDiscord {
                 StringPrefixes = new[] { Settings.Default.commandChar.ToString() },
                 CaseSensitive = false,
                 EnableMentionPrefix = false,
-                
             });
+
             Commands.RegisterCommands<SekiCommands>();
         }
 
