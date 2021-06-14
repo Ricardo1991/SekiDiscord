@@ -33,16 +33,16 @@ namespace SekiDiscord.DiscordEvents {
         }
 
         private static async Task CheckForQuitEvent(MessageCreateEventArgs a) {
-            logger.Info("Quit request received, confirming...");
+            logger.Info("Quit request received, confirming.");
 
             if (a.Guild == null) {
-                logger.Info("Message sent via DM, ignoring.");
+                logger.Info("Quit request sent via DM, ignoring.");
                 return;
             }
 
             DiscordMember author = await a.Guild.GetMemberAsync(a.Author.Id).ConfigureAwait(false);
             if (author.IsOwner || Useful.MemberIsBotOperator(author)) {
-                logger.Info("Request validated, quitting now...");
+                logger.Info("Request validated, quitting now.");
                 SekiMain.Quit = true;
             }
         }

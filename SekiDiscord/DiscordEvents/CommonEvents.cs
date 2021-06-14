@@ -37,6 +37,16 @@ namespace SekiDiscord.DiscordEvents {
             statusTimer.Start();
         }
 
+        internal static async Task SocketClosedEvent(DiscordClient sender, SocketCloseEventArgs e) {
+            SekiMain.TryReconnect = true;
+            await logger.InfoAsync("Socket Closed").ConfigureAwait(false);
+        }
+
+        internal static async Task ResumedEvent(DiscordClient sender, ReadyEventArgs e) {
+            SekiMain.TryReconnect = false;
+            await logger.InfoAsync("Resumed!").ConfigureAwait(false);
+        }
+
         private static void OnUpdateStatusEvent(object sender, ElapsedEventArgs e) {
             try {
                 logger.Info("Attempting to update user status");
