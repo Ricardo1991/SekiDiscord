@@ -26,7 +26,9 @@ namespace SekiDiscord {
 
             DiscordClient = new DiscordClient(new DiscordConfiguration {
                 Token = Arguments[0],
-                TokenType = TokenType.Bot
+                TokenType = TokenType.Bot,
+                AutoReconnect = true,
+                Intents = DiscordIntents.All
             });
 
             SetupCommands();
