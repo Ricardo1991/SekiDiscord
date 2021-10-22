@@ -55,5 +55,40 @@ namespace SekiTest
 
             Assert.Throws<ArgumentException>(() => Useful.GetBetween(testString, "hello", null));
         }
+        [Fact]
+        public void TestTimeSpanFormatter() {
+
+            DateTime test1 = DateTime.UtcNow;
+            DateTime test2 = test1.AddDays(1).AddMinutes(30);
+            TimeSpan span = test2 - test1;
+            
+            Assert.Equal("1 days, 0h30", Useful.TimeSpanFormatter(span));
+
+
+            test1 = DateTime.UtcNow;
+            test2 = test1.AddHours(1).AddMinutes(30);
+            span = test2 - test1;
+
+            Assert.Equal("1h30", Useful.TimeSpanFormatter(span));
+
+            test1 = DateTime.UtcNow;
+            test2 = test1.AddHours(11).AddMinutes(30);
+            span = test2 - test1;
+
+            Assert.Equal("11h30", Useful.TimeSpanFormatter(span));
+
+            test1 = DateTime.UtcNow;
+            test2 = test1.AddHours(25).AddMinutes(30);
+            span = test2 - test1;
+
+            Assert.Equal("1 days, 1h30", Useful.TimeSpanFormatter(span));
+
+            //zero
+            test1 = DateTime.UtcNow;
+            test2 = test1;
+            span = test2 - test1;
+
+            Assert.Equal("0h00", Useful.TimeSpanFormatter(span));
+        }
     }
 }

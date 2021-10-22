@@ -15,6 +15,16 @@ namespace SekiDiscord
     {
         private static readonly Logger logger = new Logger(typeof(SekiCommands));
 
+        [Command("uptime")]
+        [Description("Show how long the bot has been up")]
+        public async Task Uptime(CommandContext ctx) {
+            logger.Info("Uptime Command", Useful.GetDiscordName(ctx));
+
+            TimeSpan uptime = DateTime.UtcNow.Subtract(SekiMain.BootTime);
+
+            await ctx.RespondAsync("Uptime: " + Useful.TimeSpanFormatter(uptime)).ConfigureAwait(false);
+        }
+
         [Command("quote")]
         [Description("Show or add quotes. Add argument \"add\" after the command to add quote. If a different argument is used it will perform a search. If no arguments are added, a random quote is shown")]     // this will be displayed to tell users what this command does when they invoke help
         [Aliases("q")]

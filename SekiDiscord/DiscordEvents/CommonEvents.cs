@@ -18,6 +18,7 @@ namespace SekiDiscord.DiscordEvents {
 
         public static async Task ReadyEvent(DiscordClient c, ReadyEventArgs a) {
             SekiMain.TryReconnect = false;
+            SekiMain.BootTime = DateTime.UtcNow;
             await SekiMain.DiscordClient.UpdateStatusAsync(new DiscordActivity(GetRandomStatus(FileHandler.LoadStringListFromFile(FileHandler.StringListFileType.Status))), BOT_PRESENCE_STATUS).ConfigureAwait(false);
             await logger.InfoAsync("Ready!").ConfigureAwait(false);
         }

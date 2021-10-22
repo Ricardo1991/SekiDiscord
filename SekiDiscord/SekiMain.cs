@@ -17,6 +17,8 @@ namespace SekiDiscord {
 
         private static int reconnectRetryCounter = 0;
 
+        public static DateTime BootTime;
+
         public SekiMain(string[] args) {
             Arguments = args;
             SetupApiKeys();

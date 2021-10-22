@@ -107,5 +107,11 @@ namespace SekiDiscord
 
             return template;
         }
+
+        public static string TimeSpanFormatter(TimeSpan span) 
+        {
+            string uptimeText = (span.Days > 0 ? span.Days + " days, " : "") + span.ToString("h\\hmm");
+            return uptimeText;
+        }
     }
 }
