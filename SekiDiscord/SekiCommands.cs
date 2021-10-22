@@ -421,7 +421,7 @@ namespace SekiDiscord
 
         [Command("event-subscribe")]
         [Description("Subscribe to a named event")]
-        public async Task EventSubscribe(CommandContext ctx, string eventName)
+        public async Task EventSubscribe(CommandContext ctx, [RemainingText] string eventName)
         {
             logger.Info("Event Subscribe Command", Useful.GetDiscordName(ctx));
 
@@ -433,7 +433,8 @@ namespace SekiDiscord
 
         [Command("event-unsubscribe")]
         [Description("Unsubscribe to a named event")]
-        public async Task EventUnsubscribe(CommandContext ctx, string eventName)
+        [Aliases("event-unsub")]
+        public async Task EventUnsubscribe(CommandContext ctx, [RemainingText] string eventName)
         {
             logger.Info("Event Unsubscribe Command", Useful.GetDiscordName(ctx));
 
@@ -446,7 +447,7 @@ namespace SekiDiscord
         [Command("event-enable")]
         [Description("Enable a named event")]
         [Aliases("event-activate")]
-        public async Task EventEnable(CommandContext ctx, string eventName)
+        public async Task EventEnable(CommandContext ctx, [RemainingText] string eventName)
         {
             logger.Info("Event Enable Command", Useful.GetDiscordName(ctx));
 
@@ -465,7 +466,7 @@ namespace SekiDiscord
         [Command("event-disable")]
         [Description("Disable a named event")]
         [Aliases("event-deactivate")]
-        public async Task EventDisable(CommandContext ctx, string eventName)
+        public async Task EventDisable(CommandContext ctx, [RemainingText] string eventName)
         {
             logger.Info("Event Disable Command", Useful.GetDiscordName(ctx));
 
@@ -507,7 +508,7 @@ namespace SekiDiscord
         [Description("Delete a named event. Example: !event-delete genshin")]
         [RequireRoles(RoleCheckMode.Any, "bot-admin", "Administrator")]
         [Aliases("event-remove")]
-        public async Task EventDelete(CommandContext ctx, string eventName)
+        public async Task EventDelete(CommandContext ctx, [RemainingText] string eventName)
         {
             logger.Info("Remove Event Command", Useful.GetDiscordName(ctx));
 
