@@ -37,11 +37,14 @@ namespace SekiDiscord.Commands.NotifyEvent
             {
                 StringBuilder sb = new();
                 {
-                    sb.Append("Enabled: ").Append(eventN.Value.Enabled)
-                        .Append("; Subscribers: ").Append(eventN.Value.EventSubscribers.Count)
-                        .Append("; Name: ").Append(eventN.Value.Name);
-                    if (sendExtraDetail)
-                        sb.Append("; Minutes until next trigger: ").Append(NotifyEvent.TimeForNextNotification(eventN.Value.EventStart, eventN.Value.RepeatPeriod));
+                    sb.Append("Name: "); sb.AppendLine(eventN.Value.Name);
+                    sb.Append("Enabled: "); sb.AppendLine(eventN.Value.Enabled.ToString());
+                    sb.Append("Subscribers: "); sb.AppendLine(eventN.Value.EventSubscribers.Count.ToString());
+                    if (sendExtraDetail) {
+                        sb.Append("Minutes until next trigger: ");
+                        sb.AppendLine(NotifyEvent.TimeForNextNotification(eventN.Value.EventStart, eventN.Value.RepeatPeriod).ToString());
+                    }
+                    
                 }
                 list.Add(sb.ToString());
             }
