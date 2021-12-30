@@ -1,10 +1,36 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 
 namespace SekiDiscord.Commands
 {
     public static class Basics
     {
+
+        public static string RollMany(string format){
+
+            if(!format.Contains('d')){
+                //format error
+            }
+
+            string[] splitS = format.Split('d');
+
+            if(splitS.Length<2){
+                //format error 2
+            }
+
+            int diceCount = Int32.Parse(splitS[0]);
+            int diceSize = Int32.Parse(splitS[1]);
+
+            StringBuilder resultsBuilder = new StringBuilder();
+            for(int i = 0; i<diceCount; i++)
+            {
+                resultsBuilder.Append(Basics.Roll(diceSize) + " ");
+            }
+
+            return resultsBuilder.ToString();
+        }
+
         public static int Roll(int inputMax = 100)
         {
             Random random = new Random();

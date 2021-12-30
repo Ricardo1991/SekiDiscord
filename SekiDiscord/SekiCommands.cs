@@ -259,6 +259,29 @@ namespace SekiDiscord
             }
         }
 
+        [Command("roll")]
+        [Description("Roll a dice with the specified format")]
+        public async Task Roll(CommandContext ctx, string format)
+        {
+            logger.Info("Roll Command", Useful.GetDiscordName(ctx));
+
+            try
+            {
+                string result = Basics.RollMany(format);
+
+                string message = Useful.GetUsername(ctx) + " rolled " + result;
+                await ctx.RespondAsync(message).ConfigureAwait(false);
+            }
+            catch (FormatException)
+            {
+                await ctx.RespondAsync("Wrong Format").ConfigureAwait(false);
+            }
+            catch (OverflowException)
+            {
+                await ctx.RespondAsync("Number too large").ConfigureAwait(false);
+            }
+        }
+
         [Command("shuffle")]
         [Description("Shuffle provided words randomly. Can be phrases if separated by commas")]
         public async Task Shuffle(CommandContext ctx, [RemainingText] string args)
