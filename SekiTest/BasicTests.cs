@@ -27,12 +27,24 @@ namespace SekiTest
             Assert.True(randomNumber > 0 && randomNumber < 21);
         }
 
-         [Fact]
-         public void RollManyTest()
-         {
-             string result = Basics.RollMany("1d1");
-             Assert.True(result.Equals("1")); 
-         }
+        [Fact]
+        public void RollManyTestSimple()
+        {
+            string result = Basics.RollMany("1d1");
+            Assert.True(result.Equals("1"));
+        }
+
+        [Fact]
+        public void RollManyTest()
+        {
+            string result = Basics.RollMany("2d20");
+            string[] resultsSplit = result.Split();
+            int firstDice = Int32.Parse(resultsSplit[0]);
+            int secondDice = Int32.Parse(resultsSplit[1]);
+
+            Assert.True(firstDice > 0 && firstDice <= 20);
+            Assert.True(secondDice > 0 && secondDice <= 20);
+        }
 
         [Fact]
         public void RollDefaultTest()

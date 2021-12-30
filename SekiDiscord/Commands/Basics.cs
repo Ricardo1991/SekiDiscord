@@ -6,16 +6,17 @@ namespace SekiDiscord.Commands
 {
     public static class Basics
     {
-
-        public static string RollMany(string format){
-
-            if(!format.Contains('d')){
+        public static string RollMany(string format)
+        {
+            if (!format.Contains('d'))
+            {
                 //format error
             }
 
             string[] splitS = format.Split('d');
 
-            if(splitS.Length<2){
+            if (splitS.Length < 2)
+            {
                 //format error 2
             }
 
@@ -23,12 +24,12 @@ namespace SekiDiscord.Commands
             int diceSize = Int32.Parse(splitS[1]);
 
             StringBuilder resultsBuilder = new StringBuilder();
-            for(int i = 0; i<diceCount; i++)
+            for (int i = 0; i < diceCount; i++)
             {
                 resultsBuilder.Append(Basics.Roll(diceSize) + " ");
             }
 
-            return resultsBuilder.ToString();
+            return resultsBuilder.ToString().Trim();
         }
 
         public static int Roll(int inputMax = 100)
